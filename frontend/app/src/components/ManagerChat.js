@@ -1,22 +1,61 @@
 import {Client} from '@stomp/stompjs';
 import { useRef, useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView,TouchableOpacity,FlatList,TextInput,Pressable } from "react-native";
+import { StyleSheet, View, Text, ScrollView,TouchableOpacity,FlatList,TextInput,Pressable,Alert } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
-
+import axios from 'axios';
+import { chat } from '../api/api';
 export default function Chat(){
+
     const [chatRoomList, setChatRoomList] = useState([
         {id : 1, chatroom_name : "김싸피", last_message : "점심1 배달 완료했습니다.", last_time : "오후 1시 12분", last_count : 2}, 
         {id :2, chatroom_name : "박싸피", last_message : "점심2 배달 완료했습니다.", last_time : "오후 1시 30분", last_count : 1}, 
         {id:3, chatroom_name : "이싸피", last_message : "저녁1 배달 완료했습니다.", last_time : "어제", last_count : 1}]);
+    const [roomName, setRoomName] = useState('');
+    
     const [chatList, setChatList] = useState([]);
-    const [chat, setChat] = useState('');
+    const [chatting, setChat] = useState('');
     const [page, setPage] = useState('user');
     const [userList, setUserList] = useState([{user_id :"kimssafy", grade : "드라이버", name : "김싸피", phone :"010-1111-1111", region : 1}, {user_id :"parkssafy", grade : "드라이버", name : "박싸피", phone :"010-2222-2222", region : 2},{user_id :"leessafy", grade : "관리자", name : "이싸피", phone :"010-3333-3333", region : 3}]);
-    const [id, setId] = useState(0);
     const {apply_id} = "user"
     const client = useRef({});
+
+    function findAllRooms(){
+        axios({
+            method : "get",
+            url : chat.findAllRooms()
+        }).then((res)=>{
+            setChatRoomList(res.data);
+        }).catch((e)=>{
+            console.log(e)
+        });
+    }
+
+    function createRoom(){
+        if(roomName === "" || undefined){
+            Alert.alert("방 제목을 입력해 주십시오.");
+            return;
+        }else{
+            axios({
+                method: "post",
+                url : chat.createRoom()+"?name="+roomName,
+            }).then((res)=>{
+                Alert.alert(res.data.name+"방 개설에 성공하셨습니다.")
+                setRoomName('');
+                findAllRooms();
+            }).catch((e)=>{
+                Alert.alert("채팅방 개설에 실패하였습니다.")
+            })
+        }
+    }
+
+    function enterRoom(roomId){
+    }
     
+    useEffect(()=>{
+        findAllRooms();
+    },[])
+
     const connect = () =>{
         console.log(client.current);
         client.current = new Client({
@@ -56,7 +95,7 @@ export default function Chat(){
         if(!client.current.connected) return;
             console.log(chat);
             client.current.publish({
-            destination : '/pub/chat',
+            destination : '/pub/chat/message',
             body : JSON.stringify({
                 applyId : apply_id,
                 chat : chat,
@@ -164,7 +203,6 @@ export default function Chat(){
                     renderItem={({item}) =>
                         <TouchableOpacity onPress={()=>{
                             setPage('chat');
-                            setId(item.id);
                         }}>
                             <View style={styles.chatRoomListStyle}>
                                 <View style={styles.profilePicture}>
@@ -192,13 +230,11 @@ export default function Chat(){
                 <View style={styles.leftBar}>
                     <TouchableOpacity style={styles.leftBtn} onPress={()=>{
                         setPage('user')
-                        setId('')
                     }}>
                         <Icon name="person-outline" size={40}></Icon>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.leftBtn} onPress={()=>{
                         setPage('chatRoomList')
-                        setId('')
                     }}>
                         <Icon name="messenger" size={40}></Icon>
                     </TouchableOpacity>
@@ -223,7 +259,7 @@ export default function Chat(){
                 onChangeText={text => {
                     handleChange(text);
                 }}
-                value={chat}></TextInput>
+                value={chatting}></TextInput>
                 <TouchableOpacity style={styles.buttonStyle} onPress={handleSubmit} disabled={chat === ''}>
                 <Text style={styles.buttonTextStyle}>Send</Text>
                 </TouchableOpacity>

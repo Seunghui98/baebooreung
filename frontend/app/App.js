@@ -18,7 +18,7 @@ import GPSScreen from './src/pages/GPSScreen';
 import MessageScreen from './src/pages/MessageScreen';
 import DetailWorkScreen from './src/pages/DetailWorkScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import {Provider} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -45,7 +45,8 @@ export default function App() {
     <SafeAreaView style={styles.container}>
     <NavigationContainer>
       <Tab.Navigator initialRouteName="HomeStack">
-        <Tab.Screen name="HomeStack" component={HomeStack} options={{title : '홈', headerShown :false, tabBarIcon: ({color,size})=>(
+        <Tab.Screen name="HomeStack" component={HomeStack}
+        options={{title : '홈', headerShown :false, tabBarIcon: ({color,size})=>(
           <Icon name="home" color={color} size={size}></Icon>
         )}} ></Tab.Screen>
 
