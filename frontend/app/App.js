@@ -19,6 +19,7 @@ import MessageScreen from './src/pages/MessageScreen';
 import DetailWorkScreen from './src/pages/DetailWorkScreen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Provider} from 'react-redux';
+import store from "./src/redux/store";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -43,6 +44,7 @@ function HomeStack() {
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
+      <Provider store={store}>
     <NavigationContainer>
       <Tab.Navigator initialRouteName="HomeStack">
         <Tab.Screen name="HomeStack" component={HomeStack}
@@ -87,6 +89,7 @@ export default function App() {
         )}}></Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
+    </Provider>
     </SafeAreaView>
   );
 }
