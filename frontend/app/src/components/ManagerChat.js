@@ -1,24 +1,21 @@
-import {Client} from '@stomp/stompjs';
-import { useRef, useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView,TouchableOpacity,FlatList,TextInput,Pressable,Alert } from "react-native";
+import { useState, useEffect } from 'react';
+import { StyleSheet, View, Text,TouchableOpacity,FlatList,Alert } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 import axios from 'axios';
 import { chat } from '../api/api';
-export default function Chat(){
+import ManagerChatRoom from './ManagerChatRoom';
 
-    const [chatRoomList, setChatRoomList] = useState([
+export default function ManagerChat({navigation}){
+    const [chatRoomList, setChatRoomList] = useState([]);
+    const [chatRoomListTemp, setChatRoomListTemp] = useState([
         {id : 1, chatroom_name : "김싸피", last_message : "점심1 배달 완료했습니다.", last_time : "오후 1시 12분", last_count : 2}, 
         {id :2, chatroom_name : "박싸피", last_message : "점심2 배달 완료했습니다.", last_time : "오후 1시 30분", last_count : 1}, 
         {id:3, chatroom_name : "이싸피", last_message : "저녁1 배달 완료했습니다.", last_time : "어제", last_count : 1}]);
     const [roomName, setRoomName] = useState('');
-    
-    const [chatList, setChatList] = useState([]);
-    const [chatting, setChat] = useState('');
+    const [roomId, setRoomId] = useState('');
     const [page, setPage] = useState('user');
     const [userList, setUserList] = useState([{user_id :"kimssafy", grade : "드라이버", name : "김싸피", phone :"010-1111-1111", region : 1}, {user_id :"parkssafy", grade : "드라이버", name : "박싸피", phone :"010-2222-2222", region : 2},{user_id :"leessafy", grade : "관리자", name : "이싸피", phone :"010-3333-3333", region : 3}]);
-    const {apply_id} = "user"
-    const client = useRef({});
+
 
     function findAllRooms(){
         axios({
@@ -38,7 +35,10 @@ export default function Chat(){
         }else{
             axios({
                 method: "post",
-                url : chat.createRoom()+"?name="+roomName,
+                url : chat.createRoom(),
+                params : {
+                    name : roomName
+                }
             }).then((res)=>{
                 Alert.alert(res.data.name+"방 개설에 성공하셨습니다.")
                 setRoomName('');
@@ -50,93 +50,17 @@ export default function Chat(){
     }
 
     function enterRoom(roomId){
+        setRoomId(roomId);
     }
-    
+
     useEffect(()=>{
         findAllRooms();
     },[])
 
-    const connect = () =>{
-        console.log(client.current);
-        client.current = new Client({
-            brokerURL : 'wss://k7c207.p.ssafy.io:8080/ws-stomp/websocket',
-            onConnect : () =>{
-                console.log('성공');
-                subscribe();
-            },
-            logRawCommunication: true,
-            connectHeaders: {
-                login: 'user',
-                passcode: 'password',
-              },
-            onStompError:  function (frame) {
-                // Will be invoked in case of error encountered at Broker
-                // Bad login/passcode typically will cause an error
-                // Complaint brokers will set `message` header with a brief message. Body may contain details.
-                // Compliant brokers will terminate the connection after any error
-                console.log('Broker reported error: ' + frame.headers['message']);
-                console.log('Additional details: ' + frame.body);
-              },
-            debug: function (str) {
-                console.log(str);
-            },
-            reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-        });
-        console.log(client.current);
-        console.log(client.current.brokerURL);
-        console.log(client.current.connected);
-        client.current.activate();
-        console.log(client.current.connected);
-    }
-
-    const publish = (chat) =>{
-        if(!client.current.connected) return;
-            console.log(chat);
-            client.current.publish({
-            destination : '/pub/chat/message',
-            body : JSON.stringify({
-                applyId : apply_id,
-                chat : chat,
-            })
-        });
-        setChat('');
-    }
-
-    const subscribe = () =>{
-        client.current.subscribe('/sub/chat/'+apply_id,(body) =>{
-            const json_body = JSON.parse(body.body);
-            setChatList((_chat_list)=>[
-                ..._chat_list, json_body
-            ]);
-        });
-    };
-
-    const disconnect = () =>{
-        client.current.deactivate();
-    }
-
-    const handleChange = (event) =>{
-        //채팅 입력시 state에 값 설정
-        console.log("handleChange : "+ event);
-        setChat(event);
-    }
-
-    const handleSubmit =(event,chat) =>{
-        //보내기 버튼 눌렀을 경우 publish
-        console.log(event);
-        console.log("handleSubmit : "+chat);
-        publish(chat);
-    }
-
-    useEffect(()=>{
-        connect();
-        return () => disconnect();
-    },[]);
 
     return(
         <View style={styles.container}>
+
         {page === 'user' &&
             <View style={styles.container}>
             <View style={styles.leftBar}>
@@ -199,9 +123,10 @@ export default function Chat(){
                     <FlatList
                     style={styles.list}
                     data={chatRoomList}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.roomId}
                     renderItem={({item}) =>
                         <TouchableOpacity onPress={()=>{
+                            enterRoom(item.roomId);
                             setPage('chat');
                         }}>
                             <View style={styles.chatRoomListStyle}>
@@ -210,7 +135,7 @@ export default function Chat(){
                                 </View>
                                 <View style={styles.chatRoomDetail}>
                                     <View style={styles.chatRoomDetailTop}>
-                                        <View><Text style={styles.chatRoomName}>{item.chatroom_name}</Text></View>
+                                        <View><Text style={styles.chatRoomName}>{item.name}</Text></View>
                                         <View><Text style={styles.chatRoomLastTime}>{item.last_time}</Text></View>
                                     </View>
                                     <View style={styles.chatRoomDetailBottom}>
@@ -238,36 +163,13 @@ export default function Chat(){
                     }}>
                         <Icon name="messenger" size={40}></Icon>
                     </TouchableOpacity>
+                    
                 </View>
-            <View style={styles.rightBar}>
-            <FlatList
-            style={styles.list}
-            data={chatList}
-            keyExtractor={item => item.id}
-            renderItem={({item}) =>
-                item.user == userId ? (
-                <Text style={styles.myChat}>{item.message}</Text>
-                ) : (
-                <Text style={styles.otherChat}>{item.message}</Text>
-                )
-            }
-            />
-              <View style={styles.bottomContainer}>
-                <TextInput
-                style={styles.input}
-                placeholder={'Add Message'}
-                onChangeText={text => {
-                    handleChange(text);
-                }}
-                value={chatting}></TextInput>
-                <TouchableOpacity style={styles.buttonStyle} onPress={handleSubmit} disabled={chat === ''}>
-                <Text style={styles.buttonTextStyle}>Send</Text>
-                </TouchableOpacity>
-            </View>
-            </View>
+                <View style={styles.rightBar}>
+                    <ManagerChatRoom navigation={navigation} ID={roomId}></ManagerChatRoom>
+                </View>
             </View>
         }
-
     </View>
     );
 }
