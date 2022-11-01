@@ -10,7 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {chat} from '../API/api';
+import {chat} from '../api/api';
 import axios from 'axios';
 
 export default function ManagerChatRoom({navigation, ID}) {

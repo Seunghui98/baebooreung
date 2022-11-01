@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat} from '../API/api';
+import {chat} from '../api/api';
 import ManagerChatRoom from './ManagerChatRoom';
 
 export default function ManagerChat({navigation}) {
