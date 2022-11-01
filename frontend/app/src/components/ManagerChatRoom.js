@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import {Client} from '@stomp/stompjs';
+import SockJs from 'socketjs-client';
 import { StyleSheet,View,TouchableOpacity, FlatList,Text, TextInput} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { chat } from '../api/api';
@@ -36,6 +37,7 @@ export default function ManagerChatRoom({navigation, ID}) {
         console.log("handleSubmit : "+chat);
         publish(chat);
     }
+
     function sendMessage(){
         client.current.send("pub/chat/message",{}, JSON.stringify({type:'TALK',roomId:roomId,sender:sender,message:message}));
         setMessage('');
@@ -49,12 +51,16 @@ export default function ManagerChatRoom({navigation, ID}) {
         })
     }
 
-    const connect = () =>{
-        client.current = new Client({
+     async function connect() {
+        client.current = new Client();
+        client.current.configure({
             brokerURL : 'wss://k7c207.p.ssafy.io:8080/ws-stomp/websocket',
             onConnect : () =>{
                 console.log('성공');
                 subscribe();
+            },
+            onDisconnect : () =>{
+                console.log('실패');
             },
             logRawCommunication: true,
             connectHeaders: {
@@ -76,7 +82,8 @@ export default function ManagerChatRoom({navigation, ID}) {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
         });
-        client.current.activate();
+        await client.current.activate();
+        await subscribe();
         // client.subscribe("sub/chat/room"+roomId, function(message){
         //     const recv = JSON.parse(message.body);
         //     recvMessage(recv);
@@ -97,7 +104,7 @@ export default function ManagerChatRoom({navigation, ID}) {
     }
 
     const subscribe = () =>{
-        client.current.subscribe('/sub/chat/room'+roomId,(body) =>{
+        client.current.subscribe('/sub/chat/room/'+roomId,(body) =>{
             const recv = JSON.parse(body.body);
             recvMessage(recv);
             // const json_body = JSON.parse(body.body);
@@ -119,13 +126,17 @@ export default function ManagerChatRoom({navigation, ID}) {
 
 
     useEffect(()=>{
-        findRoom();
-        connect();
-        return () => disconnect();
+        const p1 = new Promise(function(resolve, reject){
+            connect();
+        })
+        p1.then(function(val){
+            subscribe()});
+       
+        return () => disconnect();    
     },[]);
 
     useEffect(()=>{
-        console.log(messages)
+        console.log(client.current.connected)
     },[messages]);
 
     return (

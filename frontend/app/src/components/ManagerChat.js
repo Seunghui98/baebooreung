@@ -8,9 +8,9 @@ import ManagerChatRoom from './ManagerChatRoom';
 export default function ManagerChat({navigation}){
     const [chatRoomList, setChatRoomList] = useState([]);
     const [chatRoomListTemp, setChatRoomListTemp] = useState([
-        {id : 1, chatroom_name : "김싸피", last_message : "점심1 배달 완료했습니다.", last_time : "오후 1시 12분", last_count : 2}, 
-        {id :2, chatroom_name : "박싸피", last_message : "점심2 배달 완료했습니다.", last_time : "오후 1시 30분", last_count : 1}, 
-        {id:3, chatroom_name : "이싸피", last_message : "저녁1 배달 완료했습니다.", last_time : "어제", last_count : 1}]);
+        {id : 1, name : "김싸피", last_message : "점심1 배달 완료했습니다.", last_time : "오후 1시 12분", last_count : 2}, 
+        {id :2, name : "박싸피", last_message : "점심2 배달 완료했습니다.", last_time : "오후 1시 30분", last_count : 1}, 
+        {id:3, name : "이싸피", last_message : "저녁1 배달 완료했습니다.", last_time : "어제", last_count : 1}]);
     const [roomName, setRoomName] = useState('');
     const [roomId, setRoomId] = useState('');
     const [page, setPage] = useState('user');
