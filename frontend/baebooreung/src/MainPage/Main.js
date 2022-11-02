@@ -5,6 +5,7 @@ import { useState } from 'react';
 import MainFrame from "./MainFrame";
 import DashBoard from "./DashBoard";
 import Chatting from "./Chatting";
+import Notice from "./Notice";
 import NaverMapApi from '../navermap/NaverMapApi';
 
 const Main = () => {
@@ -16,8 +17,9 @@ const Main = () => {
 
   const contents = {
     0: <DashBoard />,
-    1: <Chatting />,
-    2: <NaverMapApi />,
+    1: <NaverMapApi />,
+    2: <Notice />,
+    3: <Chatting />
   }
 
   return (
