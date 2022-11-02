@@ -31,7 +31,7 @@ import SignUp from './src/pages/driverApp/SignUp';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-const isManager = false;
+const isManager = true;
 
 function HomeStack() {
   return (
