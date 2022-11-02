@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { View,Button,Text,TouchableOpacity } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import SoundRecorder from 'react-native-sound-recorder';
 
 export default function AudioRecord(){
+    const [file, setFile] = useState('');
     const requestRecordingAudioPermission = async () => {
         try {
           const granted = await PermissionsAndroid.request(
@@ -21,14 +22,10 @@ export default function AudioRecord(){
     
     const startRecord = async ()=>{
         try{
-            await SoundRecorder.start(SoundRecorder.PATH_CACHE + '/test.mp4',{
-                source : SoundRecorder.SOURCE_MIC,
-                format : SoundRecorder.FORMAT_MPEG_4,
-                encoder : SoundRecorder.ENCODER_AAC,
-                sampleRate : 44100,
-              })
+            await SoundRecorder.start(SoundRecorder.PATH_DOCUMENT + '/test.mp4',)
             .then(function() {
-                console.log('started recording');
+                setFile(SoundRecorder.PATH_DOCUMENT+'/test.mp4');
+                console.log('started recording : ' + SoundRecorder.PATH_DOCUMENT+'/test.mp4');
             });
         }catch(e){
             console.log(e);
@@ -46,7 +43,7 @@ export default function AudioRecord(){
         }
     }
     
-        
+    
     // Usage with Options:
 
     //  SoundRecorder.start(
@@ -65,6 +62,7 @@ export default function AudioRecord(){
     return(
         <View>
             <TouchableOpacity onPress={startRecord}><Text>시작</Text></TouchableOpacity>
+            <Text>{file}</Text>
          <TouchableOpacity onPress={stopRecord}><Text>종료</Text></TouchableOpacity>
         </View>
     )
