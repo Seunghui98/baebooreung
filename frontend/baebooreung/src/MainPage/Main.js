@@ -9,6 +9,7 @@ import DriverPosition from "./DriverPosition";
 import NaverMapApi from '../NaverMap/NaverMapApi';
 
 const Main = () => {
+  console.log('')
   const [MainId, setactiveId] = useState(0);
   const clickhandler = (Id) => {
     setactiveId(Id); 
