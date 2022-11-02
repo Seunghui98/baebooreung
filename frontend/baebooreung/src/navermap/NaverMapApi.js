@@ -44,8 +44,8 @@ export default function NaverMapApi({start}) {
 
   const goal = "126.9108,35.1804" // 생활관5동입구
 
-  const url = `/map-direction-15/v1/driving?start=${start}&goal=${goal}&waypoints=${waypoints}`
-  const url_now = `/map-direction-15/v1/driving?start=${start}&goal=${waypoints2}`
+  const url = `/map-direction-15/v1/driving?start=${waypoints1}&goal=${goal}&waypoints=${waypoints}&option="trafast"`
+  const url_now = `/map-direction-15/v1/driving?start=${start}&goal=${waypoints1}&option="trafast"`
 
   const [test_course, setTestCourse] = useState([])
   const [test_course_now, setTestCourseNow] = useState([])
@@ -55,6 +55,7 @@ export default function NaverMapApi({start}) {
     await axios.get(url, {
       headers: headers
     }).then((res) => {
+      console.log(res.data.route)
       const path = res.data.route.traoptimal[0].path
       for (let i = 0; i <= path.length-1; i ++) {
         course.push({lat:path[i][1],lng:path[i][0]})
@@ -91,7 +92,7 @@ export default function NaverMapApi({start}) {
       height: '100vh',
     }}
     center={translate_coordinate_lat_lng(start)}
-    defaultZoom={16}
+    zoom={16}
     >
     <Marker 
       position={translate_coordinate_lat_lng(start)}
@@ -118,14 +119,14 @@ export default function NaverMapApi({start}) {
       strokeStyle={'solid'}
       strokeLineCap={'round'}
       strokeOpacity={0.5}
-      strokeWeight={5}        
+      strokeWeight={10}        
     />
     <Polyline
       path = {test_course_now}
       strokeColor={'red'}
       strokeStyle={'solid'}
       strokeLineCap={'round'}
-      strokeOpacity={0.6}
+      strokeOpacity={1}
       strokeWeight={10}        
     />
   </NaverMap>
