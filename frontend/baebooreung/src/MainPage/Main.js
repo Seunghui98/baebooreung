@@ -6,6 +6,7 @@ import MainFrame from "./MainFrame";
 import DashBoard from "./DashBoard";
 import Chatting from "./Chatting";
 import DriverPosition from "./DriverPosition";
+import NaverMapApi from '../NaverMap/NaverMapApi';
 
 const Main = () => {
   const [MainId, setactiveId] = useState(0);
@@ -16,7 +17,7 @@ const Main = () => {
   const contents = {
     0: <DashBoard />,
     1: <Chatting />,
-    2: <DriverPosition />,
+    2: <NaverMapApi />,
   }
 
   return (
@@ -26,6 +27,7 @@ const Main = () => {
       </div>
       <div>
         {contents[MainId]}
+        {/* <NaverMapApi/> */}
       </div>
     </div>
   );

@@ -81,6 +81,7 @@ export default function NaverMapApi() {
   }
 
   useEffect(() => {
+    console.log('asdfasdf')
     cal_course()
   }, [start])
 
