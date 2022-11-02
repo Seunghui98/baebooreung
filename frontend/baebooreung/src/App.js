@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import NaverMapApi from './NaverMap/NaverMapApi';
+import NaverMapApi from './navermap/NaverMapApi';
 import Page404 from './Page404';
-import Main from './MainPage/Main';
+import Main from './mainpage/Main';
 
 export default function App() {
   
