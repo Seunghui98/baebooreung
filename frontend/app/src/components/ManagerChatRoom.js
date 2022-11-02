@@ -16,11 +16,11 @@ import axios from 'axios';
 export default function ManagerChatRoom({navigation, ID}) {
   const [roomId, setRoomId] = useState(ID);
   const [room, setRoom] = useState({});
-  const [sender, setSender] = useState('');
+  const [sender, setSender] = useState('sub-0');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const client = useRef({});
-
+  console.log(messages);
   function findRoom() {
     axios({
       method: 'get',
@@ -47,16 +47,27 @@ export default function ManagerChatRoom({navigation, ID}) {
   };
 
   function sendMessage() {
-    client.current.send(
-      'pub/chat/message',
-      {},
-      JSON.stringify({
+    client.current.publish({
+      destination: '/pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
         type: 'TALK',
         roomId: roomId,
         sender: sender,
         message: message,
       }),
-    );
+    }
+      );
+      // subscribe();
+      // client.current.subscribe( '/chat/room/' + roomId, body => {
+      //   console.log(body);
+      //   const recv = JSON.parse(body.body);
+      //   recvMessage(recv);
+        // const json_body = JSON.parse(body.body);
+        // setChatList((_chat_list)=>[
+        //     ..._chat_list, json_body
+        // ]);
+      // }, {id:"sub-0"});
     setMessage('');
   }
 
@@ -74,11 +85,14 @@ export default function ManagerChatRoom({navigation, ID}) {
 
   async function connect() {
     client.current = new Client();
+    console.log(new Client);
     client.current.configure({
       brokerURL: 'wss://k7c207.p.ssafy.io:8080/ws-stomp/websocket',
       onConnect: () => {
         console.log('성공');
-        subscribe();
+      },
+      onChangeState: ()=> {
+        console.log(1111);
       },
       onDisconnect: () => {
         console.log('실패');
@@ -103,36 +117,27 @@ export default function ManagerChatRoom({navigation, ID}) {
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
-    await client.current.activate();
-    await subscribe();
-    // client.subscribe("sub/chat/room"+roomId, function(message){
-    //     const recv = JSON.parse(message.body);
-    //     recvMessage(recv);
-    // })
-  }
 
-  const publish = chat => {
-    if (!client.current.connected) return;
-    console.log(chat);
-    client.current.publish({
-      destination: '/pub/chat/message',
-      body: JSON.stringify({
-        applyId: apply_id,
-        chat: chat,
-      }),
-    });
-    setMessage('');
-  };
+    await client.current.activate();
+    console.log(client.current)
+    // subscribe();
+    await client.current.subscribe('/sub/chat/room/' + roomId, body => {
+      console.log(body);
+      const recv = JSON.parse(body.body);
+      recvMessage(recv);
+    }, {id:"sub-0"});
+  }
 
   const subscribe = () => {
     client.current.subscribe('/sub/chat/room/' + roomId, body => {
+      console.log(body);
       const recv = JSON.parse(body.body);
       recvMessage(recv);
       // const json_body = JSON.parse(body.body);
       // setChatList((_chat_list)=>[
       //     ..._chat_list, json_body
       // ]);
-    });
+    }, {id:"sub-0"});
   };
 
   const disconnect = () => {
@@ -145,14 +150,20 @@ export default function ManagerChatRoom({navigation, ID}) {
     setMessage(event);
   };
 
-  useEffect(() => {
-    const p1 = new Promise(function (resolve, reject) {
-      connect();
-    });
-    p1.then(function (val) {
-      subscribe();
-    });
+  function pub() {
+    client.current.publish({
+      destination :'pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
+        type: 'ENTER',
+        roomId: roomId,
+        sender: sender,
+      }),
+    })
+  }
 
+  useEffect(() => {
+      connect();
     return () => disconnect();
   }, []);
 
@@ -163,17 +174,14 @@ export default function ManagerChatRoom({navigation, ID}) {
   return (
     <View style={styles.container}>
       <View style={styles.rightBar}>
+        <TouchableOpacity onPress={pub}><Text>enter</Text></TouchableOpacity>
         <FlatList
           style={styles.list}
           data={messages}
           keyExtractor={item => item.id}
-          renderItem={({item}) =>
-            item.user == userId ? (
-              <Text style={styles.myChat}>{item.message}</Text>
-            ) : (
-              <Text style={styles.otherChat}>{item.message}</Text>
-            )
-          }
+          renderItem={({item}) =>{
+           <Text>{item.message}</Text>
+          }}
         />
         <View style={styles.bottomContainer}>
           <TextInput
