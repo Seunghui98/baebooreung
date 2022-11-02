@@ -1,4 +1,4 @@
-import styles from '../MainPage/MainFrame.module.css'
+import styles from './MainFrame.module.css'
 import React, { useEffect } from 'react';
 import logo from '../assets/iamges/배달긱.png'
 
