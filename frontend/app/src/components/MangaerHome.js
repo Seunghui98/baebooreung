@@ -10,9 +10,9 @@ function ManagerHome({navigation}){
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Icon name="person" size={SCREEN_HEIGHT/8}></Icon>
+                <Icon name="person" size={SCREEN_HEIGHT/8} color={'#F4FA58'}></Icon>
                 <View style={styles.topTextLayout}>
-                    <Text style={styles.topText}> {user.name} {user.grade}님</Text>
+                    <Text style={styles.topText}> {user.name} {user.grade}님 안녕하세요!</Text>
                 </View>
             </View>
 
@@ -35,7 +35,7 @@ function ManagerHome({navigation}){
                         <View style={styles.dailyWorkList}>
                         <TouchableOpacity
                         onPress={()=>{
-                            navigation.navigate('DetailWork',{ headerTitle : `${item.regionName}`})
+                            navigation.navigate('DetailWork',{ headerTitle : `${item.regionName}`, region : item.region})
                         }}>
                         <Text style={styles.dailyWorkListText}>{item.regionName}</Text>
                         </TouchableOpacity>
@@ -57,15 +57,22 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         width : SCREEN_WIDTH,
         height : SCREEN_HEIGHT/8,
+        backgroundColor :'#191970',
+        shadowOffset : {width:0, height:1},
+        shadowRadius :2,
+        elevation :2, 
+        shadowOpacity :0.4,
     },
     topTextLayout : {
         flex :1,
-        alignItems : 'flex-start',
+        alignItems : 'center',
         justifyContent : 'center',
+        
     },
     topText : {
         fontSize : 22,
-        fontWeight : 'bold'
+        fontWeight : 'bold',
+        color : '#F4FA58'
     },
     noticeLayout : {
         height : SCREEN_HEIGHT/8,

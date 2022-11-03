@@ -48,10 +48,10 @@ function HomeStack() {
         component={DetailWorkScreen}
         options={{
           headerStyle: {
-            backgroundColor: '#29b6f6',
+            backgroundColor: '#191970', 
           },
           headerTitleAlign: 'center',
-          headerTintColor: '#ffffff',
+          headerTintColor: '#F7FE2E',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
@@ -97,10 +97,10 @@ export default function App() {
               options={{
                 title: '메세지',
                 headerStyle: {
-                  backgroundColor: '#29b6f6',
+                  backgroundColor: '#191970',
                 },
                 headerTitleAlign: 'center',
-                headerTintColor: '#ffffff',
+                headerTintColor: '#F7FE2E',
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
@@ -114,10 +114,10 @@ export default function App() {
               options={{
                 title: '실시간위치',
                 headerStyle: {
-                  backgroundColor: '#29b6f6',
+                  backgroundColor: '#191970',
                 },
                 headerTitleAlign: 'center',
-                headerTintColor: '#ffffff',
+                headerTintColor: '#F7FE2E',
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
@@ -131,10 +131,10 @@ export default function App() {
               options={{
                 title: '마이페이지',
                 headerStyle: {
-                  backgroundColor: '#29b6f6',
+                  backgroundColor: '#191970',
                 },
                 headerTitleAlign: 'center',
-                headerTintColor: '#ffffff',
+                headerTintColor: '#F7FE2E',
                 headerTitleStyle: {
                   fontWeight: 'bold',
                 },
