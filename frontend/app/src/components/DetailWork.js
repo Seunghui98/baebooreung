@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { View,Text,StyleSheet, TouchableOpacity,Dimensions } from "react-native";
-
+import { View,Text,StyleSheet, TouchableOpacity, Dimensions, Image } from "react-native";
+import Truck from '../assets/truck.png'
 const {height : SCREEN_HEIGHT, width : SCREEN_WIDTH} = Dimensions.get('window');
 
-export default function DetailWork({regionName,region}){
+export default function DetailWork(props){
+    console.log(props);
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -14,6 +15,7 @@ export default function DetailWork({regionName,region}){
                     <Text style={styles.headerText}>드라이버 업무 변경</Text>
                 </TouchableOpacity>
             </View>
+            <Image source={Truck} style={styles.image}/>
        </View>
     )
 }
@@ -35,5 +37,10 @@ const styles = StyleSheet.create({
     },
     headerText : {
         fontSize : 18,
+    },
+    image : {
+        resizeMode : 'stretch',
+        width:70,
+        height:50
     }
 });
