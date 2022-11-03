@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import {Text, View} from 'react-native';
+import {Text, View,StyleSheet} from 'react-native';
+import DetailWork from '../../components/DetailWork';
 
 function DetailWorkScreen(props){
     useEffect(()=>{
@@ -7,9 +8,19 @@ function DetailWorkScreen(props){
         props.navigation.setOptions({headerTitle : headerTitle});
     },[])
     return(
-        <View>
+        <View style={styles.container}>
+            <DetailWork regionName={props.route.params.headerTitle} region={props.route.params.region}></DetailWork>
         </View>
+
     )
 }
+
+const styles = StyleSheet.create({
+    container : {
+        flex :1,
+    }
+});
+
+
 
 export default DetailWorkScreen;
