@@ -1,10 +1,15 @@
 import {StyleSheet, View} from 'react-native';
-import ManagerChat from "../components/ManagerChat"
+import AudioRecord from '../../components/AudioRecord';
+import ManagerChat from "../../components/ManagerChat"
+import Swiper from 'react-native-swiper';
 
 function MessageScreen({navigation}){
     return(
         <View style={styles.container}>
-            <ManagerChat navigation={navigation}></ManagerChat>
+            <Swiper>
+                <ManagerChat navigation={navigation}></ManagerChat>
+                <AudioRecord></AudioRecord>
+            </Swiper>
         </View>
     )
 }

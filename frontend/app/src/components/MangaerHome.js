@@ -12,7 +12,7 @@ function ManagerHome({navigation}){
             <View style={styles.top}>
                 <Icon name="person" size={SCREEN_HEIGHT/8}></Icon>
                 <View style={styles.topTextLayout}>
-                    <Text style={styles.topText}>안녕하세요 {user.name} {user.grade}님</Text>
+                    <Text style={styles.topText}> {user.name} {user.grade}님</Text>
                 </View>
             </View>
 
@@ -29,7 +29,6 @@ function ManagerHome({navigation}){
                 <View style={styles.dailyWork}>
                 <FlatList
                     style={styles.dailyWorkListLayout}
-
                     data={workList}
                     keyExtractor={item => item.region}
                     renderItem={({item}) =>
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     },
     topTextLayout : {
         flex :1,
-        alignItems : 'center',
+        alignItems : 'flex-start',
         justifyContent : 'center',
     },
     topText : {
@@ -69,20 +68,26 @@ const styles = StyleSheet.create({
         fontWeight : 'bold'
     },
     noticeLayout : {
-        width : SCREEN_WIDTH,
         height : SCREEN_HEIGHT/8,
+        marginHorizontal : 15,
+        marginVertical : 15,
     },
     notice : {
         flex : 1,
         marginHorizontal : 10,
         marginVertical :10,
         borderRadius : 15,
-        backgroundColor : '#D8D8D8',
+        backgroundColor : '#00BFFF',
         alignItems :'center',
-        justifyContent :'center'
+        justifyContent :'center',
+        shadowOffset : {width:0, height:1},
+        shadowRadius :2,
+        elevation :10, 
+        shadowOpacity :0.4,
     },
     noticeText : {
         fontSize : 22,
+        color : 'white',
         fontWeight :'bold'
     },
     dailyWorkLayout : {
@@ -91,7 +96,8 @@ const styles = StyleSheet.create({
     },
     dailyWorkTitleTextLayout : {
         alignItems : 'center',
-        justifyContent : 'center'
+        justifyContent : 'center',
+
     },
     dailyWorkTitleText : {
         fontSize : 22,
@@ -102,10 +108,8 @@ const styles = StyleSheet.create({
         marginHorizontal : 10,
         marginVertical :10,
         borderRadius : 15,
-        backgroundColor : '#D8D8D8'
     },
     dailyWorkListLayout : {
-        backgroundColor :'white',
         marginHorizontal : 15,
         marginVertical : 15,
     },
@@ -113,6 +117,13 @@ const styles = StyleSheet.create({
         height : SCREEN_HEIGHT/10,
         alignItems : 'center',
         justifyContent :'center',
+        borderRadius : 20, 
+        backgroundColor :'white',
+        marginBottom :20,
+        shadowOffset : {width:0, height:1},
+        shadowRadius :2,
+        elevation :10, 
+        shadowOpacity :0.4,
     },
     dailyWorkListText : {
         fontSize : 22,
