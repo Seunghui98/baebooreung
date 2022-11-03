@@ -1,7 +1,8 @@
 .main_logo_image {
-  width:200px;
-  height:200px;
+  width:150px;
+  height:150px;
   padding-bottom:20px;
+  margin:20px;
 }
 
 .button_style {
@@ -12,9 +13,10 @@
   border: 0;
   outline:0;
   color: white;
-  font-size:15px;
+  font-size:20px;
   display: flex;
   align-items: center;
+  font-family: 'BMHANNAAir';
 }
 
 .main_frame_logo_image {
@@ -24,6 +26,7 @@
 
 .main_display_flex {
   display:flex;
+  font-family: "BMJUA";
 }
 
 .main_display_flex_direction_col {
@@ -35,7 +38,8 @@
   display:flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #878A8F;
+  background-color: #0F1839;
+  width:220px;
 }
 
 .main_content {

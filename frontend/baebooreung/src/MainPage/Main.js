@@ -28,7 +28,8 @@ const Main = () => {
         <div>
           <MainFrame SetMainId={clickhandler} />
         </div>
-        <div style={{ display: "block", width: "100%" }}>
+        <div style={{ width: "100%" }}>
+          <div style={{backgroundColor:"aqua", margin:"30px", marginLeft:"0px"}}>안녕하세요?</div>
           {contents[MainId]}
         </div>
       </div>
