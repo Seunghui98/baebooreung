@@ -12,11 +12,14 @@ import * as encoding from 'text-encoding';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from './src/pages/HomeScreen';
-import MyPageScreen from './src/pages/MyPageScreen';
-import GPSScreen from './src/pages/GPSScreen';
-import MessageScreen from './src/pages/MessageScreen';
-import DetailWorkScreen from './src/pages/DetailWorkScreen';
+
+// <-- manager App pages-->
+import HomeScreen from './src/pages/managerApp/HomeScreen';
+import MyPageScreen from './src/pages/managerApp/MyPageScreen';
+import GPSScreen from './src/pages/managerApp/GPSScreen';
+import MessageScreen from './src/pages/managerApp/MessageScreen';
+import DetailWorkScreen from './src/pages/managerApp/DetailWorkScreen';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Provider} from 'react-redux';
 import store from "./src/redux/store";

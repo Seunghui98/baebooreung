@@ -1,8 +1,10 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect,useRef} from 'react';
+import {Client} from '@stomp/stompjs';
 import {
   StyleSheet,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   FlatList,
   Alert,
@@ -10,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {chat} from '../api/api';
-import ManagerChatRoom from './ManagerChatRoom';
+
 
 export default function ManagerChat({navigation}) {
   const [chatRoomList, setChatRoomList] = useState([]);
@@ -63,7 +65,13 @@ export default function ManagerChat({navigation}) {
       region: 3,
     },
   ]);
+  const [room, setRoom] = useState({});
+  const [sender, setSender] = useState('sub-0');
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const client = useRef({});
 
+  
   function findAllRooms() {
     axios({
       method: 'get',
@@ -101,11 +109,139 @@ export default function ManagerChat({navigation}) {
   }
 
   function enterRoom(roomId) {
+    subscribe(roomId);
     setRoomId(roomId);
   }
 
+
+  function findRoom() {
+    axios({
+      method: 'get',
+      url: chat.findRoom(),
+      params: {
+        roomId: roomId,
+      },
+    })
+      .then(res => {
+        setRoom(res.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
+  function sendMessage() {
+    console.log(messages);
+    setMessages(messages => {
+      const newMessages = [...messages];
+      newMessages.unshift({
+        type: 'TALK',
+        sender: sender,
+        message: message,
+      });
+      return newMessages;
+    });
+
+    client.current.publish({
+      destination: '/pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
+        type: 'TALK',
+        roomId: roomId,
+        sender: sender,
+        message: message,
+      }),
+    });
+    setMessage('');
+  }
+
+  function recvMessage(recv) {
+    setMessages(messages => {
+      const newMessages = [...messages];
+      newMessages.unshift({
+        type: recv.type,
+        sender: recv.type === 'ENTER' ? '[알림]' : recv.sender,
+        message: recv.message,
+      });
+      return newMessages;
+    });
+  }
+
+  async function connect() {
+    client.current = new Client();
+    console.log(new Client);
+    client.current.configure({
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/ws-stomp/websocket',
+      onConnect: () => {
+        console.log('성공');
+      },
+      onChangeState: ()=> {
+        console.log("change");
+      },
+      onDisconnect: () => {
+        console.log('실패');
+      },
+      logRawCommunication: true,
+      connectHeaders: {
+        login: 'user',
+        passcode: 'password',
+      },
+      onStompError: function (frame) {
+        // Will be invoked in case of error encountered at Broker
+        // Bad login/passcode typically will cause an error
+        // Complaint brokers will set `message` header with a brief message. Body may contain details.
+        // Compliant brokers will terminate the connection after any error
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    await client.current.activate();
+    console.log(client.current)
+  }
+
+  const subscribe = (roomId) => {
+    client.current.subscribe('/sub/chat/room/' + roomId, body => {
+      console.log(body);
+      const recv = JSON.parse(body.body);
+      recvMessage(recv);
+    }, {id:"sub-0"});
+  };
+
+  const disconnect = () => {
+    client.current.deactivate();
+  };
+
+  const handleChange = event => {
+    //채팅 입력시 state에 값 설정
+    setMessage(event);
+  };
+
+  // function pub() {
+  //   client.current.publish({
+  //     destination :'pub/chat/message',
+  //     headers: {},
+  //     body: JSON.stringify({
+  //       type: 'ENTER',
+  //       roomId: roomId,
+  //       sender: sender,
+  //     }),
+  //   })
+  // }
+
   useEffect(() => {
     findAllRooms();
+  }, []);
+
+  useEffect(() => {
+      connect();
+    return () => disconnect();
   }, []);
 
   return (
@@ -144,13 +280,9 @@ export default function ManagerChat({navigation}) {
                     <TouchableOpacity
                       onPress={() => {
                         chatRoomList.forEach(value => {
-                          if (value.chatroom_name === item.username) {
-                            //만약 해당 채팅방이 존재한다면 그냥 그 채팅방 사용
+                            subscribe();
                             setPage('chat');
-                          }
                         });
-                        //만약 해당 유저에대한 채팅방이 존재하지 않는다면 새로운 채팅방 생성
-                        setPage('chat');
                       }}>
                       <Icon name="textsms" size={40}></Icon>
                     </TouchableOpacity>
@@ -238,9 +370,29 @@ export default function ManagerChat({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
-            <ManagerChatRoom
-              navigation={navigation}
-              ID={roomId}></ManagerChatRoom>
+        <FlatList
+          style={styles.list}
+          data={messages}
+          keyExtractor={item => idx}
+          renderItem={({item, idx}) =>{
+           <Text>{item.message}</Text>
+          }}
+        />
+        <View style={styles.bottomContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder={'Add Message'}
+            onChangeText={text => {
+              handleChange(text);
+            }}
+            value={message}></TextInput>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={sendMessage}
+            disabled={message === ''}>
+            <Text style={styles.buttonTextStyle}>Send</Text>
+          </TouchableOpacity>
+        </View>
           </View>
         </View>
       )}
@@ -257,7 +409,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    borderWidth: 1,
+    borderRightWidth: 1,
   },
   leftBtn: {
     paddingTop: 10,
@@ -265,16 +417,13 @@ const styles = StyleSheet.create({
   rightBar: {
     flex: 6,
     flexDirection: 'column',
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
   },
   userListStyle: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
   },
   userListDetailText: {
     flex: 5,
@@ -295,7 +444,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    borderBottomWidth: 1,
   },
   chatRoomDetail: {
     flex: 1,
@@ -350,4 +499,6 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     color: 'white',
   },
+
+  
 });
