@@ -1,19 +1,20 @@
 import { useState } from "react";
-import { View,Text,StyleSheet, TouchableOpacity, Dimensions, Image,FlatList, TouchableHighlight } from "react-native";
+import { View,Text,StyleSheet, TouchableOpacity, Dimensions, Image,FlatList, TouchableHighlight,Pressable } from "react-native";
 import Truck from '../assets/truck.png'
 const {height : SCREEN_HEIGHT, width : SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function DetailWork(props){
+    const [tab, setTab] = useState();
     const driver = [{id : 1, region : props.region, regionName : props.regionName, name : "김싸피"},{id :2, region : props.region, regionName : props.regionName, name : "이싸피" },{id :3, region : props.region, regionName : props.regionName, name : "박싸피" },]
     return(
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableHighlight style={{underlayColor : "black"}}>
+                <Pressable>
                     <Text style={styles.headerText}>드라이버 업무 현황</Text>
-                </TouchableHighlight>
-                <TouchableHighlight>
+                </Pressable>
+                <Pressable>
                     <Text style={styles.headerText}>드라이버 업무 변경</Text>
-                </TouchableHighlight>
+                </Pressable>
             </View>
             <FlatList
                 style={styles.driverListLayout}
