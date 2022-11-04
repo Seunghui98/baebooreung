@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
 
     },
     dailyWorkTitleText : {
-        fontSize : 17,
+        fontSize : 20,
         fontWeight : '900'
     },
     dailyWork : {

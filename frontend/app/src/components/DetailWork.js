@@ -1,20 +1,34 @@
 import { useState } from "react";
-import { View,Text,StyleSheet, TouchableOpacity, Dimensions, Image } from "react-native";
+import { View,Text,StyleSheet, TouchableOpacity, Dimensions, Image,FlatList, TouchableHighlight } from "react-native";
 import Truck from '../assets/truck.png'
 const {height : SCREEN_HEIGHT, width : SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function DetailWork(props){
-    console.log(props);
+    const driver = [{id : 1, region : props.region, regionName : props.regionName, name : "김싸피"},{id :2, region : props.region, regionName : props.regionName, name : "이싸피" },{id :3, region : props.region, regionName : props.regionName, name : "박싸피" },]
     return(
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity>
+                <TouchableHighlight style={{underlayColor : "black"}}>
                     <Text style={styles.headerText}>드라이버 업무 현황</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
+                </TouchableHighlight>
+                <TouchableHighlight>
                     <Text style={styles.headerText}>드라이버 업무 변경</Text>
-                </TouchableOpacity>
+                </TouchableHighlight>
             </View>
+            <FlatList
+                style={styles.driverListLayout}
+                data={driver}
+                keyExtractor={item => item.id}
+                renderItem={({item}) =>
+                    <TouchableOpacity>
+                        <View style={styles.driverList}>
+                            <Text>{item.regionName} {item.name} 드라이버</Text>
+                        </View>
+                    </TouchableOpacity>
+                }   
+            > 
+                
+            </FlatList>
             <Image source={Truck} style={styles.image}/>
        </View>
     )
@@ -37,6 +51,13 @@ const styles = StyleSheet.create({
     },
     headerText : {
         fontSize : 18,
+    },
+    driverListLayout : {
+        flex :1,
+
+    },
+    driverList : {
+
     },
     image : {
         resizeMode : 'stretch',

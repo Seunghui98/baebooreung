@@ -67,6 +67,7 @@ export default function ManagerChat({navigation}) {
   ]);
   const [room, setRoom] = useState({});
   const [sender, setSender] = useState('sub-0');
+  const [userCount, setUserCount] = useState(0);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const client = useRef({});
@@ -131,28 +132,19 @@ export default function ManagerChat({navigation}) {
   }
 
   function sendMessage() {
-    console.log(messages);
-    setMessages(messages => {
-      const newMessages = [...messages];
-      newMessages.unshift({
-        type: 'TALK',
-        sender: sender,
-        message: message,
-      });
-      return newMessages;
-    });
-
     client.current.publish({
-      destination: '/pub/chat/message',
-      headers: {},
+      destination: '/api/pub/chat/message',
+      headers: {id :sender},
       body: JSON.stringify({
         type: 'TALK',
         roomId: roomId,
         sender: sender,
         message: message,
+        userCount : userCount
       }),
     });
-    setMessage('');
+     recvMessage({type:'TALK',roomId :roomId, sender : sender, message:message, userCount : userCount});
+      setMessage('');
   }
 
   function recvMessage(recv) {
@@ -162,6 +154,7 @@ export default function ManagerChat({navigation}) {
         type: recv.type,
         sender: recv.type === 'ENTER' ? '[알림]' : recv.sender,
         message: recv.message,
+
       });
       return newMessages;
     });
@@ -171,7 +164,7 @@ export default function ManagerChat({navigation}) {
     client.current = new Client();
     console.log(new Client);
     client.current.configure({
-      brokerURL: 'wss://k7c207.p.ssafy.io:8080/ws-stomp/websocket',
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
       onConnect: () => {
         console.log('성공');
       },
@@ -183,8 +176,6 @@ export default function ManagerChat({navigation}) {
       },
       logRawCommunication: true,
       connectHeaders: {
-        login: 'user',
-        passcode: 'password',
       },
       onStompError: function (frame) {
         // Will be invoked in case of error encountered at Broker
@@ -207,11 +198,10 @@ export default function ManagerChat({navigation}) {
   }
 
   const subscribe = (roomId) => {
-    client.current.subscribe('/sub/chat/room/' + roomId, body => {
-      console.log(body);
+    client.current.subscribe('/api/sub/chat/room/' + roomId, body => {
       const recv = JSON.parse(body.body);
       recvMessage(recv);
-    }, {id:"sub-0"});
+    }, {id : 'sub-0'});
   };
 
   const disconnect = () => {
@@ -243,6 +233,10 @@ export default function ManagerChat({navigation}) {
       connect();
     return () => disconnect();
   }, []);
+
+  useEffect(()=>{
+    console.log(messages)
+  },[messages]);
 
   return (
     <View style={styles.container}>
@@ -371,11 +365,11 @@ export default function ManagerChat({navigation}) {
           </View>
           <View style={styles.rightBar}>
         <FlatList
-          style={styles.list}
+          style={{flex :1}}
           data={messages}
-          keyExtractor={item => idx}
-          renderItem={({item, idx}) =>{
-           <Text>{item.message}</Text>
+          keyExtractor={item => item.message}
+          renderItem={({item}) =>{
+           <Text>{item.message}ddd</Text>
           }}
         />
         <View style={styles.bottomContainer}>
