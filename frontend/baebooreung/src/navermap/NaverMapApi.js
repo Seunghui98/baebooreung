@@ -57,6 +57,7 @@ export default function NaverMapApi() {
     await axios.get(url, {
       headers: headers
     }).then((res) => {
+      console.log(res)
       console.log(res.data.route)
       const path = res.data.route.traoptimal[0].path
       for (let i = 0; i <= path.length - 1; i++) {
@@ -83,7 +84,6 @@ export default function NaverMapApi() {
   }
 
   useEffect(() => {
-    console.log('asdfasdf')
     cal_course()
   }, [start])
 
