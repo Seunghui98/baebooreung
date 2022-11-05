@@ -17,7 +17,7 @@
     "@stomp/stompjs": "^6.1.2",
     "axios": "^0.27.2",
     "react": "18.1.0",
-    "react-native": "^0.70.4",
+    "react-native": "^0.70.3",
     "react-native-cli": "^2.0.1",
     "react-native-document-picker": "^8.1.2",
     "react-native-dropdown-select-list": "^1.0.23",
