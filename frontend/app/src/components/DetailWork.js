@@ -7,22 +7,29 @@ import {
   Dimensions,
   Image,
   FlatList,
-  TouchableHighlight,
   Pressable,
-  ScrollView,
+  Modal,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Truck from '../assets/truck.png';
+import Sample from '../assets/sample.png';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function DetailWork(props) {
   const [tab, setTab] = useState(false); // 드라이버 업무현황 / 드라이버 업무변경 분기처리
   const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
   const [ID, setID] = useState(-1);
+  const [modalVisible, setModalVisible] = useState(false);
   const driver = [
     {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
-    {id: 2, region: props.region, regionName: props.regionName, name: '이싸피'},
-    {id: 3, region: props.region, regionName: props.regionName, name: '박싸피'},
+    {id: 2, region: props.region, regionName: props.regionName, name: '나싸피'},
+    {id: 3, region: props.region, regionName: props.regionName, name: '안싸피'},
+    {id: 4, region: props.region, regionName: props.regionName, name: '이싸피'},
+    {id: 5, region: props.region, regionName: props.regionName, name: '강싸피'},
+    {id: 6, region: props.region, regionName: props.regionName, name: '남싸피'},
+    {id: 7, region: props.region, regionName: props.regionName, name: '최싸피'},
+    {id: 8, region: props.region, regionName: props.regionName, name: '박싸피'},
   ];
 
   const driverPickupWorkList = [
@@ -95,6 +102,7 @@ export default function DetailWork(props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
+          activeOpacity={0.9}
           onPress={() => {
             setTab(false);
             setID(-1);
@@ -104,6 +112,7 @@ export default function DetailWork(props) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          activeOpacity={0.9}
           onPress={() => {
             setTab(true);
             setID(-1);
@@ -158,6 +167,7 @@ export default function DetailWork(props) {
                 <View style={styles.ScrollList}>
                   <View style={styles.driverHeader}>
                     <TouchableOpacity
+                      activeOpacity={0.9}
                       onPress={() => {
                         return setWorkType(false);
                       }}>
@@ -207,12 +217,17 @@ export default function DetailWork(props) {
                           </View>
                           <View style={styles.pickupFinish}>
                             {item.pickup_finish === true && (
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={styles.pickupFinishText}>
-                                  픽업 완료
-                                </Text>
-                                <Icon name="image-search" size={18}></Icon>
-                              </View>
+                              <Pressable
+                                onPress={() => {
+                                  setModalVisible(!modalVisible);
+                                }}>
+                                <View style={{flexDirection: 'row'}}>
+                                  <Text style={styles.pickupFinishText}>
+                                    픽업 완료
+                                  </Text>
+                                  <Icon name="image-search" size={18}></Icon>
+                                </View>
+                              </Pressable>
                             )}
                             {item.pickup_finish === false && (
                               <Text style={styles.pickupFailText}>미완료</Text>
@@ -244,12 +259,17 @@ export default function DetailWork(props) {
                           </View>
                           <View style={styles.deliveryFinish}>
                             {item.delivery_finish === true && (
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={styles.deliveryFinishText}>
-                                  수령 완료
-                                </Text>
-                                <Icon name="image-search" size={18}></Icon>
-                              </View>
+                              <Pressable
+                                onPress={() => {
+                                  setModalVisible(!modalVisible);
+                                }}>
+                                <View style={{flexDirection: 'row'}}>
+                                  <Text style={styles.deliveryFinishText}>
+                                    수령 완료
+                                  </Text>
+                                  <Icon name="image-search" size={18}></Icon>
+                                </View>
+                              </Pressable>
                             )}
                             {item.delivery_finish === false && (
                               <Text style={styles.deliveryFailText}>
@@ -266,6 +286,26 @@ export default function DetailWork(props) {
           )}></FlatList>
       )}
       {tab === true && <View></View>}
+
+      {/* 이미지 모달창 */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Image source={Sample} style={styles.modalImage} />
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>확인</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -438,5 +478,46 @@ const styles = StyleSheet.create({
   },
   deliveryFailText: {
     color: 'red',
+  },
+
+  //모달 css
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  modalView: {
+    margin: 20,
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalImage: {
+    resizeMode: 'stretch',
+
+    width: (SCREEN_WIDTH * 2) / 3,
+    height: SCREEN_HEIGHT / 3,
+    marginVertical: 10,
   },
 });
