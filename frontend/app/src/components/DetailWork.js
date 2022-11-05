@@ -9,12 +9,15 @@ import {
   FlatList,
   TouchableHighlight,
   Pressable,
+  ScrollView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Truck from '../assets/truck.png';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function DetailWork(props) {
-  const [tab, setTab] = useState(false);
+  const [tab, setTab] = useState(false); // 드라이버 업무현황 / 드라이버 업무변경 분기처리
+  const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
   const [ID, setID] = useState(-1);
   const driver = [
     {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
@@ -51,7 +54,7 @@ export default function DetailWork(props) {
       restaurant_id: 4,
       restaurant_name: '덮덮밥',
       pickup_time: '11:35',
-      pickup_finish: false,
+      pickup_finish: true,
       photo: '',
       order_quantity: 7,
     },
@@ -62,14 +65,14 @@ export default function DetailWork(props) {
       deliveryLocation_id: 1,
       deliveryLocation_name: '생활관 A동',
       delivery_time: '12:10',
-      delivery_finish: false,
+      delivery_finish: true,
       delivery_quantity: 15,
     },
     {
       deliveryLocation_id: 2,
       deliveryLocation_name: '생활관 B동',
       delivery_time: '12:13',
-      delivery_finish: false,
+      delivery_finish: true,
       delivery_quantity: 10,
     },
     {
@@ -93,7 +96,8 @@ export default function DetailWork(props) {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            return setTab(false);
+            setTab(false);
+            setID(-1);
           }}>
           <Text style={tab ? styles.headerText : styles.headerClickText}>
             드라이버 업무 현황
@@ -101,7 +105,8 @@ export default function DetailWork(props) {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            return setTab(true);
+            setTab(true);
+            setID(-1);
           }}>
           <Text style={tab ? styles.headerClickText : styles.headerText}>
             드라이버 업무 변경
@@ -114,23 +119,153 @@ export default function DetailWork(props) {
           data={driver}
           keyExtractor={item => item.id}
           renderItem={({item}) => (
-            <TouchableOpacity
-              onPress={() => {
-                setID(item.id);
-              }}>
-              <View style={styles.driverList}>
-                <View style={styles.driverListTextLayout}>
-                  <Text style={styles.driverListText}>
-                    {item.regionName} {item.name} 드라이버
-                  </Text>
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => {
+                  if (ID !== item.id) {
+                    setID(item.id);
+                    setWorkType(false);
+                  } else {
+                    setID(-1);
+                    setWorkType(false);
+                  }
+                }}>
+                <View>
+                  <View
+                    style={
+                      ID === item.id
+                        ? styles.driverListClick
+                        : styles.driverList
+                    }>
+                    <View style={styles.driverListTextLayout}>
+                      <Text
+                        style={
+                          ID === item.id
+                            ? styles.driverListClickText
+                            : styles.driverListText
+                        }>
+                        {item.regionName} {item.name} 드라이버
+                      </Text>
+                    </View>
+                    <View style={styles.driverListImageLayout}>
+                      <Image source={Truck} style={styles.image} />
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.driverListImageLayout}>
-                  <Image source={Truck} style={styles.image} />
+              </TouchableOpacity>
+              {ID === item.id && (
+                <View style={styles.ScrollList}>
+                  <View style={styles.driverHeader}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        return setWorkType(false);
+                      }}>
+                      <Text
+                        style={
+                          workType
+                            ? styles.driverHeaderText
+                            : styles.driverHeaderClickText
+                        }>
+                        픽업 장소
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPress={() => {
+                        return setWorkType(true);
+                      }}>
+                      <Text
+                        style={
+                          workType
+                            ? styles.driverHeaderClickText
+                            : styles.driverHeaderText
+                        }>
+                        수령 장소
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {workType === false && (
+                    <FlatList
+                      style={styles.pickupListLayout}
+                      data={driverPickupWorkList}
+                      keyExtractor={item => item.restaurant_id}
+                      renderItem={({item}) => (
+                        <View style={styles.pickupLayout}>
+                          <View style={styles.pickupRestaurantName}>
+                            <Text style={styles.pickupRestaurantNameText}>
+                              {item.restaurant_name}
+                            </Text>
+                            <Text style={styles.pickupOrderQuantityText}>
+                              {item.order_quantity}건
+                            </Text>
+                          </View>
+                          <View style={styles.pickupTime}>
+                            <Text style={styles.pickupTimeText}>
+                              {item.pickup_time}
+                            </Text>
+                          </View>
+                          <View style={styles.pickupFinish}>
+                            {item.pickup_finish === true && (
+                              <View style={{flexDirection: 'row'}}>
+                                <Text style={styles.pickupFinishText}>
+                                  픽업 완료
+                                </Text>
+                                <Icon name="image-search" size={18}></Icon>
+                              </View>
+                            )}
+                            {item.pickup_finish === false && (
+                              <Text style={styles.pickupFailText}>미완료</Text>
+                            )}
+                          </View>
+                        </View>
+                      )}></FlatList>
+                  )}
+
+                  {workType === true && (
+                    <FlatList
+                      style={styles.deliveryListLayout}
+                      data={driverDeliveryWorkList}
+                      keyExtractor={item => item.deliveryLocation_id}
+                      renderItem={({item}) => (
+                        <View style={styles.deliveryLayout}>
+                          <View style={styles.deliveryLocationName}>
+                            <Text style={styles.deliveryLocationNameText}>
+                              {item.deliveryLocation_name}
+                            </Text>
+                            <Text style={styles.deliveryQuantityText}>
+                              {item.delivery_quantity}건
+                            </Text>
+                          </View>
+                          <View style={styles.deliveryTime}>
+                            <Text style={styles.deliveryTimeText}>
+                              {item.delivery_time}
+                            </Text>
+                          </View>
+                          <View style={styles.deliveryFinish}>
+                            {item.delivery_finish === true && (
+                              <View style={{flexDirection: 'row'}}>
+                                <Text style={styles.deliveryFinishText}>
+                                  수령 완료
+                                </Text>
+                                <Icon name="image-search" size={18}></Icon>
+                              </View>
+                            )}
+                            {item.delivery_finish === false && (
+                              <Text style={styles.deliveryFailText}>
+                                미완료
+                              </Text>
+                            )}
+                          </View>
+                        </View>
+                      )}></FlatList>
+                  )}
                 </View>
-              </View>
-            </TouchableOpacity>
+              )}
+            </View>
           )}></FlatList>
       )}
+      {tab === true && <View></View>}
     </View>
   );
 }
@@ -164,11 +299,30 @@ const styles = StyleSheet.create({
   driverList: {
     flex: 1,
     flexDirection: 'row',
-
     height: SCREEN_HEIGHT / 15,
     marginHorizontal: 15,
-    marginVertical: 15,
+    marginTop: 15,
     alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 2,
+    shadowOpacity: 0.4,
+  },
+  driverListClick: {
+    flex: 1,
+    flexDirection: 'row',
+    height: SCREEN_HEIGHT / 15,
+    marginHorizontal: 15,
+    marginTop: 15,
+    alignItems: 'center',
+    backgroundColor: 'black',
+    borderRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 2,
+    shadowOpacity: 0.4,
   },
   driverListTextLayout: {
     flex: 1,
@@ -180,6 +334,8 @@ const styles = StyleSheet.create({
   },
   driverListClickText: {
     fontSize: 15,
+    fontWeight: 'bold',
+    color: 'white',
   },
   driverListImageLayout: {
     felx: 1,
@@ -188,5 +344,99 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: 70,
     height: 50,
+  },
+  ScrollList: {
+    marginHorizontal: 15,
+    backgroundColor: 'white',
+  },
+  driverHeader: {
+    height: SCREEN_HEIGHT / 15,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderColor: 'black',
+  },
+  driverHeaderText: {
+    fontSize: 15,
+  },
+  driverHeaderClickText: {
+    fontSize: 15,
+    color: '#00BFFF',
+    fontWeight: 'bold',
+  },
+  pickupListLayout: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  pickupLayout: {
+    height: SCREEN_HEIGHT / 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  pickupRestaurantName: {
+    flex: 3,
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+  },
+  pickupRestaurantNameText: {
+    fontWeight: 'bold',
+  },
+  pickupOrderQuantityText: {
+    color: 'red',
+  },
+  pickupTime: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  pickupTimeText: {},
+  pickupFinish: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  pickupFinishText: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  pickupFailText: {
+    color: 'red',
+  },
+  deliveryListLayout: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  deliveryLayout: {
+    height: SCREEN_HEIGHT / 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  deliveryLocationName: {
+    flex: 3,
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+  },
+  deliveryLocationNameText: {
+    fontWeight: 'bold',
+  },
+  deliveryQuantityText: {
+    color: 'red',
+  },
+  deliveryTime: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  deliveryTimeText: {},
+  deliveryFinish: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  deliveryFinishText: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  deliveryFailText: {
+    color: 'red',
   },
 });
