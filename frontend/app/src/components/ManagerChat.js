@@ -75,6 +75,44 @@ export default function ManagerChat({navigation}) {
   ]);
   const client = useRef({});
 
+  async function connect() {
+    client.current = new Client();
+    console.log(new Client());
+    client.current.configure({
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
+      onConnect: () => {
+        console.log('성공');
+      },
+      onChangeState: () => {
+        console.log('change');
+      },
+      onDisconnect: () => {
+        console.log('실패');
+      },
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+      logRawCommunication: true,
+      connectHeaders: {},
+      onStompError: function (frame) {
+        // Will be invoked in case of error encountered at Broker
+        // Bad login/passcode typically will cause an error
+        // Complaint brokers will set `message` header with a brief message. Body may contain details.
+        // Compliant brokers will terminate the connection after any error
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    await client.current.activate();
+    console.log(client.current);
+  }
+
   function findAllRooms() {
     axios({
       method: 'get',
@@ -88,53 +126,54 @@ export default function ManagerChat({navigation}) {
       });
   }
 
-  function createRoom() {
-    if (roomName === '' || undefined) {
-      Alert.alert('방 제목을 입력해 주십시오.');
-      return;
-    } else {
-      axios({
-        method: 'post',
-        url: chat.createRoom(),
-        params: {
-          name: roomName,
-        },
-      })
-        .then(res => {
-          Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
-          setRoomName('');
-          findAllRooms();
-        })
-        .catch(e => {
-          Alert.alert('채팅방 개설에 실패하였습니다.');
-        });
-    }
-  }
+  // function createRoom() {
+  //   if (roomName === '' || undefined) {
+  //     Alert.alert('방 제목을 입력해 주십시오.');
+  //     return;
+  //   } else {
+  //     axios({
+  //       method: 'post',
+  //       url: chat.createRoom(),
+  //       params: {
+  //         name: roomName,
+  //       },
+  //     })
+  //       .then(res => {
+  //         Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
+  //         setRoomName('');
+  //         findAllRooms();
+  //       })
+  //       .catch(e => {
+  //         Alert.alert('채팅방 개설에 실패하였습니다.');
+  //       });
+  //   }
+  // }
 
-  function quitRoom(roomId) {
-    quit(roomId);
-  }
   async function enterRoom(roomId) {
     subscribe(roomId);
     enter(roomId);
     setRoomId(roomId);
   }
 
-  function findRoom() {
-    axios({
-      method: 'get',
-      url: chat.findRoom(),
-      params: {
-        roomId: roomId,
-      },
-    })
-      .then(res => {
-        setRoom(res.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
+  function quitRoom(roomId) {
+    quit(roomId);
   }
+
+  // function findRoom() {
+  //   axios({
+  //     method: 'get',
+  //     url: chat.findRoom(),
+  //     params: {
+  //       roomId: roomId,
+  //     },
+  //   })
+  //     .then(res => {
+  //       setRoom(res.data);
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // }
 
   function sendMessage() {
     client.current.publish({
@@ -168,42 +207,6 @@ export default function ManagerChat({navigation}) {
       });
       return newMessages;
     });
-  }
-
-  async function connect() {
-    client.current = new Client();
-    console.log(new Client());
-    client.current.configure({
-      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
-      onConnect: () => {
-        console.log('성공');
-      },
-      onChangeState: () => {
-        console.log('change');
-      },
-      onDisconnect: () => {
-        console.log('실패');
-      },
-      logRawCommunication: true,
-      connectHeaders: {},
-      onStompError: function (frame) {
-        // Will be invoked in case of error encountered at Broker
-        // Bad login/passcode typically will cause an error
-        // Complaint brokers will set `message` header with a brief message. Body may contain details.
-        // Compliant brokers will terminate the connection after any error
-        console.log('Broker reported error: ' + frame.headers['message']);
-        console.log('Additional details: ' + frame.body);
-      },
-      debug: function (str) {
-        console.log(str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    await client.current.activate();
-    console.log(client.current);
   }
 
   const subscribe = roomId => {
@@ -252,7 +255,9 @@ export default function ManagerChat({navigation}) {
 
   useEffect(() => {
     findAllRooms();
-  }, [chatRoomList]);
+  }, []);
+
+  useEffect(() => {}, [chatRoomList]);
 
   useEffect(() => {
     connect();
@@ -262,11 +267,26 @@ export default function ManagerChat({navigation}) {
   useEffect(() => {
     console.log(messages);
   }, [messages]);
+
+  // 새로만든 함수들
+
   return (
     <View style={styles.container}>
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
+            {/* <TouchableOpacity
+              onPress={connect}
+              style={styles.leftBtn}
+              activeOpacity={0.5}>
+              <Text>연결</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={disconnect}
+              style={styles.leftBtn}
+              activeOpacity={0.5}>
+              <Text>연결해제</Text>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
