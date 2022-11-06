@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {chat} from '../api/api';
+const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
   const [chatRoomList, setChatRoomList] = useState([]);
@@ -59,7 +61,7 @@ export default function ManagerChat({navigation}) {
     {
       user_id: 'leessafy',
       grade: '관리자',
-      name: '이싸피',
+      name: '구싸피',
       phone: '010-3333-3333',
       region: 3,
     },
@@ -68,7 +70,9 @@ export default function ManagerChat({navigation}) {
   const [sender, setSender] = useState('sub-0');
   const [userCount, setUserCount] = useState(0);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {message: '[알림] 방에 입장하셨습니다', sender: sender, type: 'ENTER'},
+  ]);
   const client = useRef({});
 
   function findAllRooms() {
@@ -134,7 +138,7 @@ export default function ManagerChat({navigation}) {
 
   function sendMessage() {
     client.current.publish({
-      destination: 'wss://k7c207.p.ssafy.io:8080/api/pub/chat/message',
+      destination: 'api/pub/chat/message',
       headers: {id: sender},
       body: JSON.stringify({
         type: 'TALK',
@@ -170,7 +174,7 @@ export default function ManagerChat({navigation}) {
     client.current = new Client();
     console.log(new Client());
     client.current.configure({
-      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp',
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
       onConnect: () => {
         console.log('성공');
       },
@@ -204,7 +208,7 @@ export default function ManagerChat({navigation}) {
 
   const subscribe = roomId => {
     client.current.subscribe(
-      'wss://k7c207.p.ssafy.io:8080/api/sub/chat/room/' + roomId,
+      'api/sub/chat/room/' + roomId,
       body => {
         const recv = JSON.parse(body.body);
         recvMessage(recv);
@@ -224,7 +228,7 @@ export default function ManagerChat({navigation}) {
 
   async function enter(roomId) {
     await client.current.publish({
-      destination: 'wss://k7c207.p.ssafy.io:8080/api/pub/chat/message',
+      destination: 'api/pub/chat/message',
       headers: {},
       body: JSON.stringify({
         type: 'ENTER',
@@ -236,7 +240,7 @@ export default function ManagerChat({navigation}) {
 
   async function quit(roomId) {
     await client.current.publish({
-      destination: 'wss://k7c207.p.ssafy.io:8080/api/pub/chat/message',
+      destination: 'api/pub/chat/message',
       headers: {},
       body: JSON.stringify({
         type: 'QUIT',
@@ -248,7 +252,7 @@ export default function ManagerChat({navigation}) {
 
   useEffect(() => {
     findAllRooms();
-  }, []);
+  }, [chatRoomList]);
 
   useEffect(() => {
     connect();
@@ -282,23 +286,26 @@ export default function ManagerChat({navigation}) {
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
-                    <Icon name="person" size={40}></Icon>
+                    <Icon name="person" size={30}></Icon>
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade}
                     </Text>
                   </View>
                   <View style={styles.userListDetailIcon}>
                     <TouchableOpacity>
-                      <Icon name="phone-forwarded" size={40}></Icon>
+                      <Icon name="phone-forwarded" size={30}></Icon>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
                         chatRoomList.forEach(value => {
-                          subscribe();
+                          subscribe(roomId);
                           setPage('chat');
                         });
                       }}>
-                      <Icon name="textsms" size={40}></Icon>
+                      <Icon
+                        name="textsms"
+                        size={30}
+                        style={styles.userMessageIcon}></Icon>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -334,7 +341,7 @@ export default function ManagerChat({navigation}) {
                   }}>
                   <View style={styles.chatRoomListStyle}>
                     <View style={styles.profilePicture}>
-                      <Icon name="person" size={60}></Icon>
+                      <Icon name="person" size={30}></Icon>
                     </View>
                     <View style={styles.chatRoomDetail}>
                       <View style={styles.chatRoomDetailTop}>
@@ -386,14 +393,8 @@ export default function ManagerChat({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
-            <FlatList
-              style={{flex: 1}}
-              data={messages}
-              keyExtractor={item => item.message}
-              renderItem={({item}) => {
-                <Text>{item.message}ddd</Text>;
-              }}
-            />
+            <Text>dfsfs</Text>
+            <Text>dfsfsdf</Text>
             <View style={styles.bottomContainer}>
               <TextInput
                 style={styles.input}
@@ -425,42 +426,64 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    borderRightWidth: 1,
+    backgroundColor: 'white',
+    marginRight: 2,
+    borderBottomLeftRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 7,
+    shadowOpacity: 0.4,
   },
   leftBtn: {
     paddingTop: 10,
   },
   rightBar: {
     flex: 6,
-    flexDirection: 'column',
   },
   userListStyle: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderBottomWidth: 1,
+    backgroundColor: 'white',
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   userListDetailText: {
     flex: 5,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   userListTextStyle: {
     paddingLeft: 10,
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   userListDetailIcon: {
     flex: 2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+  },
+  userMessageIcon: {
+    paddingLeft: 10,
   },
   chatRoomListStyle: {
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderBottomWidth: 1,
+    backgroundColor: 'white',
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   chatRoomDetail: {
     flex: 1,
@@ -501,7 +524,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   bottomContainer: {
-    backgroundColor: 'green',
+    backgroundColor: 'red',
   },
 
   buttonStyle: {
