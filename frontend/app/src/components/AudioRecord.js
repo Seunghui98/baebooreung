@@ -1,6 +1,13 @@
 import {useEffect, useState} from 'react';
-import {View, Button, Text, TouchableOpacity} from 'react-native';
-import {PermissionsAndroid} from 'react-native';
+import {
+  View,
+  Button,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  PermissionsAndroid,
+} from 'react-native';
+import {} from 'react-native';
 import SoundRecorder from 'react-native-sound-recorder';
 import axios from 'axios';
 import {voice} from '../api/api';
@@ -142,13 +149,13 @@ export default function AudioRecord() {
   }, []);
   return (
     <View>
-      <TouchableOpacity onPress={startRecord}>
+      <Pressable onPress={startRecord}>
         <Text>시작</Text>
-      </TouchableOpacity>
+      </Pressable>
       <Text>{folderName}</Text>
-      <TouchableOpacity onPress={stopRecord}>
+      <Pressable onPress={stopRecord}>
         <Text>종료</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
