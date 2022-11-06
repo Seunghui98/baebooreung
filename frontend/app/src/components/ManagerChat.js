@@ -16,33 +16,38 @@ import {chat} from '../api/api';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
+  const [page, setPage] = useState('user');
   const [chatRoomList, setChatRoomList] = useState([]);
-  const [chatRoomListTemp, setChatRoomListTemp] = useState([
-    {
-      id: 1,
-      name: '김싸피',
-      last_message: '점심1 배달 완료했습니다.',
-      last_time: '오후 1시 12분',
-      last_count: 2,
-    },
-    {
-      id: 2,
-      name: '박싸피',
-      last_message: '점심2 배달 완료했습니다.',
-      last_time: '오후 1시 30분',
-      last_count: 1,
-    },
-    {
-      id: 3,
-      name: '이싸피',
-      last_message: '저녁1 배달 완료했습니다.',
-      last_time: '어제',
-      last_count: 1,
-    },
-  ]);
   const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
-  const [page, setPage] = useState('user');
+  const [sender, setSender] = useState('sub-0'); //메세지를 전송하는 주체
+  const [userCount, setUserCount] = useState(0);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const client = useRef({});
+  // const [chatRoomListTemp, setChatRoomListTemp] = useState([
+  //   {
+  //     id: 1,
+  //     name: '김싸피',
+  //     last_message: '점심1 배달 완료했습니다.',
+  //     last_time: '오후 1시 12분',
+  //     last_count: 2,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: '박싸피',
+  //     last_message: '점심2 배달 완료했습니다.',
+  //     last_time: '오후 1시 30분',
+  //     last_count: 1,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: '이싸피',
+  //     last_message: '저녁1 배달 완료했습니다.',
+  //     last_time: '어제',
+  //     last_count: 1,
+  //   },
+  // ]);
   const [userList, setUserList] = useState([
     {
       user_id: 'kimssafy',
@@ -66,14 +71,6 @@ export default function ManagerChat({navigation}) {
       region: 3,
     },
   ]);
-  const [room, setRoom] = useState({});
-  const [sender, setSender] = useState('sub-0');
-  const [userCount, setUserCount] = useState(0);
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {message: '[알림] 방에 입장하셨습니다', sender: sender, type: 'ENTER'},
-  ]);
-  const client = useRef({});
 
   async function connect() {
     client.current = new Client();
@@ -257,8 +254,6 @@ export default function ManagerChat({navigation}) {
     findAllRooms();
   }, []);
 
-  useEffect(() => {}, [chatRoomList]);
-
   useEffect(() => {
     connect();
     return () => disconnect();
@@ -275,18 +270,6 @@ export default function ManagerChat({navigation}) {
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
-            {/* <TouchableOpacity
-              onPress={connect}
-              style={styles.leftBtn}
-              activeOpacity={0.5}>
-              <Text>연결</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={disconnect}
-              style={styles.leftBtn}
-              activeOpacity={0.5}>
-              <Text>연결해제</Text>
-            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -294,6 +277,7 @@ export default function ManagerChat({navigation}) {
               style={styles.leftBtn}
               onPress={() => {
                 setPage('chatRoomList');
+                findAllRooms();
               }}>
               <Icon name="messenger-outline" size={40}></Icon>
             </TouchableOpacity>
@@ -344,7 +328,10 @@ export default function ManagerChat({navigation}) {
               }}>
               <Icon name="person-outline" size={40}></Icon>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
+            <TouchableOpacity
+              onPress={findAllRooms}
+              style={styles.leftBtn}
+              activeOpacity={1}>
               <Icon name="messenger" size={40}></Icon>
             </TouchableOpacity>
           </View>
@@ -407,6 +394,7 @@ export default function ManagerChat({navigation}) {
               style={styles.leftBtn}
               onPress={() => {
                 quitRoom(roomId);
+                findAllRooms();
                 setPage('chatRoomList');
               }}>
               <Icon name="messenger" size={40}></Icon>

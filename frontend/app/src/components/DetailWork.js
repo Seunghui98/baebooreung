@@ -21,7 +21,6 @@ export default function DetailWork(props) {
   // const [tab,setTab]=useState(false); // 드라이버업무현황 / 드라이버업무변경 분기처리
   const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
   const [ID, setID] = useState(-1);
-  const [imageName] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const driver = [
     {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
