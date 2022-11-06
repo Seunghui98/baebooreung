@@ -9,7 +9,6 @@ import {
   FlatList,
   Pressable,
   Modal,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Truck from '../assets/truck.png';
@@ -22,6 +21,7 @@ export default function DetailWork(props) {
   const [tab, setTab] = useState(false); // 드라이버 업무현황 / 드라이버 업무변경 분기처리
   const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
   const [ID, setID] = useState(-1);
+  const [imageName] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const driver = [
     {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
@@ -32,7 +32,7 @@ export default function DetailWork(props) {
     {id: 6, region: props.region, regionName: props.regionName, name: '남싸피'},
     {id: 7, region: props.region, regionName: props.regionName, name: '강싸피'},
     {id: 8, region: props.region, regionName: props.regionName, name: '안싸피'},
-    {id: 8, region: props.region, regionName: props.regionName, name: '나싸피'},
+    {id: 9, region: props.region, regionName: props.regionName, name: '나싸피'},
   ];
 
   const driverPickupWorkList = [
@@ -300,6 +300,7 @@ export default function DetailWork(props) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <Text></Text>
             <View style={{alignItems: 'center'}}>
               <Image source={Sample} style={styles.modalImage} />
             </View>
