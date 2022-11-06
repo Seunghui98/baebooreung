@@ -15,6 +15,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Truck from '../assets/truck.png';
 import Sample from '../assets/sample.png';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
+const identityColor = '#0B0B3B';
+const identityTextColor = '#F7FE2E';
 
 export default function DetailWork(props) {
   const [tab, setTab] = useState(false); // 드라이버 업무현황 / 드라이버 업무변경 분기처리
@@ -23,13 +25,14 @@ export default function DetailWork(props) {
   const [modalVisible, setModalVisible] = useState(false);
   const driver = [
     {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
-    {id: 2, region: props.region, regionName: props.regionName, name: '나싸피'},
-    {id: 3, region: props.region, regionName: props.regionName, name: '안싸피'},
-    {id: 4, region: props.region, regionName: props.regionName, name: '이싸피'},
-    {id: 5, region: props.region, regionName: props.regionName, name: '강싸피'},
+    {id: 2, region: props.region, regionName: props.regionName, name: '이싸피'},
+    {id: 3, region: props.region, regionName: props.regionName, name: '박싸피'},
+    {id: 4, region: props.region, regionName: props.regionName, name: '최싸피'},
+    {id: 5, region: props.region, regionName: props.regionName, name: '전싸피'},
     {id: 6, region: props.region, regionName: props.regionName, name: '남싸피'},
-    {id: 7, region: props.region, regionName: props.regionName, name: '최싸피'},
-    {id: 8, region: props.region, regionName: props.regionName, name: '박싸피'},
+    {id: 7, region: props.region, regionName: props.regionName, name: '강싸피'},
+    {id: 8, region: props.region, regionName: props.regionName, name: '안싸피'},
+    {id: 8, region: props.region, regionName: props.regionName, name: '나싸피'},
   ];
 
   const driverPickupWorkList = [
@@ -297,7 +300,9 @@ export default function DetailWork(props) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Image source={Sample} style={styles.modalImage} />
+            <View style={{alignItems: 'center'}}>
+              <Image source={Sample} style={styles.modalImage} />
+            </View>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}>
@@ -487,10 +492,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    alignItems: 'center',
+
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: 10,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -506,16 +511,15 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: identityColor,
   },
   textStyle: {
-    color: 'white',
+    color: identityTextColor,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   modalImage: {
     resizeMode: 'stretch',
-
     width: (SCREEN_WIDTH * 2) / 3,
     height: SCREEN_HEIGHT / 3,
     marginVertical: 10,
