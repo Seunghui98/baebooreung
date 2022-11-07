@@ -2,8 +2,12 @@ import styles from './login.module.css'
 import new_logo from '../assets/images/new_logo_2.png'
 import { TextField } from '@mui/material';
 import React, { useState } from 'react';
+// import ValidField from '../component/ValidField';
+
 
 const Login = () => {
+
+
   const [value, setValue] = useState('');
 
   const onChange = (e)=> {
@@ -25,7 +29,6 @@ const Login = () => {
           <div>Login</div>
           <div>
             <TextField 
-
                 label="ID" 
                 type="text" 
                 name="validation" 
@@ -35,6 +38,9 @@ const Login = () => {
                 error={validation()}
                 helperText={validation() ? "특수기호나 한글은 입력 하실 수 없습니다.":""}
             />
+            {/* <ValidField></ValidField>
+            <ValidField></ValidField>
+            <ValidField></ValidField> */}
         </div>
         </div>
       </div>
