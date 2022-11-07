@@ -11,8 +11,8 @@ import {
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Truck from '../assets/truck.png';
-import Sample from '../assets/sample.png';
+import Truck from '../assets/images/truck.png';
+import Sample from '../assets/images/sample.png';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#F7FE2E';

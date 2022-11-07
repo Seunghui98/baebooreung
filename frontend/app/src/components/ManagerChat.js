@@ -1,4 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {setUser} from '../redux/user';
 import {Client} from '@stomp/stompjs';
 import {
   StyleSheet,
@@ -9,10 +11,12 @@ import {
   FlatList,
   Alert,
   Dimensions,
+  YellowBox,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {chat} from '../api/api';
+import {BottomTabBarHeightCallbackContext} from '@react-navigation/bottom-tabs';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
@@ -20,10 +24,11 @@ export default function ManagerChat({navigation}) {
   const [chatRoomList, setChatRoomList] = useState([]);
   const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
-  const [sender, setSender] = useState('sub-0'); //메세지를 전송하는 주체
   const [userCount, setUserCount] = useState(0);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const sender = useSelector(state => state.user.name); //메세지를 전송하는 주체
+  const dispatch = useDispatch();
   const client = useRef({});
   // const [chatRoomListTemp, setChatRoomListTemp] = useState([
   //   {
@@ -107,7 +112,6 @@ export default function ManagerChat({navigation}) {
     });
 
     await client.current.activate();
-    console.log(client.current);
   }
 
   function findAllRooms() {
@@ -135,7 +139,7 @@ export default function ManagerChat({navigation}) {
   //         name: roomName,
   //       },
   //     })
-  //       .then(res => {
+  //      .then(res => {
   //         Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
   //         setRoomName('');
   //         findAllRooms();
@@ -147,9 +151,10 @@ export default function ManagerChat({navigation}) {
   // }
 
   async function enterRoom(roomId) {
-    subscribe(roomId);
-    enter(roomId);
     setRoomId(roomId);
+
+    subscribe(roomId);
+    await enter(roomId);
   }
 
   function quitRoom(roomId) {
@@ -174,7 +179,7 @@ export default function ManagerChat({navigation}) {
 
   function sendMessage() {
     client.current.publish({
-      destination: 'api/pub/chat/message',
+      destination: '/api/pub/chat/message',
       headers: {id: sender},
       body: JSON.stringify({
         type: 'TALK',
@@ -184,22 +189,14 @@ export default function ManagerChat({navigation}) {
         userCount: userCount,
       }),
     });
-    recvMessage({
-      type: 'TALK',
-      roomId: roomId,
-      sender: sender,
-      message: message,
-      userCount: userCount,
-    });
-    setMessage('');
   }
 
   function recvMessage(recv) {
     setMessages(messages => {
       const newMessages = [...messages];
-      newMessages.unshift({
+      newMessages.push({
         type: recv.type,
-        sender: recv.type === 'ENTER' ? '[알림]' : recv.sender,
+        sender: recv.sender,
         message: recv.message,
       });
       return newMessages;
@@ -208,12 +205,12 @@ export default function ManagerChat({navigation}) {
 
   const subscribe = roomId => {
     client.current.subscribe(
-      'api/sub/chat/room/' + roomId,
+      '/api/sub/chat/room/' + roomId,
       body => {
         const recv = JSON.parse(body.body);
         recvMessage(recv);
       },
-      {id: 'sub-0'},
+      {id: sender},
     );
   };
 
@@ -228,7 +225,7 @@ export default function ManagerChat({navigation}) {
 
   async function enter(roomId) {
     await client.current.publish({
-      destination: 'api/pub/chat/message',
+      destination: '/api/pub/chat/message',
       headers: {},
       body: JSON.stringify({
         type: 'ENTER',
@@ -240,7 +237,7 @@ export default function ManagerChat({navigation}) {
 
   async function quit(roomId) {
     await client.current.publish({
-      destination: 'api/pub/chat/message',
+      destination: '/api/pub/chat/message',
       headers: {},
       body: JSON.stringify({
         type: 'QUIT',
@@ -252,6 +249,9 @@ export default function ManagerChat({navigation}) {
 
   useEffect(() => {
     findAllRooms();
+    console.log(sender);
+    dispatch(setUser({name: '김싸피'}));
+    console.log(sender);
   }, []);
 
   useEffect(() => {
@@ -262,8 +262,6 @@ export default function ManagerChat({navigation}) {
   useEffect(() => {
     console.log(messages);
   }, [messages]);
-
-  // 새로만든 함수들
 
   return (
     <View style={styles.container}>
@@ -385,7 +383,6 @@ export default function ManagerChat({navigation}) {
             <TouchableOpacity
               style={styles.leftBtn}
               onPress={() => {
-                quitRoom(roomId);
                 setPage('user');
               }}>
               <Icon name="person-outline" size={40}></Icon>
@@ -393,7 +390,6 @@ export default function ManagerChat({navigation}) {
             <TouchableOpacity
               style={styles.leftBtn}
               onPress={() => {
-                quitRoom(roomId);
                 findAllRooms();
                 setPage('chatRoomList');
               }}>
@@ -401,12 +397,35 @@ export default function ManagerChat({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
-            <Text>dfsfs</Text>
-            <Text>dfsfsdf</Text>
+            <FlatList
+              style={styles.chatHistroy}
+              data={messages}
+              keyExtractor={(item, index) => 'key' + index}
+              renderItem={({item}) => (
+                <View
+                  style={
+                    item.sender === '[알림]'
+                      ? styles.noticeChat
+                      : item.sender === sender
+                      ? styles.myChat
+                      : styles.otherChat
+                  }>
+                  <Text
+                    style={
+                      item.sender === '[알림]'
+                        ? styles.noticeChatText
+                        : item.sender === sender
+                        ? styles.myChatText
+                        : styles.otherChatText
+                    }>
+                    {item.message}
+                  </Text>
+                </View>
+              )}></FlatList>
             <View style={styles.bottomContainer}>
               <TextInput
-                style={styles.input}
-                placeholder={'Add Message'}
+                style={styles.messageInput}
+                placeholder={'메세지를 입력하세요.'}
                 onChangeText={text => {
                   handleChange(text);
                 }}
@@ -531,16 +550,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 5,
   },
+  chatHistroy: {
+    flex: 1,
+  },
+  messageInput: {
+    flex: 1,
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+  noticeChat: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  myChat: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  otherChat: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  noticeChatText: {
+    color: 'green',
+  },
+  myChatText: {
+    color: 'red',
+  },
+  otherChatText: {
+    color: 'yellow',
+  },
   bottomContainer: {
-    backgroundColor: 'red',
+    backgroundColor: 'gray',
   },
 
   buttonStyle: {
     backgroundColor: '#000',
-    marginTop: 15,
-    padding: 10,
-    marginRight: 10,
-    marginLeft: 10,
   },
 
   buttonTextStyle: {
