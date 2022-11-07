@@ -34,7 +34,7 @@ import SignUp from './src/pages/driverApp/SignUp';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const identityColor = '#0B0B3B';
-const identityTextColor = '#F7FE2E';
+const identityTextColor = '#FACC2E';
 const isManager = true;
 
 function HomeStack() {

@@ -9,9 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  Alert,
   Dimensions,
-  YellowBox,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
@@ -81,7 +79,7 @@ export default function ManagerChat({navigation}) {
     client.current = new Client();
     console.log(new Client());
     client.current.configure({
-      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
+      brokerURL: 'wss://k7c207.p.ssafy.io:8000/chat-service/ws-stomp/websocket',
       onConnect: () => {
         console.log('성공');
       },
@@ -189,6 +187,7 @@ export default function ManagerChat({navigation}) {
         userCount: userCount,
       }),
     });
+    setMessage('');
   }
 
   function recvMessage(recv) {
@@ -268,6 +267,9 @@ export default function ManagerChat({navigation}) {
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
+            <TouchableOpacity onPress={setPage('chat')}>
+              <Text>임시채팅</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -434,7 +436,7 @@ export default function ManagerChat({navigation}) {
                 style={styles.buttonStyle}
                 onPress={sendMessage}
                 disabled={message === ''}>
-                <Text style={styles.buttonTextStyle}>Send</Text>
+                <Text style={styles.buttonTextStyle}>전송</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -552,12 +554,9 @@ const styles = StyleSheet.create({
   },
   chatHistroy: {
     flex: 1,
+    backgroundColor: 'gray',
   },
-  messageInput: {
-    flex: 1,
-    borderRadius: 10,
-    backgroundColor: 'white',
-  },
+
   noticeChat: {
     flex: 1,
     justifyContent: 'center',
@@ -580,11 +579,20 @@ const styles = StyleSheet.create({
     color: 'yellow',
   },
   bottomContainer: {
+    flexDirection: 'row',
     backgroundColor: 'gray',
   },
-
+  messageInput: {
+    flex: 1,
+    fontSize: 15,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: 'white',
+  },
   buttonStyle: {
     backgroundColor: '#000',
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
 
   buttonTextStyle: {

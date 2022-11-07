@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
+const identityTextColor = '#FACC2E';
 function ManagerHome({navigation}) {
   const user = {name: '최싸피', grade: '관리자'};
   //const user = useSelector((state) => state.user.value); //react-redux를 이용하여 user 정보 받을 예정
@@ -27,7 +28,10 @@ function ManagerHome({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <Icon name="person" size={SCREEN_HEIGHT / 8} color={'#F4FA58'}></Icon>
+        <Icon
+          name="person"
+          size={SCREEN_HEIGHT / 8}
+          color={identityTextColor}></Icon>
         <View style={styles.topTextLayout}>
           <Text style={styles.topText}>
             {' '}
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
   topText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#F4FA58',
+    color: identityTextColor,
   },
   dailyWorkLayout: {
     flex: 1,
