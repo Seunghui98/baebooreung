@@ -10,8 +10,8 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import Mic from '../assets/mic.png';
-import MicOFF from '../assets/micoff.png';
+import Mic from '../assets/images/mic.png';
+import MicOFF from '../assets/images/micoff.png';
 import SoundRecorder from 'react-native-sound-recorder';
 import axios from 'axios';
 import {voice} from '../api/api';
