@@ -137,9 +137,9 @@ export default function NaverMapApi() {
         </div> */}
         <NaverMap
           id='maps-examples-polyline'
-          style={{
-            width: '80%',
-            height: '80vh',
+          style={{ 
+            width: '100%',
+            height: '100%',
           }}
           center={translate_coordinate_lat_lng(start)}
           zoom={16}
