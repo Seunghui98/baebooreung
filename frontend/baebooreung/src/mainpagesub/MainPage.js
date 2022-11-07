@@ -39,15 +39,15 @@ const MainPage = () => {
   }
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height:"100%", width:"100%" }}>
       {/* <button onClick={fold} className={styles.fold_button}>
         <img src={fold_on} style={{width:"20px", height:"20px"}} alt="" />
       </button> */}
-      <div style={{ display: "flex", height: "100%" }}>
+      <div style={{ display: "flex", height:"100%", width:"100%" }}>
         <div style={{ display: "flex", height: "100%"}}>
           <MainFrame setMainId={clickhandler} changeMenuHeader={clickhandler2} />
         </div>
-        <div style={{ width:"100%" }}>
+        <div style={{ height:"100%", width:"100%" }}>
           <div className={styles.menu_header_after} id="menu_header">{menu_header[MenuId]}</div>
           <div className={styles.menu_content}>{contents[MainId]}</div>
         </div>
