@@ -79,7 +79,7 @@ export default function ManagerChat({navigation}) {
     client.current = new Client();
     console.log(new Client());
     client.current.configure({
-      brokerURL: 'wss://k7c207.p.ssafy.io:8000/chat-service/ws-stomp/websocket',
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
       onConnect: () => {
         console.log('성공');
       },
@@ -248,9 +248,9 @@ export default function ManagerChat({navigation}) {
 
   useEffect(() => {
     findAllRooms();
-    console.log(sender);
-    dispatch(setUser({name: '김싸피'}));
-    console.log(sender);
+    // console.log(sender);
+    // dispatch(setUser({name: '김싸피'}));
+    // console.log(sender);
   }, []);
 
   useEffect(() => {
@@ -267,9 +267,9 @@ export default function ManagerChat({navigation}) {
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
-            <TouchableOpacity onPress={setPage('chat')}>
+            {/* <TouchableOpacity onPress={setPage('chat')}>
               <Text>임시채팅</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -427,6 +427,10 @@ export default function ManagerChat({navigation}) {
             <View style={styles.bottomContainer}>
               <TextInput
                 style={styles.messageInput}
+                multiline={true}
+                onContentSizeChange={event => {
+                  SCREEN_WIDTH, SCREEN_HEIGHT / 15;
+                }}
                 placeholder={'메세지를 입력하세요.'}
                 onChangeText={text => {
                   handleChange(text);
@@ -570,7 +574,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   noticeChatText: {
-    color: 'green',
+    color: 'blue',
   },
   myChatText: {
     color: 'red',

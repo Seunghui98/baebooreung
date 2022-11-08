@@ -9,14 +9,18 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {useEffect} from 'react';
+import {setUser} from '../redux/user';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
 function ManagerHome({navigation}) {
-  const user = {name: '최싸피', grade: '관리자'};
-  //const user = useSelector((state) => state.user.value); //react-redux를 이용하여 user 정보 받을 예정
+  const dispatch = useDispatch();
+  // const user = {name: '최싸피', grade: '관리자'};
+  const user = useSelector(state => state.user); //react-redux를 이용하여 user 정보 받을 예정
   const workList = [
     {region: 1, regionName: '광주과학기술원', driver: 2, total: 50, finish: 30},
     {region: 2, regionName: '전남대학교', driver: 2, total: 25, finish: 25},
@@ -25,6 +29,9 @@ function ManagerHome({navigation}) {
     {region: 5, regionName: '건국대학교', driver: 3, total: 45, finish: 25},
     {region: 6, regionName: '경희대학교', driver: 2, total: 50, finish: 30},
   ];
+  useEffect(() => {
+    dispatch(setUser({name: '김싸피', grade: '관리자'}));
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
