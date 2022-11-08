@@ -121,7 +121,7 @@ export default function NaverMapApi() {
     cal_course()
   }, [start])
 
-  return <div>
+  return <div style={{ height: "100%", width:"100%" }}>
     <div className={styles.App}>
       <div className={styles.app_width}>
         {/* <div className={styles.app_color}>
