@@ -52,6 +52,7 @@ export default function NaverMapApi() {
   const waypoints = "126.9153,35.1810" // 근처입니다.
 
   // const url = `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${waypoints1}&goal=${goal}&waypoints=${waypoints}&option="trafast"`
+  // const url = `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=126.8950,35.1790&goal=126.9108,35.1804&waypoints=126.9153,35.1810&option=trafast`
   // const url_now = `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${start}&goal=${waypoints1}&option="trafast"`
   const url = `http://k7c207.p.ssafy.io:8000/user-service/map`
 
