@@ -1,11 +1,17 @@
 // chatting 관련 기능 api
-const HOST = 'https://k7c207.p.ssafy.io:8080/';
+const HOST = 'https://k7c207.p.ssafy.io:8080/api/';
+const VOICE = 'http://k7c207.p.ssafy.io:5000/';
 const CHAT = 'chat/';
 
 const chat = {
   findAllRooms: () => HOST + CHAT + 'rooms/',
   createRoom: () => HOST + CHAT + 'room/',
   findRoom: () => HOST + CHAT + 'room/',
+};
+
+//음성호출 관련 기능
+const voice = {
+  file: () => VOICE + 'file',
 };
 
 // user 관련 기능 api
@@ -21,4 +27,4 @@ const user = {
   getAllUser: () => USER_BASE_URL + USER + 'users', // 전체 사용자 정보 출력
 };
 
-export {chat, user};
+export {chat, user, voice};
