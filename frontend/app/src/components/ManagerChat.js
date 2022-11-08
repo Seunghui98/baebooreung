@@ -400,44 +400,68 @@ export default function ManagerChat({navigation}) {
               keyExtractor={(item, index) => 'key' + index}
               renderItem={({item}) => (
                 <View>
+                  {/*  */}
                   <View
                     style={
                       item.sender === sender
                         ? styles.myChatComponent
                         : styles.otherChatComponent
                     }>
+                    {/*  */}
+                    {item.type === 'TALK' && item.sender !== sender && (
+                      <View style={styles.otherChatProfile}>
+                        <Icon name="person" size={50}></Icon>
+                      </View>
+                    )}
+
                     <View
                       style={
-                        item.type === 'ENTER'
-                          ? styles.noticeChat
-                          : item.sender === sender
-                          ? styles.myChat
-                          : styles.otherChat
+                        (item.type === 'ENTER' ||
+                          item.type === 'QUIT' ||
+                          item.sender !== sender) && {flex: 1}
                       }>
-                      {item.type === 'ENTER' && (
-                        <Text style={styles.noticeChatText}>
-                          {item.sender}님이 입장하셨습니다.
-                        </Text>
+                      {/*  */}
+                      {item.type === 'TALK' && item.sender !== sender && (
+                        <View style={styles.otherChatName}>
+                          <Text style={{fontWeight: 'bold'}}>
+                            {item.sender}
+                          </Text>
+                        </View>
                       )}
-                      {item.type === 'TALK' && (
-                        <Text
-                          style={
-                            item.sender === sender
-                              ? styles.myChatText
-                              : styles.otherChatText
-                          }>
-                          {item.message}
-                        </Text>
-                      )}
-                      {item.type === 'QUIT' && (
-                        <Text style={styles.noticeChatText}>
-                          {item.sender}님이 퇴장하셨습니다.
-                        </Text>
-                      )}
+
+                      {/*  */}
+                      <View
+                        style={
+                          item.type === 'ENTER'
+                            ? styles.noticeChat
+                            : item.sender === sender
+                            ? styles.myChat
+                            : styles.otherChat
+                        }>
+                        {item.type === 'ENTER' && (
+                          <Text style={styles.noticeChatText}>
+                            {item.sender}님이 입장하셨습니다.
+                          </Text>
+                        )}
+
+                        {/* */}
+                        {item.type === 'TALK' && (
+                          <Text
+                            style={
+                              item.sender === sender
+                                ? styles.myChatText
+                                : styles.otherChatText
+                            }>
+                            {item.message}
+                          </Text>
+                        )}
+                        {item.type === 'QUIT' && (
+                          <Text style={styles.noticeChatText}>
+                            {item.sender}님이 퇴장하셨습니다.
+                          </Text>
+                        )}
+                      </View>
                     </View>
-                    {item.type === 'TALK' && (
-                      <View style={styles.sideChat}></View>
-                    )}
                   </View>
                 </View>
               )}></FlatList>
@@ -581,25 +605,42 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
+  otherChatProfile: {
+    maxWidth: SCREEN_WIDTH / 7,
+  },
+  otherChatName: {
+    marginLeft: 2,
+    paddingLeft: 2,
+  },
   noticeChat: {
     flex: 1,
     margin: 1,
     alignItems: 'center',
   },
   myChat: {
-    flex: 1,
-    margin: 5,
-    padding: 5,
+    maxWidth: (SCREEN_WIDTH * 4) / 7,
     backgroundColor: '#58ACFA',
     borderRadius: 10,
+    margin: 5,
+    padding: 5,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   otherChat: {
     flex: 1,
-    backgroundColor: 'red',
+    maxWidth: (SCREEN_WIDTH * 4) / 7,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    margin: 7,
+    padding: 7,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
-  sideChat: {
-    flex: 0.5,
-  },
+
   noticeChatText: {
     fontSize: 16,
     color: '#BDBDBD',
@@ -611,7 +652,7 @@ const styles = StyleSheet.create({
   },
   otherChatText: {
     fontSize: 16,
-    color: 'white',
+    color: 'black',
   },
   bottomContainer: {
     flexDirection: 'row',
@@ -621,10 +662,14 @@ const styles = StyleSheet.create({
     maxHeight: SCREEN_HEIGHT / 7.3,
     fontSize: 15,
     backgroundColor: 'white',
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 10,
+    shadowOpacity: 0.4,
   },
   buttonStyle: {
     backgroundColor: 'black',
-    borderRadius: 10,
+
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
