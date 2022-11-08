@@ -50,6 +50,10 @@ export default function NaverMapApi() {
   // const url = `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${waypoints1}&goal=${goal}&waypoints=${waypoints}&option="trafast"`
   // const url_now = `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${start}&goal=${waypoints1}&option="trafast"`
   const url = `http://k7c207.p.ssafy.io:8000/user-service/map`
+
+  const config = {"Content-Type": 'application/json'};
+
+
   
   const [test_course, setTestCourse] = useState([])
   const [test_course_now, setTestCourseNow] = useState([])
@@ -76,8 +80,7 @@ export default function NaverMapApi() {
         goal:goal,
         option:"trafast",
         waypoints:waypoints,
-
-      }
+      }, config
     }).then((res) => {
       console.log(res)
       const path = res.data.route.traoptimal[0].path
