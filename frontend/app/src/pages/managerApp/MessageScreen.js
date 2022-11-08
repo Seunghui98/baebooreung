@@ -6,7 +6,7 @@ import Swiper from 'react-native-swiper';
 function MessageScreen({navigation}) {
   return (
     <View style={styles.container}>
-      <Swiper
+      {/* <Swiper
         loop={false}
         dot={
           <View
@@ -21,10 +21,10 @@ function MessageScreen({navigation}) {
               width: 0,
               height: 0,
             }}></View>
-        }>
-        <ManagerChat navigation={navigation}></ManagerChat>
-        <AudioRecord></AudioRecord>
-      </Swiper>
+        }> */}
+      <ManagerChat navigation={navigation}></ManagerChat>
+      {/* <AudioRecord></AudioRecord>
+      </Swiper> */}
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 export const gpsSlice = createSlice({
-  name: 'user',
+  name: 'gps',
   initialState: {
     lat: '',
     lng: '',

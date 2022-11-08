@@ -1,10 +1,11 @@
 import {Text, View} from 'react-native';
-
-function MyPageScreen(){
-    return(
-        <View>
-        </View>
-    )
+import MyPage from '../../components/MyPage';
+function MyPageScreen() {
+  return (
+    <View>
+      <MyPage></MyPage>
+    </View>
+  );
 }
 
 export default MyPageScreen;

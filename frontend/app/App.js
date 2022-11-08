@@ -12,17 +12,16 @@ import * as encoding from 'text-encoding';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-// <-- manager App pages-->
-import HomeScreen from './src/pages/managerApp/HomeScreen';
-import MyPageScreen from './src/pages/managerApp/MyPageScreen';
-import GPSScreen from './src/pages/managerApp/GPSScreen';
-import MessageScreen from './src/pages/managerApp/MessageScreen';
-import DetailWorkScreen from './src/pages/managerApp/DetailWorkScreen';
-
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+
+// <-- manager App pages-->
+import HomeScreen from './src/pages/managerApp/HomeScreen';
+import GPSScreen from './src/pages/managerApp/GPSScreen';
+import MessageScreen from './src/pages/managerApp/MessageScreen';
+import DetailWorkScreen from './src/pages/managerApp/DetailWorkScreen';
+import STTScreen from './src/pages/managerApp/STTScreen';
 
 // <-- driver App pages -->
 import Gps from './src/pages/driverApp/Gps';
@@ -127,10 +126,10 @@ export default function App() {
                   ),
                 }}></Tab.Screen>
               <Tab.Screen
-                name="MyPage"
-                component={MyPageScreen}
+                name="STT"
+                component={STTScreen}
                 options={{
-                  title: '마이페이지',
+                  title: '음성인식',
                   headerStyle: {
                     backgroundColor: identityColor,
                   },
@@ -140,7 +139,7 @@ export default function App() {
                     fontWeight: 'bold',
                   },
                   tabBarIcon: ({color, size}) => (
-                    <Icon name="person" color={color} size={size}></Icon>
+                    <Icon name="mic" color={color} size={size}></Icon>
                   ),
                 }}></Tab.Screen>
             </Tab.Navigator>
