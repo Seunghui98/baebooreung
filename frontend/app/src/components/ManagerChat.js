@@ -1,45 +1,56 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {setUser} from '../redux/user';
+import {Client} from '@stomp/stompjs';
 import {
   StyleSheet,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   FlatList,
-  Alert,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {chat} from '../api/api';
-import ManagerChatRoom from './ManagerChatRoom';
+import {BottomTabBarHeightCallbackContext} from '@react-navigation/bottom-tabs';
+const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
+  const [page, setPage] = useState('user');
   const [chatRoomList, setChatRoomList] = useState([]);
-  const [chatRoomListTemp, setChatRoomListTemp] = useState([
-    {
-      id: 1,
-      name: '김싸피',
-      last_message: '점심1 배달 완료했습니다.',
-      last_time: '오후 1시 12분',
-      last_count: 2,
-    },
-    {
-      id: 2,
-      name: '박싸피',
-      last_message: '점심2 배달 완료했습니다.',
-      last_time: '오후 1시 30분',
-      last_count: 1,
-    },
-    {
-      id: 3,
-      name: '이싸피',
-      last_message: '저녁1 배달 완료했습니다.',
-      last_time: '어제',
-      last_count: 1,
-    },
-  ]);
   const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
-  const [page, setPage] = useState('user');
+  const [userCount, setUserCount] = useState(0);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const sender = useSelector(state => state.user.name); //메세지를 전송하는 주체
+  const dispatch = useDispatch();
+  const client = useRef({});
+  // const [chatRoomListTemp, setChatRoomListTemp] = useState([
+  //   {
+  //     id: 1,
+  //     name: '김싸피',
+  //     last_message: '점심1 배달 완료했습니다.',
+  //     last_time: '오후 1시 12분',
+  //     last_count: 2,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: '박싸피',
+  //     last_message: '점심2 배달 완료했습니다.',
+  //     last_time: '오후 1시 30분',
+  //     last_count: 1,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: '이싸피',
+  //     last_message: '저녁1 배달 완료했습니다.',
+  //     last_time: '어제',
+  //     last_count: 1,
+  //   },
+  // ]);
   const [userList, setUserList] = useState([
     {
       user_id: 'kimssafy',
@@ -58,11 +69,48 @@ export default function ManagerChat({navigation}) {
     {
       user_id: 'leessafy',
       grade: '관리자',
-      name: '이싸피',
+      name: '구싸피',
       phone: '010-3333-3333',
       region: 3,
     },
   ]);
+
+  async function connect() {
+    client.current = new Client();
+    console.log(new Client());
+    client.current.configure({
+      brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
+      onConnect: () => {
+        console.log('성공');
+      },
+      onChangeState: () => {
+        console.log('change');
+      },
+      onDisconnect: () => {
+        console.log('실패');
+      },
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+      logRawCommunication: true,
+      connectHeaders: {},
+      onStompError: function (frame) {
+        // Will be invoked in case of error encountered at Broker
+        // Bad login/passcode typically will cause an error
+        // Complaint brokers will set `message` header with a brief message. Body may contain details.
+        // Compliant brokers will terminate the connection after any error
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    await client.current.activate();
+  }
 
   function findAllRooms() {
     axios({
@@ -77,42 +125,151 @@ export default function ManagerChat({navigation}) {
       });
   }
 
-  function createRoom() {
-    if (roomName === '' || undefined) {
-      Alert.alert('방 제목을 입력해 주십시오.');
-      return;
-    } else {
-      axios({
-        method: 'post',
-        url: chat.createRoom(),
-        params: {
-          name: roomName,
-        },
-      })
-        .then(res => {
-          Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
-          setRoomName('');
-          findAllRooms();
-        })
-        .catch(e => {
-          Alert.alert('채팅방 개설에 실패하였습니다.');
-        });
-    }
+  // function createRoom() {
+  //   if (roomName === '' || undefined) {
+  //     Alert.alert('방 제목을 입력해 주십시오.');
+  //     return;
+  //   } else {
+  //     axios({
+  //       method: 'post',
+  //       url: chat.createRoom(),
+  //       params: {
+  //         name: roomName,
+  //       },
+  //     })
+  //      .then(res => {
+  //         Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
+  //         setRoomName('');
+  //         findAllRooms();
+  //       })
+  //       .catch(e => {
+  //         Alert.alert('채팅방 개설에 실패하였습니다.');
+  //       });
+  //   }
+  // }
+
+  async function enterRoom(roomId) {
+    setRoomId(roomId);
+
+    subscribe(roomId);
+    await enter(roomId);
   }
 
-  function enterRoom(roomId) {
-    setRoomId(roomId);
+  function quitRoom(roomId) {
+    quit(roomId);
+  }
+
+  // function findRoom() {
+  //   axios({
+  //     method: 'get',
+  //     url: chat.findRoom(),
+  //     params: {
+  //       roomId: roomId,
+  //     },
+  //   })
+  //     .then(res => {
+  //       setRoom(res.data);
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // }
+
+  function sendMessage() {
+    client.current.publish({
+      destination: '/api/pub/chat/message',
+      headers: {id: sender},
+      body: JSON.stringify({
+        type: 'TALK',
+        roomId: roomId,
+        sender: sender,
+        message: message,
+        userCount: userCount,
+      }),
+    });
+    setMessage('');
+  }
+
+  function recvMessage(recv) {
+    setMessages(messages => {
+      const newMessages = [...messages];
+      newMessages.push({
+        type: recv.type,
+        sender: recv.sender,
+        message: recv.message,
+      });
+      return newMessages;
+    });
+  }
+
+  const subscribe = roomId => {
+    client.current.subscribe(
+      '/api/sub/chat/room/' + roomId,
+      body => {
+        const recv = JSON.parse(body.body);
+        recvMessage(recv);
+      },
+      {id: sender},
+    );
+  };
+
+  const disconnect = () => {
+    client.current.deactivate();
+  };
+
+  const handleChange = event => {
+    //채팅 입력시 state에 값 설정
+    setMessage(event);
+  };
+
+  async function enter(roomId) {
+    await client.current.publish({
+      destination: '/api/pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
+        type: 'ENTER',
+        roomId: roomId,
+        sender: sender,
+      }),
+    });
+  }
+
+  async function quit(roomId) {
+    await client.current.publish({
+      destination: '/api/pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
+        type: 'QUIT',
+        roomId: roomId,
+        sender: sender,
+      }),
+    });
   }
 
   useEffect(() => {
     findAllRooms();
+    // console.log(sender);
+    // dispatch(setUser({name: '김싸피'}));
+    // console.log(sender);
   }, []);
+
+  useEffect(() => {
+    connect();
+    return () => disconnect();
+  }, []);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   return (
     <View style={styles.container}>
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
+            {/* <TouchableOpacity onPress={setPage('chat')}>
+              <Text>임시채팅</Text>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -120,6 +277,7 @@ export default function ManagerChat({navigation}) {
               style={styles.leftBtn}
               onPress={() => {
                 setPage('chatRoomList');
+                findAllRooms();
               }}>
               <Icon name="messenger-outline" size={40}></Icon>
             </TouchableOpacity>
@@ -132,27 +290,26 @@ export default function ManagerChat({navigation}) {
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
-                    <Icon name="person" size={40}></Icon>
+                    <Icon name="person" size={30}></Icon>
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade}
                     </Text>
                   </View>
                   <View style={styles.userListDetailIcon}>
                     <TouchableOpacity>
-                      <Icon name="phone-forwarded" size={40}></Icon>
+                      <Icon name="phone-forwarded" size={30}></Icon>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
                         chatRoomList.forEach(value => {
-                          if (value.chatroom_name === item.username) {
-                            //만약 해당 채팅방이 존재한다면 그냥 그 채팅방 사용
-                            setPage('chat');
-                          }
+                          subscribe(roomId);
+                          setPage('chat');
                         });
-                        //만약 해당 유저에대한 채팅방이 존재하지 않는다면 새로운 채팅방 생성
-                        setPage('chat');
                       }}>
-                      <Icon name="textsms" size={40}></Icon>
+                      <Icon
+                        name="textsms"
+                        size={30}
+                        style={styles.userMessageIcon}></Icon>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -171,7 +328,10 @@ export default function ManagerChat({navigation}) {
               }}>
               <Icon name="person-outline" size={40}></Icon>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
+            <TouchableOpacity
+              onPress={findAllRooms}
+              style={styles.leftBtn}
+              activeOpacity={1}>
               <Icon name="messenger" size={40}></Icon>
             </TouchableOpacity>
           </View>
@@ -188,7 +348,7 @@ export default function ManagerChat({navigation}) {
                   }}>
                   <View style={styles.chatRoomListStyle}>
                     <View style={styles.profilePicture}>
-                      <Icon name="person" size={60}></Icon>
+                      <Icon name="person" size={30}></Icon>
                     </View>
                     <View style={styles.chatRoomDetail}>
                       <View style={styles.chatRoomDetailTop}>
@@ -232,15 +392,57 @@ export default function ManagerChat({navigation}) {
             <TouchableOpacity
               style={styles.leftBtn}
               onPress={() => {
+                findAllRooms();
                 setPage('chatRoomList');
               }}>
               <Icon name="messenger" size={40}></Icon>
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
-            <ManagerChatRoom
-              navigation={navigation}
-              ID={roomId}></ManagerChatRoom>
+            <FlatList
+              style={styles.chatHistroy}
+              data={messages}
+              keyExtractor={(item, index) => 'key' + index}
+              renderItem={({item}) => (
+                <View
+                  style={
+                    item.sender === '[알림]'
+                      ? styles.noticeChat
+                      : item.sender === sender
+                      ? styles.myChat
+                      : styles.otherChat
+                  }>
+                  <Text
+                    style={
+                      item.sender === '[알림]'
+                        ? styles.noticeChatText
+                        : item.sender === sender
+                        ? styles.myChatText
+                        : styles.otherChatText
+                    }>
+                    {item.message}
+                  </Text>
+                </View>
+              )}></FlatList>
+            <View style={styles.bottomContainer}>
+              <TextInput
+                style={styles.messageInput}
+                multiline={true}
+                onContentSizeChange={event => {
+                  SCREEN_WIDTH, SCREEN_HEIGHT / 15;
+                }}
+                placeholder={'메세지를 입력하세요.'}
+                onChangeText={text => {
+                  handleChange(text);
+                }}
+                value={message}></TextInput>
+              <TouchableOpacity
+                style={styles.buttonStyle}
+                onPress={sendMessage}
+                disabled={message === ''}>
+                <Text style={styles.buttonTextStyle}>전송</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}
@@ -257,45 +459,64 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    borderWidth: 1,
+    backgroundColor: 'white',
+    marginRight: 2,
+    borderBottomLeftRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 7,
+    shadowOpacity: 0.4,
   },
   leftBtn: {
     paddingTop: 10,
   },
   rightBar: {
     flex: 6,
-    flexDirection: 'column',
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
   },
   userListStyle: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    backgroundColor: 'white',
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   userListDetailText: {
     flex: 5,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   userListTextStyle: {
     paddingLeft: 10,
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   userListDetailIcon: {
     flex: 2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+  },
+  userMessageIcon: {
+    paddingLeft: 10,
   },
   chatRoomListStyle: {
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    backgroundColor: 'white',
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   chatRoomDetail: {
     flex: 1,
@@ -335,16 +556,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 5,
   },
-  bottomContainer: {
-    backgroundColor: 'green',
+  chatHistroy: {
+    flex: 1,
+    backgroundColor: 'gray',
   },
 
+  noticeChat: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  myChat: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  otherChat: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  noticeChatText: {
+    color: 'blue',
+  },
+  myChatText: {
+    color: 'red',
+  },
+  otherChatText: {
+    color: 'yellow',
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'gray',
+  },
+  messageInput: {
+    flex: 1,
+    fontSize: 15,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: 'white',
+  },
   buttonStyle: {
     backgroundColor: '#000',
-    marginTop: 15,
-    padding: 10,
-    marginRight: 10,
-    marginLeft: 10,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
 
   buttonTextStyle: {
