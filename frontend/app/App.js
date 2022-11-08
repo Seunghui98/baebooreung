@@ -57,7 +57,7 @@ function HomeStack() {
         }}></Stack.Screen>
       <Stack.Screen
         name="Gps"
-        component={Gps}
+        component={DetailWork}
         options={{
           headerStyle: {
             backgroundColor: '#29b6f6',
@@ -146,7 +146,7 @@ export default function App() {
             // <-- driver 로그인 시-->
             <Tab.Navigator initialRouteName="home">
               <Tab.Screen
-                name="Gps"
+                name="DetailWork"
                 component={DetailWork}
                 options={{
                   title: 'DetailWork',
