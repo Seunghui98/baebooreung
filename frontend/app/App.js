@@ -33,7 +33,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
-const isManager = false;
+const isManager = true;
 
 function HomeStack() {
   return (
@@ -108,7 +108,7 @@ export default function App() {
                   ),
                 }}></Tab.Screen>
               <Tab.Screen
-                name="GPS"
+                name=""
                 component={GPSScreen}
                 options={{
                   title: '실시간위치',

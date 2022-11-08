@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat} from '../api/api';
+import {chat, user} from '../api/api';
 import {BottomTabBarHeightCallbackContext} from '@react-navigation/bottom-tabs';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
@@ -77,7 +77,6 @@ export default function ManagerChat({navigation}) {
 
   async function connect() {
     client.current = new Client();
-    console.log(new Client());
     client.current.configure({
       brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
       onConnect: () => {
@@ -150,14 +149,13 @@ export default function ManagerChat({navigation}) {
 
   async function enterRoom(roomId) {
     setRoomId(roomId);
-
     subscribe(roomId);
     await enter(roomId);
   }
 
-  function quitRoom(roomId) {
-    quit(roomId);
-  }
+  // function quitRoom(roomId) {
+  //   quit(roomId);
+  // }
 
   // function findRoom() {
   //   axios({
@@ -234,17 +232,17 @@ export default function ManagerChat({navigation}) {
     });
   }
 
-  async function quit(roomId) {
-    await client.current.publish({
-      destination: '/api/pub/chat/message',
-      headers: {},
-      body: JSON.stringify({
-        type: 'QUIT',
-        roomId: roomId,
-        sender: sender,
-      }),
-    });
-  }
+  // async function quit(roomId) {
+  //   await client.current.publish({
+  //     destination: '/api/pub/chat/message',
+  //     headers: {},
+  //     body: JSON.stringify({
+  //       type: 'QUIT',
+  //       roomId: roomId,
+  //       sender: sender,
+  //     }),
+  //   });
+  // }
 
   useEffect(() => {
     findAllRooms();
@@ -267,9 +265,6 @@ export default function ManagerChat({navigation}) {
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
-            {/* <TouchableOpacity onPress={setPage('chat')}>
-              <Text>임시채팅</Text>
-            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -404,33 +399,52 @@ export default function ManagerChat({navigation}) {
               data={messages}
               keyExtractor={(item, index) => 'key' + index}
               renderItem={({item}) => (
-                <View
-                  style={
-                    item.sender === '[알림]'
-                      ? styles.noticeChat
-                      : item.sender === sender
-                      ? styles.myChat
-                      : styles.otherChat
-                  }>
-                  <Text
+                <View>
+                  <View
                     style={
-                      item.sender === '[알림]'
-                        ? styles.noticeChatText
-                        : item.sender === sender
-                        ? styles.myChatText
-                        : styles.otherChatText
+                      item.sender === sender
+                        ? styles.myChatComponent
+                        : styles.otherChatComponent
                     }>
-                    {item.message}
-                  </Text>
+                    <View
+                      style={
+                        item.type === 'ENTER'
+                          ? styles.noticeChat
+                          : item.sender === sender
+                          ? styles.myChat
+                          : styles.otherChat
+                      }>
+                      {item.type === 'ENTER' && (
+                        <Text style={styles.noticeChatText}>
+                          {item.sender}님이 입장하셨습니다.
+                        </Text>
+                      )}
+                      {item.type === 'TALK' && (
+                        <Text
+                          style={
+                            item.sender === sender
+                              ? styles.myChatText
+                              : styles.otherChatText
+                          }>
+                          {item.message}
+                        </Text>
+                      )}
+                      {item.type === 'QUIT' && (
+                        <Text style={styles.noticeChatText}>
+                          {item.sender}님이 퇴장하셨습니다.
+                        </Text>
+                      )}
+                    </View>
+                    {item.type === 'TALK' && (
+                      <View style={styles.sideChat}></View>
+                    )}
+                  </View>
                 </View>
               )}></FlatList>
             <View style={styles.bottomContainer}>
               <TextInput
                 style={styles.messageInput}
                 multiline={true}
-                onContentSizeChange={event => {
-                  SCREEN_WIDTH, SCREEN_HEIGHT / 15;
-                }}
                 placeholder={'메세지를 입력하세요.'}
                 onChangeText={text => {
                   handleChange(text);
@@ -558,43 +572,59 @@ const styles = StyleSheet.create({
   },
   chatHistroy: {
     flex: 1,
-    backgroundColor: 'gray',
   },
-
+  myChatComponent: {
+    flex: 1,
+    flexDirection: 'row-reverse',
+  },
+  otherChatComponent: {
+    flex: 1,
+    flexDirection: 'row',
+  },
   noticeChat: {
     flex: 1,
-    justifyContent: 'center',
+    margin: 1,
+    alignItems: 'center',
   },
   myChat: {
     flex: 1,
-    justifyContent: 'flex-end',
+    margin: 5,
+    padding: 5,
+    backgroundColor: '#58ACFA',
+    borderRadius: 10,
   },
   otherChat: {
     flex: 1,
-    justifyContent: 'flex-start',
+    backgroundColor: 'red',
+  },
+  sideChat: {
+    flex: 0.5,
   },
   noticeChatText: {
-    color: 'blue',
+    fontSize: 16,
+    color: '#BDBDBD',
+    fontWeight: 'bold',
   },
   myChatText: {
-    color: 'red',
+    fontSize: 16,
+    color: 'white',
   },
   otherChatText: {
-    color: 'yellow',
+    fontSize: 16,
+    color: 'white',
   },
   bottomContainer: {
     flexDirection: 'row',
-    backgroundColor: 'gray',
   },
   messageInput: {
     flex: 1,
+    maxHeight: SCREEN_HEIGHT / 7.3,
     fontSize: 15,
-    borderTopLeftRadius: 10,
-    borderBottomRightRadius: 10,
     backgroundColor: 'white',
   },
   buttonStyle: {
-    backgroundColor: '#000',
+    backgroundColor: 'black',
+    borderRadius: 10,
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
