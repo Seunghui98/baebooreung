@@ -108,7 +108,7 @@ export default function App() {
                   ),
                 }}></Tab.Screen>
               <Tab.Screen
-                name=""
+                name="GPS"
                 component={GPSScreen}
                 options={{
                   title: '실시간위치',
