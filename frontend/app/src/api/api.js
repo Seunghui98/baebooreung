@@ -7,6 +7,10 @@ const chat = {
   findAllRooms: () => HOST + CHAT + 'rooms/',
   createRoom: () => HOST + CHAT + 'room/',
   findRoom: () => HOST + CHAT + 'room/',
+  updateSubscribeInfo: () => HOST + CHAT + 'room/update/subscribe/',
+  updateEnterInfo: () => HOST + CHAT + 'room/update/enter/',
+  exitRoom: () => HOST + CHAT + 'room/delete/',
+  getInfo: () => HOST + CHAT + 'room/user/info/', //해당 유저의 구독, 입장 정보 확인
 };
 
 //음성호출 관련 기능

@@ -30,7 +30,7 @@ function ManagerHome({navigation}) {
     {region: 6, regionName: '경희대학교', driver: 2, total: 50, finish: 30},
   ];
   useEffect(() => {
-    dispatch(setUser({name: '김싸피', grade: '관리자'}));
+    dispatch(setUser({name: '김싸피', grade: '관리자', userId: 'ssafy'}));
   }, []);
   return (
     <View style={styles.container}>
