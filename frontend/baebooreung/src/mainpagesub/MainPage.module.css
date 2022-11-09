@@ -32,7 +32,7 @@
   padding-top: 20px;
   padding-bottom:20px;
   padding-left: 224px;
-  box-shadow: inset 1700px 3px 0px #F5CC1F;
+  box-shadow: inset 3000px 3px 0px #F5CC1F;
   /* 좌상, 우상, 우하, 좌하 */
   border-radius: 0px 20px 20px 0px;
   color:black;
@@ -63,7 +63,7 @@
 
 .fold_button {
   position:absolute;
-  top:45%;
+  top:200px;
   left:204px;
   background-color: #0F1839;
   background-color: #0F1839;
