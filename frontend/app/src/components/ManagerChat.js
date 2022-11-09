@@ -10,11 +10,15 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Modal,
+  Pressable,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {chat, user} from '../api/api';
-import {BottomTabBarHeightCallbackContext} from '@react-navigation/bottom-tabs';
+import CheckBox from '@react-native-community/checkbox';
+
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
@@ -25,6 +29,9 @@ export default function ManagerChat({navigation}) {
   const [userCount, setUserCount] = useState(0);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [createChatVisible, setCreateChatVisible] = useState(false);
+  const [createChatCheckBox, setCreateChatCheckBox] = useState([]);
+  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('black');
   const sender = useSelector(state => state.user.name); //메세지를 전송하는 주체
   const dispatch = useDispatch();
   const client = useRef({});
@@ -75,6 +82,16 @@ export default function ManagerChat({navigation}) {
     },
   ]);
 
+  useEffect(() => {
+    userList.map((el, idx) => {
+      setCreateChatCheckBox(createChatCheckBox => {
+        const newArr = [...createChatCheckBox];
+        newArr.push(false);
+        return newArr;
+      });
+    });
+  }, []);
+
   async function connect() {
     client.current = new Client();
     client.current.configure({
@@ -117,6 +134,7 @@ export default function ManagerChat({navigation}) {
       url: chat.findAllRooms(),
     })
       .then(res => {
+        console.log(res.data);
         setChatRoomList(res.data);
       })
       .catch(e => {
@@ -124,33 +142,14 @@ export default function ManagerChat({navigation}) {
       });
   }
 
-  // function createRoom() {
-  //   if (roomName === '' || undefined) {
-  //     Alert.alert('방 제목을 입력해 주십시오.');
-  //     return;
-  //   } else {
-  //     axios({
-  //       method: 'post',
-  //       url: chat.createRoom(),
-  //       params: {
-  //         name: roomName,
-  //       },
-  //     })
-  //      .then(res => {
-  //         Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
-  //         setRoomName('');
-  //         findAllRooms();
-  //       })
-  //       .catch(e => {
-  //         Alert.alert('채팅방 개설에 실패하였습니다.');
-  //       });
-  //   }
-  // }
-
-  async function enterRoom(roomId) {
+  async function createRoom(roomId, sender) {
     setRoomId(roomId);
     subscribe(roomId);
     await enter(roomId);
+  }
+
+  function enterRoom(roomId) {
+    setRoomId(roomId);
   }
 
   // function quitRoom(roomId) {
@@ -220,6 +219,9 @@ export default function ManagerChat({navigation}) {
     setMessage(event);
   };
 
+  const RoomNameChange = event => {
+    setRoomName(event);
+  };
   async function enter(roomId) {
     await client.current.publish({
       destination: '/api/pub/chat/message',
@@ -331,8 +333,15 @@ export default function ManagerChat({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
+            <Pressable
+              onPress={() => {
+                setCreateChatVisible(!createChatVisible);
+              }}>
+              <View style={{alignItems: 'flex-end'}}>
+                <Icon name="maps-ugc" size={40}></Icon>
+              </View>
+            </Pressable>
             <FlatList
-              style={styles.list}
               data={chatRoomList}
               keyExtractor={item => item.roomId}
               renderItem={({item}) => (
@@ -347,8 +356,10 @@ export default function ManagerChat({navigation}) {
                     </View>
                     <View style={styles.chatRoomDetail}>
                       <View style={styles.chatRoomDetailTop}>
-                        <View>
-                          <Text style={styles.chatRoomName}>{item.name}</Text>
+                        <View style={{paddingLeft: 10}}>
+                          <Text style={styles.chatRoomName}>
+                            {item.roomName}
+                          </Text>
                         </View>
                         <View>
                           <Text style={styles.chatRoomLastTime}>
@@ -469,7 +480,7 @@ export default function ManagerChat({navigation}) {
               <TextInput
                 style={styles.messageInput}
                 multiline={true}
-                placeholder={'메세지를 입력하세요.'}
+                placeholder={'메세지를 입력하세요'}
                 onChangeText={text => {
                   handleChange(text);
                 }}
@@ -484,6 +495,121 @@ export default function ManagerChat({navigation}) {
           </View>
         </View>
       )}
+
+      {/* 채팅방 생성 모달창 */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={createChatVisible}
+        onRequestClose={() => {
+          setCreateChatVisible(!createChatVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.createRoomNameLayout}>
+              <Text>방 제목</Text>
+              <TextInput
+                style={styles.roomNameInput}
+                placeholder={'방 제목을 입력하세요'}
+                placeholderTextColor={roomNamePlaceholder}
+                onChangeText={text => {
+                  RoomNameChange(text);
+                }}
+                value={roomName}
+                maxLength={45}></TextInput>
+            </View>
+            <FlatList
+              contentContainerStyle={{}}
+              data={userList}
+              keyExtractor={(item, index) => index}
+              renderItem={({item, index}) => (
+                <View style={styles.createChatListStyle}>
+                  <View style={styles.userListDetailText}>
+                    <Icon name="person" size={30}></Icon>
+                    <Text style={styles.userListTextStyle}>
+                      {item.name} {item.grade}
+                    </Text>
+                  </View>
+                  <View style={styles.userListDetailIcon}>
+                    <CheckBox
+                      value={createChatCheckBox[index]}
+                      onValueChange={newValue => {
+                        setCreateChatCheckBox(el => {
+                          const newArr = [...el];
+                          newArr[index] = !newArr[index];
+                          return newArr;
+                        });
+                      }}
+                    />
+                  </View>
+                </View>
+              )}
+            />
+
+            <View style={styles.buttonLayout}>
+              <Pressable
+                style={styles.submitButton}
+                onPress={async () => {
+                  if (roomName === '') {
+                    setRoomNamePlaceholder('red');
+                  } else {
+                    await axios({
+                      method: 'post',
+                      url: chat.createRoom(),
+                      params: {
+                        name: roomName,
+                      },
+                    })
+                      .then(res => {
+                        createRoom(res.data.roomId, sender);
+                        createChatCheckBox.map((item, idx) => {
+                          if (item === true) {
+                            userList[idx].name;
+                          }
+                        });
+                      })
+                      .catch(e => {
+                        console.log(e);
+                      });
+                    createChatCheckBox.map((item, idx) => {
+                      if (item === true) {
+                        setCreateChatCheckBox(createChatCheckBox => {
+                          const newArr = [...createChatCheckBox];
+                          newArr[idx] = false;
+                          return newArr;
+                        });
+                      }
+                    });
+                    setCreateChatVisible(!createChatVisible);
+                    setRoomName('');
+                    setRoomNamePlaceholder('black');
+                  }
+                }}>
+                <Text style={styles.createChatButtonTextStyle}>초대</Text>
+              </Pressable>
+              <Pressable
+                style={styles.cancelButton}
+                onPress={() => {
+                  createChatCheckBox.map((item, idx) => {
+                    if (item === true) {
+                      setCreateChatCheckBox(createChatCheckBox => {
+                        const newArr = [...createChatCheckBox];
+                        newArr[idx] = false;
+                        return newArr;
+                      });
+                    }
+                  });
+                  setCreateChatVisible(!createChatVisible);
+                  setRoomName('');
+                  setRoomNamePlaceholder('black');
+                }}>
+                <Text style={styles.createChatButtonTextStyle}>취소</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* 채팅방 생성 모달창 끝 */}
     </View>
   );
 }
@@ -569,7 +695,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chatRoomName: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   chatRoomLastTime: {
@@ -676,5 +802,55 @@ const styles = StyleSheet.create({
 
   buttonTextStyle: {
     color: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+  },
+  createChatListStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
+  },
+  buttonLayout: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  submitButton: {
+    alignItems: 'center',
+    padding: 10,
+    margin: 10,
+    backgroundColor: '#58ACFA',
+  },
+  cancelButton: {
+    alignItems: 'center',
+    padding: 10,
+    margin: 10,
+    backgroundColor: 'red',
+  },
+  createChatButtonTextStyle: {
+    fontSize: 16,
+    color: 'white',
+  },
+  createRoomNameLayout: {
+    margin: 10,
+    alignItems: 'center',
+  },
+  roomNameInput: {
+    fontSize: 15,
   },
 });
