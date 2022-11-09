@@ -67,13 +67,13 @@ export default function NaverMapApi() {
   async function cal_course() {
     const course = []
     await axios({
-      url: 'https://k7c207.p.ssafy.io:8000/user-service/map',
-      method: 'get',
+      url: "https://k7c207.p.ssafy.io:8000/user-service/map",
+      method: "post",
       data: data,
     })
       .then((res) => {
         console.log(res);
-        const path = res.data.route.traoptimal[0].path
+        const path = res.data.route.trafast[0].path
         for (let i = 0; i <= path.length - 1; i++) {
           course.push({ lat: path[i][1], lng: path[i][0] })
         }
@@ -87,14 +87,15 @@ export default function NaverMapApi() {
     await axios({
       url: 'https://k7c207.p.ssafy.io:8000/user-service/map',
       method: 'post',
-      params: data_now
+      data: data_now
     })
       .then((res) => {
         console.log(res);
-        const path_now = res.data.route.traoptimal[0].path
+        const path_now = res.data.route.trafast[0].path
         for (let i = 0; i <= path_now.length - 1; i++) {
           course_now.push({ lat: path_now[i][1], lng: path_now[i][0] })
         }
+        console.log(course_now)
         setTestCourseNow(course_now)
       })
       .catch((error) => {
