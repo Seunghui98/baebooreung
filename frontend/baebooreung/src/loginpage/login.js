@@ -29,6 +29,11 @@ const Login = () => {
           <div>Login</div>
           <div>
           <TextField
+            size='small'
+            sx={{
+              width:300,
+              height:20
+            }}
             id="standard-name"
             label="ID2"
             variant="outlined"

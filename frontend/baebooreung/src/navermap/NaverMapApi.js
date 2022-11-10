@@ -16,13 +16,15 @@ export default function NaverMapApi() {
   // // API 2번
   // const X_NCP_APIGW_API_KEY_ID = "g05t2a43ik"
   // const X_NCP_APIGW_API_KEY = "K2jWBmNcWQ3vgKdPE95fexbTrS2Mz4fDXQvfSeFt"
+  
   // const headers = {
   //   "X-NCP-APIGW-API-KEY-ID": X_NCP_APIGW_API_KEY_ID
   //   "X-NCP-APIGW-API-KEY": X_NCP_APIGW_API_KEY
-  // }
+  // }0
+
 
   // waypoints 만들기
-  const [start, setStart] = useState("126.8950,35.1790") // 출발지
+  const [start, setStart] = useState("126.8950,35.1792") // 출발지
   let waypoints = []
   const waypoints1 = "126.8982,35.1786" // 킹스샌드
   const waypoints2 = "126.9043,35.1777" // 알촌
@@ -92,6 +94,7 @@ export default function NaverMapApi() {
       .then((res) => {
         console.log(res);
         const path_now = res.data.route.trafast[0].path
+        console.log(path_now)
         for (let i = 0; i <= path_now.length - 1; i++) {
           course_now.push({ lat: path_now[i][1], lng: path_now[i][0] })
         }
@@ -139,7 +142,7 @@ export default function NaverMapApi() {
             position={translate_coordinate_lat_lng(start)}
             animation={1}
           />
-          <Marker position={translate_coordinate_lat_lng(waypoints1)} />
+          <Marker position={translate_coordinate_lat_lng(goal)} />
           <Marker position={translate_coordinate_lat_lng(waypoints2)} />
           <Marker position={translate_coordinate_lat_lng(waypoints3)} />
           <Marker position={translate_coordinate_lat_lng(waypoints4)} />
@@ -151,7 +154,7 @@ export default function NaverMapApi() {
           <Marker position={translate_coordinate_lat_lng(waypoints10)} />
           <Marker position={translate_coordinate_lat_lng(waypoints11)} />
           <Marker
-            position={translate_coordinate_lat_lng(goal)}
+            position={translate_coordinate_lat_lng(waypoints1)}
             animation={1}
           />
           <Polyline
