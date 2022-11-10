@@ -11,6 +11,7 @@ const chat = {
   updateEnterInfo: () => HOST + CHAT + 'room/update/enter/',
   exitRoom: () => HOST + CHAT + 'room/delete/',
   getInfo: () => HOST + CHAT + 'room/user/info/', //해당 유저의 구독, 입장 정보 확인
+  invite: () => HOST + CHAT + 'room/user/add/', //다른 유저를 채팅방에 초대
 };
 
 //음성호출 관련 기능
@@ -32,3 +33,4 @@ const user = {
 };
 
 export {chat, user, voice};
+//

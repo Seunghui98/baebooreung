@@ -47,7 +47,7 @@ export default function ManagerChat({navigation}) {
   //   },
   //   {
   //     id: 2,
-  //     name: '박싸피',
+  //     name: '박싸피'
   //     last_message: '점심2 배달 완료했습니다.',
   //     last_time: '오후 1시 30분',
   //     last_count: 1,
@@ -63,22 +63,29 @@ export default function ManagerChat({navigation}) {
   const [userList, setUserList] = useState([
     {
       user_id: 'kimssafy',
-      grade: '드라이버',
+      grade: '관리자',
       name: '김싸피',
       phone: '010-1111-1111',
       region: 1,
     },
+    // {
+    //   user_id: 'parkssafy',
+    //   grade: '관리자',
+    //   name: '박싸피',
+    //   phone: '010-2222-2222',
+    //   region: 2,
+    // },
     {
-      user_id: 'parkssafy',
-      grade: '드라이버',
-      name: '박싸피',
+      user_id: 'ssafy',
+      grade: '관리자',
+      name: '최싸피',
       phone: '010-2222-2222',
       region: 2,
     },
     {
-      user_id: 'leessafy',
-      grade: '관리자',
-      name: '구싸피',
+      user_id: 'Leessafy',
+      grade: '드라이버',
+      name: '이싸피',
       phone: '010-3333-3333',
       region: 3,
     },
@@ -130,98 +137,90 @@ export default function ManagerChat({navigation}) {
     await client.current.activate();
   }
 
-  function findAllRooms() {
-    axios({
+  async function findAllRooms() {
+    await axios({
       method: 'get',
       url: chat.findAllRooms(),
     })
       .then(res => {
-        // console.log(res.data);
-        setChatRoomList(res.data);
+        console.log('방 정보 전체 출력', res.data);
+        // setChatRoomList(res.data);
+        const newArr = res.data;
+        {
+          newArr.map((item, idx) => {
+            axios({
+              method: 'get',
+              url: chat.getInfo() + `${item.roomId}/${userId}`,
+            })
+              .then(result => {
+                console.log('getInfo', result.data);
+                if (result.data.userId === userId) {
+                  setChatRoomList(chatRoomList => {
+                    const newChatRoomList = [...chatRoomList];
+                    newChatRoomList.push(item);
+                    return newChatRoomList;
+                  });
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          });
+        }
       })
       .catch(e => {
         console.log(e);
       });
   }
 
-  async function createRoom(roomId, user) {
-    setRoomId(roomId);
-    subscribe(roomId, user);
-    if (user === userId) {
-      await axios({
-        method: 'put',
-        url: chat.updateSubscribeInfo(),
-        params: {
-          roomId: roomId,
-          userId: user,
-        },
-      })
-        .then(res => {
-          console.log(res);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }
-    await enter(roomId, user);
-    if (user === userId) {
-      await axios({
-        method: 'put',
-        url: chat.updateEnterInfo(),
-        params: {
-          roomId: roomId,
-          userId: user,
-        },
-      })
-        .then(res => {
-          console.log(res);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }
-  }
-
   async function enterRoom(roomId, user) {
     setRoomId(roomId);
-    // await axios({
-    //   method: 'get',
-    //   url: chat.getInfo() + `${roomId}/${user}`,
-    //   params: {
-    //     roomId: roomId,
-    //     userId: user,
-    //   },
-    // })
-    //   .then(res => {
-    //     console.log(res.data);
-    //   })
-    //   .catch(e => {
-    //     console.log(e);
-    //   });
+    axios({
+      method: 'get',
+      url: chat.getInfo() + `${roomId}/${user}`,
+      // params: {
+      //   roomId: roomId,
+      //   userId: user,
+      // },
+    })
+      .then(res => {
+        console.log('getInfo', res.data.isEnter, res.data.isSubscribe);
+        if (res.data.isSubscribe === false) {
+          axios({
+            method: 'put',
+            url: chat.updateSubscribeInfo() + `${roomId}/${user}/`,
+          })
+            .then(() => {
+              console.log('update Subscribe');
+            })
+            .catch(e => {
+              console.log(e);
+            });
+          subscribe(roomId, user);
+        }
 
-    subscribe(roomId, user);
-    await enter(roomId, user);
+        if (res.data.isEnter === false) {
+          axios({
+            method: 'put',
+            url: chat.updateEnterInfo() + `${roomId}/${user}/`,
+            // params: {
+            //   roomId: roomId,
+            //   userId: user,
+            // },
+          })
+            .then(() => {
+              console.log('update Enter');
+            })
+            .catch(e => {
+              console.log(e);
+            });
+          enter(roomId, user);
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
-
-  // function quitRoom(roomId) {
-  //   quit(roomId);
-  // }
-
-  // function findRoom() {
-  //   axios({
-  //     method: 'get',
-  //     url: chat.findRoom(),
-  //     params: {
-  //       roomId: roomId,
-  //     },
-  //   })
-  //     .then(res => {
-  //       setRoom(res.data);
-  //     })
-  //     .catch(e => {
-  //       console.log(e);
-  //     });
-  // }
 
   function sendMessage() {
     client.current.publish({
@@ -251,7 +250,7 @@ export default function ManagerChat({navigation}) {
     });
   }
 
-  const subscribe = (roomId, userId) => {
+  const subscribe = async (roomId, userId) => {
     client.current.subscribe(
       '/api/sub/chat/room/' + roomId,
       body => {
@@ -300,10 +299,8 @@ export default function ManagerChat({navigation}) {
   // }
 
   useEffect(() => {
+    setChatRoomList([]);
     findAllRooms();
-    // console.log(sender);
-    // dispatch(setUser({name: '김싸피'}));
-    // console.log(sender);
   }, []);
 
   useEffect(() => {
@@ -328,6 +325,7 @@ export default function ManagerChat({navigation}) {
               style={styles.leftBtn}
               onPress={() => {
                 setPage('chatRoomList');
+                setChatRoomList([]);
                 findAllRooms();
               }}>
               <Icon name="messenger-outline" size={40}></Icon>
@@ -383,7 +381,10 @@ export default function ManagerChat({navigation}) {
               <Icon name="person-outline" size={40}></Icon>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={findAllRooms}
+              onPress={() => {
+                setChatRoomList([]);
+                findAllRooms();
+              }}
               style={styles.leftBtn}
               activeOpacity={1}>
               <Icon name="messenger" size={40}></Icon>
@@ -405,12 +406,14 @@ export default function ManagerChat({navigation}) {
                 <Pressable
                   activeOpacity={0.6}
                   onLongPress={() => {
+                    console.log('방정보', item);
                     setQuitChatRoomInfo(() => {
                       return item;
                     });
                     setQuitChatVisible(!quitChatVisible);
                   }}
                   onPress={() => {
+                    console.log('enterRoom에 보낼 데이터', item.roomId, userId);
                     enterRoom(item.roomId, userId);
                     setPage('chat');
                   }}>
@@ -472,6 +475,7 @@ export default function ManagerChat({navigation}) {
             <TouchableOpacity
               style={styles.leftBtn}
               onPress={() => {
+                setChatRoomList([]);
                 findAllRooms();
                 setPage('chatRoomList');
               }}>
@@ -648,12 +652,24 @@ export default function ManagerChat({navigation}) {
                       },
                     })
                       .then(res => {
-                        createRoom(res.data.roomId, userId);
-                        // createChatCheckBox.map((item, idx) => {
-                        //   if (item === true) {
-                        //     createRoom(res.data.roomId, userList[idx].user_id);
-                        //   }
-                        // });
+                        console.log('결과확인', res.data.roomId, userId);
+
+                        createChatCheckBox.map((item, idx) => {
+                          if (item === true) {
+                            axios({
+                              method: 'post',
+                              url:
+                                chat.invite() +
+                                `${res.data.roomId}/${userList[idx].user_id}/`,
+                            })
+                              .then(res => {
+                                console.log('초대', res.data);
+                              })
+                              .catch(e => {
+                                console.log(e);
+                              });
+                          }
+                        });
                       })
                       .catch(e => {
                         console.log(e);
@@ -670,6 +686,7 @@ export default function ManagerChat({navigation}) {
                     setCreateChatVisible(!createChatVisible);
                     setRoomName('');
                     setRoomNamePlaceholder('black');
+                    setChatRoomList([]);
                     findAllRooms();
                   }
                 }}>
@@ -732,18 +749,19 @@ export default function ManagerChat({navigation}) {
             <Pressable
               onPress={() => {
                 axios({
-                  method: 'put',
-                  url: chat.exitRoom(),
-                  params: {
-                    roomId: quitChatRoomInfo.roomId,
-                    userId: userId,
-                  },
+                  method: 'delete',
+                  url: chat.exitRoom() + `${quitChatRoomInfo.roomId}/${userId}`,
                 })
                   .then(res => {
-                    console.log(res.data);
+                    console.log('채팅방 삭제', res.data);
                   })
-                  .catch(e => {});
+                  .catch(e => {
+                    console.log(e);
+                  });
+                setChatRoomList([]);
                 findAllRooms();
+                setQuitChatRoomInfo({});
+                setQuitChatVisible(!quitChatVisible);
               }}>
               {({pressed}) => (
                 <View
