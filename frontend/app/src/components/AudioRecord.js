@@ -17,12 +17,6 @@ import RNFS from 'react-native-fs';
 import axios from 'axios';
 import {voice} from '../api/api';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
-// // MediaRecorder 변수 생성
-// let mediaRecorder = null;
-
-// // 녹음 데이터(Blob) 조각 저장 배열
-// const audioArray = [];
-// let granted = null;
 
 export default function AudioRecord() {
   const [mic, setMic] = useState(false);
@@ -66,11 +60,12 @@ export default function AudioRecord() {
     await RNFS.readDir(RNFS.DocumentDirectoryPath).then(result => {
       const file = result.find(item => item.name === 'voice.mp4');
       // console.log('GOT RESULT', result);
+      console.log(file);
       formData.append('file', file);
       return Promise.all([RNFS.stat(result[0].path), result[0].path]);
     });
 
-    await axios({
+    axios({
       url: voice.file(),
       method: 'post',
       headers: {
