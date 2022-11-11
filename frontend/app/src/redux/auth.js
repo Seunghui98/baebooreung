@@ -15,8 +15,7 @@ const authSlice = createSlice({
       state.id = action.payload.id;
       state.specialkey = action.payload.specialkey;
       state.accessToken = action.payload.accessToken;
-      // state.name = action.payload.name;
-      // state.authorization = action.payload.authorization;
+      state.name = action.payload.name;
     },
     // setId: (state, action) => {
     //   state.Id = action.Id;
@@ -48,6 +47,7 @@ export const setUserInfo = authSlice.actions.setUserInfo;
 // state
 export const accessToken = state => state.accessToken;
 export const id = state => state.id;
+export const name = state => state.name;
 // export const name = state => state.name;
 
 // reducer

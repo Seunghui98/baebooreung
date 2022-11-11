@@ -5,7 +5,7 @@ const CustomButton = props => {
     props.onPress(props.data);
   };
   return (
-    <View style={styles.buttonOuterContainer}>
+    <View style={props.ButtonStyle}>
       <Pressable
         style={({pressed}) =>
           pressed
@@ -21,12 +21,6 @@ const CustomButton = props => {
 };
 
 const styles = StyleSheet.create({
-  buttonOuterContainer: {
-    borderWidth: 0.8,
-    borderRadius: 16,
-    overflow: 'hidden',
-    width: '100%',
-  },
   buttonInnerContainer: {
     paddingVertical: 12,
     paddingHorizontal: 16,

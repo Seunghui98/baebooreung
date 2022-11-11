@@ -1,12 +1,17 @@
 import {React, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, Button} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {getLocationPermission} from '../../utils/permission';
 import {sendGps} from '../../api/kafka';
 import NaverMapView, {Marker} from 'react-native-nmap';
-import ScrollBottom from '../../components/ScrollBottom';
+import Map from '../../components/Map';
+import {useDispatch} from 'react-redux';
+import {setGps} from '../../redux/gps';
+// import DetailJob from '../../components/DetailJob';
 
-const Gps = () => {
+const DetailWork = () => {
+  const dispatch = useDispatch();
+
   const watchId = null;
   const [watchLocation, setWatchLocation] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(false);
@@ -68,6 +73,12 @@ const Gps = () => {
               longitude,
               requestDateTime: date,
             });
+            dispatch(
+              setGps({
+                lat: latitude,
+                lng: longitude,
+              }),
+            );
           },
           error => {
             console.log("driverApp/Gps => getWatchLocation's error", error);
@@ -87,23 +98,28 @@ const Gps = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getWatchLocation();
-  // }, []);
+  useEffect(() => {
+    // 업무시작 버튼을 누르면 실행되게 하기.
+    getWatchLocation();
+  }, []);
 
   useEffect(() => {
     if (watchLocation !== false) {
       sendGps(setKafka());
     }
   }, [watchLocation]);
-
   return (
-    <SafeAreaView style={styles.DetailRootContainer}>
-      <NaverMapView style={styles.map}></NaverMapView>
-      <View style={styles.DetailInfo}>
-        <ScrollBottom />
-      </View>
-      {/* <Button
+    <SafeAreaView style={styles.DetailWorkContainer}>
+      {watchLocation ? (
+        <Map
+          width="100%"
+          height="50%"
+          coords={{
+            latitude: watchLocation.latitude,
+            longitude: watchLocation.longitude,
+          }}></Map>
+      ) : null}
+      <Button
         title="KILL watchLocation"
         onPress={() => {
           killWatchLocation();
@@ -113,20 +129,33 @@ const Gps = () => {
         title="START watchLocation"
         onPress={() => {
           getWatchLocation();
-        }}></Button> */}
+        }}></Button>
     </SafeAreaView>
   );
 };
 
-export default Gps;
+export default DetailWork;
 const styles = StyleSheet.create({
-  DetailRootContainer: {
-    zIndex: 3,
-    borderWidth: 1,
+  DetailWorkContainer: {
+    flex: 1,
+  },
+  header: {
+    flex: 0.8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 20,
+  },
+  body: {
+    padding: 10,
+    flex: 8,
+  },
+  footer: {
+    flex: 3,
   },
   map: {
     width: '100%',
     height: '100%',
-    borderRadius: 10,
   },
 });

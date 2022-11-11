@@ -22,11 +22,12 @@ import {Provider} from 'react-redux';
 import store from './src/redux/store';
 
 // <-- driver App pages -->
-import DetailWork from './src/pages/driverApp/DetailWork';
-import MainScreen from './src/pages/driverApp/MainScreen';
+import DetailPage from './src/pages/driverApp/DetailPage';
+import HomePage from './src/pages/driverApp/HomePage';
 import TestMap from './src/pages/driverApp/TestMap';
-import Login from './src/pages/driverApp/Login';
-import SignUp from './src/pages/driverApp/SignUp';
+import LoginPage from './src/pages/driverApp/LoginPage';
+import SignUpPage from './src/pages/driverApp/SignUpPage';
+import Test from './src/pages/driverApp/Test';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -143,18 +144,8 @@ export default function App() {
             // <-- driver 로그인 시-->
             <Tab.Navigator initialRouteName="home">
               <Tab.Screen
-                name="Gps"
-                component={DetailWork}
-                options={{
-                  title: 'DetailWork',
-                  headerStyle: {
-                    backgroundColor: '#29b6f6',
-                  },
-                  headerShown: false,
-                }}></Tab.Screen>
-              <Tab.Screen
                 name="home"
-                component={MainScreen}
+                component={HomePage}
                 options={{
                   title: 'Home',
                   headerStyle: {
@@ -163,30 +154,30 @@ export default function App() {
                   headerShown: false,
                 }}></Tab.Screen>
               <Tab.Screen
-                name="TestMap"
-                component={TestMap}
+                name="Detail"
+                component={DetailPage}
                 options={{
-                  title: 'naver',
+                  title: 'Detail',
                   headerStyle: {
                     backgroundColor: '#29b6f6',
                   },
                   headerShown: false,
                 }}></Tab.Screen>
               <Tab.Screen
-                name="Login"
-                component={Login}
+                name="Test"
+                component={Test}
                 options={{
-                  title: 'Login',
+                  title: 'Test',
                   headerStyle: {
                     backgroundColor: '#29b6f6',
                   },
                   headerShown: false,
                 }}></Tab.Screen>
               <Tab.Screen
-                name="SignUp"
-                component={SignUp}
+                name="login"
+                component={LoginPage}
                 options={{
-                  title: 'SignUp',
+                  title: 'LoginPage',
                   headerStyle: {
                     backgroundColor: '#29b6f6',
                   },
