@@ -8,6 +8,7 @@ height:100%;
   display:flex;
   width:100%;
   height:100%;
+  flex-direction: column;
   }
 
   .app_color {
@@ -20,4 +21,54 @@ height:100%;
   padding:10px;
   display:flex;
   width:300px;
+  }
+
+  .profile {
+    /* background-color: blue; */
+    border-radius: 50%;
+    height:50px;
+    width:50px;
+    margin-bottom:10px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+  }
+  
+  .profileList {
+    position:absolute;
+    padding:10px;
+    top: 120px;
+    left: 257px;
+    display: flex ;
+    flex-direction: column;
+    z-index: 2; 
+    background-color: rgba( 255, 255, 255, 1 );
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 2px rgba( 0, 0, 0, 0.1 ) ;
+    padding-right: 20px;
+    font-family: 'BMJUA';
+    /* border: 1px solid black; */
+  }
+
+  .profileImage {
+    /* background-color: blue; */
+    border-radius: 50%;
+    font-size: 20px;
+    width:40px;
+    height:40px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profileImageContent {
+    margin-top:5px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
