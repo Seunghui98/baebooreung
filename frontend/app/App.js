@@ -34,7 +34,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
-const isManager = true;
+const isManager = false;
 
 function HomeStack() {
   return (
@@ -58,7 +58,7 @@ function HomeStack() {
         }}></Stack.Screen>
       <Stack.Screen
         name="Gps"
-        component={DetailWork}
+        component={Gps}
         options={{
           headerStyle: {
             backgroundColor: '#29b6f6',
@@ -147,16 +147,6 @@ export default function App() {
             // <-- driver 로그인 시-->
             <Tab.Navigator initialRouteName="home">
               <Tab.Screen
-                name="DetailWork"
-                component={DetailWork}
-                options={{
-                  title: 'DetailWork',
-                  headerStyle: {
-                    backgroundColor: '#29b6f6',
-                  },
-                  headerShown: false,
-                }}></Tab.Screen>
-              <Tab.Screen
                 name="home"
                 component={HomePage}
                 options={{
@@ -174,7 +164,6 @@ export default function App() {
                   headerStyle: {
                     backgroundColor: '#29b6f6',
                   },
-
                   headerShown: false,
                 }}></Tab.Screen>
               <Tab.Screen
