@@ -34,7 +34,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
-const isManager = true;
+const isManager = false;
 
 function HomeStack() {
   return (
