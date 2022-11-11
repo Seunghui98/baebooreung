@@ -16,6 +16,7 @@ const authSlice = createSlice({
       state.specialkey = action.payload.specialkey;
       state.accessToken = action.payload.accessToken;
       state.name = action.payload.name;
+      // state.authorization = action.payload.authorization;
     },
     // setId: (state, action) => {
     //   state.Id = action.Id;

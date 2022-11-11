@@ -10,8 +10,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/checkbox": "^0.5.14",
     "@react-native-community/viewpager": "^5.0.11",
+<<<<<<< HEAD
     "@react-native-firebase/app": "^16.4.3",
+=======
+    "@react-native-community/voice": "^1.1.9",
+>>>>>>> feature_manager
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
@@ -23,6 +28,7 @@
     "react-native-cli": "^2.0.1",
     "react-native-document-picker": "^8.1.2",
     "react-native-dropdown-select-list": "^1.0.23",
+    "react-native-fs": "^2.20.0",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-bottom-sheet": "^1.1.0",
     "react-native-nmap": "^0.0.66",
