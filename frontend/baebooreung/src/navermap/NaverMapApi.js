@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { RenderAfterNavermapsLoaded, NaverMap, Polyline, Marker } from 'react-naver-maps'
 import styles from './NaverMapApi.module.css'
 import axios from 'axios';
+import jnu from '../assets/images/전남대학교.png'
+import gist from '../assets/images/지스트.png'
 
 // waypoints -> 시작|1|2|3|4|5~11|도착지:
 // 출발지에서 출발하다가, 다음 경유지에 도달(root(x*2+y*2) <= 오차범위)하면 다음 목적지는 체크된다.
@@ -22,8 +24,10 @@ export default function NaverMapApi() {
   //   "X-NCP-APIGW-API-KEY": X_NCP_APIGW_API_KEY
   // }0
 
+  const [zoom, setZoom] = useState(16)
 
   // waypoints 만들기
+
   const [start, setStart] = useState("126.8950,35.1792") // 출발지
   let waypoints = []
   const waypoints1 = "126.8982,35.1786" // 킹스샌드
@@ -142,66 +146,106 @@ export default function NaverMapApi() {
     cal_course()
   }, [start])
 
-  return <div style={{ height: "100%", width: "100%" }}>
-    <div className={styles.App}>
-      <div className={styles.app_width}>
-        {/* <div className={styles.app_color}>
-          <div className={styles.app_color_height}>
-          <div className={styles.app_color_white}>
-          <div>출발지좌표</div>
-          <input type="text" value={start} onChange={(e) => {
-            setStart(e.target.value)
-          }} />
+  useEffect(() => {
+
+  })
+
+  return (
+    <div style={{ height: "100%", width: "100%" }}>
+      <div className={styles.App}>
+        <div className={styles.app_width}>
+          <div>
+            <div className={styles.profileList}>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={gist} alt="" />
+                <div>&nbsp;지스트A</div>
+              </div>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={gist} alt="" />
+                <div>&nbsp;지스트B</div>
+              </div>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={gist} alt="" />
+                <div>&nbsp;지스트C</div>
+              </div>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={jnu} alt="" />
+                <div>&nbsp;전남대A</div>
+              </div>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={jnu} alt="" />
+                <div>&nbsp;전남대B</div>
+              </div>
+              <div className={styles.profileImageContent}>
+                <img className={styles.profileImage} src={jnu} alt="" />
+                <div>&nbsp;전남대C</div>
+              </div>
+              {/* <input
+                type="text"
+                onChange={(e) => {
+                  setZoom(e.target.value);
+                }}
+                value={zoom}
+              ></input> */}
+            </div>
           </div>
-          <div>{start}</div>
-          </div>
-        </div> */}
-        <NaverMap
-          id='maps-examples-polyline'
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-          center={translate_coordinate_lat_lng(start)}
-          zoom={16}
-        >
-          <Marker
-            position={translate_coordinate_lat_lng(start)}
-            animation={1}
-          />
-          <Marker position={translate_coordinate_lat_lng(goal)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints2)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints3)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints4)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints5)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints6)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints7)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints8)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints9)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints10)} />
-          <Marker position={translate_coordinate_lat_lng(waypoints11)} />
-          <Marker
-            position={translate_coordinate_lat_lng(waypoints1)}
-            animation={1}
-          />
-          <Polyline
-            path={test_course}
-            strokeColor={'#000000'}
-            strokeStyle={'solid'}
-            strokeLineCap={'round'}
-            strokeOpacity={0.5}
-            strokeWeight={10}
-          />
-          <Polyline
-            path={test_course_now}
-            strokeColor={'red'}
-            strokeStyle={'solid'}
-            strokeLineCap={'round'}
-            strokeOpacity={1}
-            strokeWeight={10}
-          />
-        </NaverMap>
-      </div>
+          {/* <div className={styles.app_color}>
+            <div className={styles.app_color_height}>
+            <div className={styles.app_color_white}>
+            <div>출발지좌표</div>
+            <input type="text" value={start} onChange={(e) => {
+              setStart(e.target.value)
+            }} />
+            </div>
+            <div>{start}</div>
+            </div>
+          </div> */}
+          <NaverMap
+            id="maps-examples-polyline"
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            center={translate_coordinate_lat_lng(start)}
+            zoom={zoom}
+          >
+            <Marker
+              position={translate_coordinate_lat_lng(start)}
+              animation={1}
+            />
+            <Marker position={translate_coordinate_lat_lng(goal)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints2)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints3)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints4)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints5)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints6)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints7)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints8)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints9)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints10)} />
+            <Marker position={translate_coordinate_lat_lng(waypoints11)} />
+            <Marker
+              position={translate_coordinate_lat_lng(waypoints1)}
+              animation={1}
+            />
+            <Polyline
+              path={test_course}
+              strokeColor={"#000000"}
+              strokeStyle={"solid"}
+              strokeLineCap={"round"}
+              strokeOpacity={0.5}
+              strokeWeight={10}
+            />
+            <Polyline
+              path={test_course_now}
+              strokeColor={"red"}
+              strokeStyle={"solid"}
+              strokeLineCap={"round"}
+              strokeOpacity={1}
+              strokeWeight={10}
+            />
+          </NaverMap>
+        </div>
         {/* {test_course.map((item,idx)=>{
           // console.log(item);
           return(
@@ -210,7 +254,8 @@ export default function NaverMapApi() {
         })} */}
 
         {/* <div>{test_course}</div> */}
+      </div>
     </div>
-  </div>
+  );
 
 }
