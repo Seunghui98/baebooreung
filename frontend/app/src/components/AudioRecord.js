@@ -21,6 +21,7 @@ const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 export default function AudioRecord() {
   const [mic, setMic] = useState(false);
   const [folderName, setFolderName] = useState('');
+  const [voiceBase64, setVoiceBase64] = useState();
   const formData = new FormData();
 
   const requestRecordingAudioPermission = async () => {
@@ -57,31 +58,48 @@ export default function AudioRecord() {
     await SoundRecorder.stop().then(function (res) {
       console.log('stopped recording, audio file saved at: ' + res.path);
     });
-    await RNFS.readDir(RNFS.DocumentDirectoryPath).then(result => {
-      const file = result.find(item => item.name === 'voice.mp4');
-      // console.log('GOT RESULT', result);
-      console.log(file);
-      formData.append('file', file);
-      return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-    });
+    // await RNFS.readDir(RNFS.DocumentDirectoryPath).then(result => {
+    //   const file = result.find(item => item.name === 'voice.mp4');
+    //   // console.log('GOT RESULT', result);
+    //   console.log(file);
+    //   formData.append('file', {
+    //     uri: 'file://' + file.path,
+    //     type: 'video/mp4',
+    //     name: 'voice.mp4',
+    //   });
+    //   return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+    // });
 
-    axios({
-      url: voice.file(),
-      method: 'post',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      data: formData,
-      transformRequest: (data, headers) => {
-        return data;
-      },
-    })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    await RNFS.readFile(
+      RNFS.DocumentDirectoryPath + '/voice.mp4',
+      'base64',
+    ).then(result => {
+      setVoiceBase64(result);
+      console.log(result);
+      console.log(voiceBase64);
+      // axios({
+      //   url: voice.file(),
+      //   method: 'post',
+
+      // });
+    });
+    // axios({
+    //   url: voice.file(),
+    //   method: 'post',
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    //   data: formData,
+    //   transformRequest: (data, headers) => {
+    //     return data;
+    //   },
+    // })
+    //   .then(res => {
+    //     console.log(res);
+    //   })
+    //   .catch(e => {
+    //     console.log(e);
+    //   });
   };
 
   // Usage with Options:
