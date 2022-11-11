@@ -1,12 +1,16 @@
 // chatting 관련 기능 api
-const HOST = 'https://k7c207.p.ssafy.io:8080/api/';
 const VOICE = 'http://k7c207.p.ssafy.io:5000/';
-const CHAT = 'chat/';
+const CHAT = 'https://k7c207.p.ssafy.io:8080/api/chat/';
 
 const chat = {
-  findAllRooms: () => HOST + CHAT + 'rooms/',
-  createRoom: () => HOST + CHAT + 'room/',
-  findRoom: () => HOST + CHAT + 'room/',
+  findAllRooms: () => CHAT + 'rooms/', //모든 방 출력
+  createRoom: () => CHAT + 'room/', // 방 만들기
+  findRoom: () => CHAT + 'room/', // 이름으로 방 찾기
+  updateSubscribeInfo: () => CHAT + 'room/update/subscribe/', // 구독 정보 true로 변경
+  updateEnterInfo: () => CHAT + 'room/update/enter/', // 입장 정보 true로 변경
+  exitRoom: () => CHAT + 'room/delete/', // 방 나가기
+  getInfo: () => CHAT + 'room/user/info/', //해당 유저의 구독, 입장 정보 확인
+  invite: () => CHAT + 'room/user/add/', //다른 유저를 채팅방에 초대
 };
 
 //음성호출 관련 기능
@@ -27,3 +31,4 @@ const user = {
 };
 
 export {chat, user, voice};
+//

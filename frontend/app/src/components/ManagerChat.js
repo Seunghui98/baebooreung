@@ -10,24 +10,37 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Modal,
+  Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat} from '../api/api';
-import {BottomTabBarHeightCallbackContext} from '@react-navigation/bottom-tabs';
+import {chat, user} from '../api/api';
+import CheckBox from '@react-native-community/checkbox';
+
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
-  const [page, setPage] = useState('user');
-  const [chatRoomList, setChatRoomList] = useState([]);
-  const [roomName, setRoomName] = useState('');
-  const [roomId, setRoomId] = useState('');
+  const [page, setPage] = useState('user'); // 유저 / 채팅방목록 / 채팅방 분기처리
+  const [chatRoomList, setChatRoomList] = useState([]); //채팅방 목록
+  const [roomName, setRoomName] = useState(''); // 방 제목
+  const [roomId, setRoomId] = useState(''); // 입장할 방 설정
   const [userCount, setUserCount] = useState(0);
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const sender = useSelector(state => state.user.name); //메세지를 전송하는 주체
+  const [message, setMessage] = useState(''); // 메세지
+  const [messages, setMessages] = useState([]); // 채팅 목록
+  const [createChatVisible, setCreateChatVisible] = useState(false); // 채팅창 생성 모달창
+  const [createChatCheckBox, setCreateChatCheckBox] = useState([]);
+  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('black');
+  const [quitChatVisible, setQuitChatVisible] = useState(false); // 채팅방 수정/나가기 모달창
+  const [quitChatRoomInfo, setQuitChatRoomInfo] = useState({});
+  const userList = useSelector(state => state.userList.userList);
+  const user = useSelector(state => state.user);
+  const name = user.name; //메세지를 전송하는 주체
+  console.log(name);
+  const userId = useSelector(state => state.user.userId);
   const dispatch = useDispatch();
   const client = useRef({});
+
   // const [chatRoomListTemp, setChatRoomListTemp] = useState([
   //   {
   //     id: 1,
@@ -38,7 +51,7 @@ export default function ManagerChat({navigation}) {
   //   },
   //   {
   //     id: 2,
-  //     name: '박싸피',
+  //     name: '박싸피'
   //     last_message: '점심2 배달 완료했습니다.',
   //     last_time: '오후 1시 30분',
   //     last_count: 1,
@@ -51,33 +64,49 @@ export default function ManagerChat({navigation}) {
   //     last_count: 1,
   //   },
   // ]);
-  const [userList, setUserList] = useState([
-    {
-      user_id: 'kimssafy',
-      grade: '드라이버',
-      name: '김싸피',
-      phone: '010-1111-1111',
-      region: 1,
-    },
-    {
-      user_id: 'parkssafy',
-      grade: '드라이버',
-      name: '박싸피',
-      phone: '010-2222-2222',
-      region: 2,
-    },
-    {
-      user_id: 'leessafy',
-      grade: '관리자',
-      name: '구싸피',
-      phone: '010-3333-3333',
-      region: 3,
-    },
-  ]);
+  // const [userList, setUserList] = useState([
+  //   {
+  //     user_id: 'kimssafy',
+  //     grade: '관리자',
+  //     name: '김싸피',
+  //     phone: '010-1111-1111',
+  //     region: 1,
+  //   },
+  //   {
+  //     user_id: 'parkssafy',
+  //     grade: '관리자',
+  //     name: '박싸피',
+  //     phone: '010-2222-2222',
+  //     region: 2,
+  //   },
+  //   {
+  //     user_id: 'ssafy',
+  //     grade: '관리자',
+  //     name: '최싸피',
+  //     phone: '010-2222-2222',
+  //     region: 2,
+  //   },
+  //   {
+  //     user_id: 'Leessafy',
+  //     grade: '드라이버',
+  //     name: '이싸피',
+  //     phone: '010-3333-3333',
+  //     region: 3,
+  //   },
+  // ]);
+
+  useEffect(() => {
+    // userList.map((el, idx) => {
+    //   setCreateChatCheckBox(createChatCheckBox => {
+    //     const newArr = [...createChatCheckBox];
+    //     newArr.push(false);
+    //     return newArr;
+    //   });
+    // });
+  }, []);
 
   async function connect() {
     client.current = new Client();
-    console.log(new Client());
     client.current.configure({
       brokerURL: 'wss://k7c207.p.ssafy.io:8080/api/ws-stomp/websocket',
       onConnect: () => {
@@ -112,77 +141,99 @@ export default function ManagerChat({navigation}) {
     await client.current.activate();
   }
 
-  function findAllRooms() {
-    axios({
+  async function findAllRooms() {
+    await axios({
       method: 'get',
       url: chat.findAllRooms(),
     })
       .then(res => {
-        setChatRoomList(res.data);
+        console.log('방 정보 전체 출력', res.data);
+        // setChatRoomList(res.data);
+        const newArr = res.data;
+        {
+          newArr.map((item, idx) => {
+            axios({
+              method: 'get',
+              url: chat.getInfo() + `${item.roomId}/${userId}`,
+            })
+              .then(result => {
+                console.log('getInfo', result.data);
+                if (result.data.userId === userId) {
+                  setChatRoomList(chatRoomList => {
+                    const newChatRoomList = [...chatRoomList];
+                    newChatRoomList.push(item);
+                    return newChatRoomList;
+                  });
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          });
+        }
       })
       .catch(e => {
         console.log(e);
       });
   }
 
-  // function createRoom() {
-  //   if (roomName === '' || undefined) {
-  //     Alert.alert('방 제목을 입력해 주십시오.');
-  //     return;
-  //   } else {
-  //     axios({
-  //       method: 'post',
-  //       url: chat.createRoom(),
-  //       params: {
-  //         name: roomName,
-  //       },
-  //     })
-  //      .then(res => {
-  //         Alert.alert(res.data.name + '방 개설에 성공하셨습니다.');
-  //         setRoomName('');
-  //         findAllRooms();
-  //       })
-  //       .catch(e => {
-  //         Alert.alert('채팅방 개설에 실패하였습니다.');
-  //       });
-  //   }
-  // }
-
-  async function enterRoom(roomId) {
+  async function enterRoom(roomId, user) {
     setRoomId(roomId);
+    axios({
+      method: 'get',
+      url: chat.getInfo() + `${roomId}/${user}`,
+      // params: {
+      //   roomId: roomId,
+      //   userId: user,
+      // },
+    })
+      .then(res => {
+        console.log('getInfo', res.data.isEnter, res.data.isSubscribe);
+        if (res.data.isSubscribe === false) {
+          axios({
+            method: 'put',
+            url: chat.updateSubscribeInfo() + `${roomId}/${user}/`,
+          })
+            .then(() => {
+              console.log('update Subscribe');
+            })
+            .catch(e => {
+              console.log(e);
+            });
+          subscribe(roomId, user);
+        }
 
-    subscribe(roomId);
-    await enter(roomId);
+        if (res.data.isEnter === false) {
+          axios({
+            method: 'put',
+            url: chat.updateEnterInfo() + `${roomId}/${user}/`,
+            // params: {
+            //   roomId: roomId,
+            //   userId: user,
+            // },
+          })
+            .then(() => {
+              console.log('update Enter');
+            })
+            .catch(e => {
+              console.log(e);
+            });
+          enter(roomId, user);
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
-
-  function quitRoom(roomId) {
-    quit(roomId);
-  }
-
-  // function findRoom() {
-  //   axios({
-  //     method: 'get',
-  //     url: chat.findRoom(),
-  //     params: {
-  //       roomId: roomId,
-  //     },
-  //   })
-  //     .then(res => {
-  //       setRoom(res.data);
-  //     })
-  //     .catch(e => {
-  //       console.log(e);
-  //     });
-  // }
 
   function sendMessage() {
     client.current.publish({
       destination: '/api/pub/chat/message',
-      headers: {id: sender},
+      headers: {id: name},
       body: JSON.stringify({
         type: 'TALK',
         roomId: roomId,
-        sender: sender,
+        sender: userId,
         message: message,
         userCount: userCount,
       }),
@@ -194,6 +245,7 @@ export default function ManagerChat({navigation}) {
     setMessages(messages => {
       const newMessages = [...messages];
       newMessages.push({
+        roomId: recv.roomId,
         type: recv.type,
         sender: recv.sender,
         message: recv.message,
@@ -202,14 +254,15 @@ export default function ManagerChat({navigation}) {
     });
   }
 
-  const subscribe = roomId => {
+  const subscribe = async (roomId, userId) => {
     client.current.subscribe(
       '/api/sub/chat/room/' + roomId,
       body => {
+        // console.log('body', body.body);
         const recv = JSON.parse(body.body);
         recvMessage(recv);
       },
-      {id: sender},
+      {id: userId},
     );
   };
 
@@ -222,35 +275,36 @@ export default function ManagerChat({navigation}) {
     setMessage(event);
   };
 
-  async function enter(roomId) {
+  const RoomNameChange = event => {
+    setRoomName(event);
+  };
+  async function enter(roomId, userId) {
     await client.current.publish({
       destination: '/api/pub/chat/message',
       headers: {},
       body: JSON.stringify({
         type: 'ENTER',
         roomId: roomId,
-        sender: sender,
+        sender: userId,
       }),
     });
   }
 
-  async function quit(roomId) {
-    await client.current.publish({
-      destination: '/api/pub/chat/message',
-      headers: {},
-      body: JSON.stringify({
-        type: 'QUIT',
-        roomId: roomId,
-        sender: sender,
-      }),
-    });
-  }
+  // async function quit(roomId) {
+  //   await client.current.publish({
+  //     destination: '/api/pub/chat/message',
+  //     headers: {},
+  //     body: JSON.stringify({
+  //       type: 'QUIT',
+  //       roomId: roomId,
+  //       sender: sender,
+  //     }),
+  //   });
+  // }
 
   useEffect(() => {
+    setChatRoomList([]);
     findAllRooms();
-    // console.log(sender);
-    // dispatch(setUser({name: '김싸피'}));
-    // console.log(sender);
   }, []);
 
   useEffect(() => {
@@ -264,12 +318,10 @@ export default function ManagerChat({navigation}) {
 
   return (
     <View style={styles.container}>
+      {/* 친구 목록 화면 */}
       {page === 'user' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
-            {/* <TouchableOpacity onPress={setPage('chat')}>
-              <Text>임시채팅</Text>
-            </TouchableOpacity> */}
             <TouchableOpacity style={styles.leftBtn} activeOpacity={1}>
               <Icon name="person" size={40}></Icon>
             </TouchableOpacity>
@@ -277,6 +329,7 @@ export default function ManagerChat({navigation}) {
               style={styles.leftBtn}
               onPress={() => {
                 setPage('chatRoomList');
+                setChatRoomList([]);
                 findAllRooms();
               }}>
               <Icon name="messenger-outline" size={40}></Icon>
@@ -318,6 +371,9 @@ export default function ManagerChat({navigation}) {
           </View>
         </View>
       )}
+      {/* 친구 목록 화면 끝*/}
+
+      {/* 채팅방 목록 화면 */}
       {page === 'chatRoomList' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
@@ -329,56 +385,87 @@ export default function ManagerChat({navigation}) {
               <Icon name="person-outline" size={40}></Icon>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={findAllRooms}
+              onPress={() => {
+                setChatRoomList([]);
+                findAllRooms();
+              }}
               style={styles.leftBtn}
               activeOpacity={1}>
               <Icon name="messenger" size={40}></Icon>
             </TouchableOpacity>
           </View>
           <View style={styles.rightBar}>
+            <Pressable
+              onPress={() => {
+                setCreateChatVisible(!createChatVisible);
+              }}>
+              <View style={{alignItems: 'flex-end'}}>
+                <Icon name="maps-ugc" size={40}></Icon>
+              </View>
+            </Pressable>
             <FlatList
-              style={styles.list}
               data={chatRoomList}
               keyExtractor={item => item.roomId}
               renderItem={({item}) => (
-                <TouchableOpacity
+                <Pressable
+                  activeOpacity={0.6}
+                  onLongPress={() => {
+                    console.log('방정보', item);
+                    setQuitChatRoomInfo(() => {
+                      return item;
+                    });
+                    setQuitChatVisible(!quitChatVisible);
+                  }}
                   onPress={() => {
-                    enterRoom(item.roomId);
+                    console.log('enterRoom에 보낼 데이터', item.roomId, userId);
+                    enterRoom(item.roomId, userId);
                     setPage('chat');
                   }}>
-                  <View style={styles.chatRoomListStyle}>
-                    <View style={styles.profilePicture}>
-                      <Icon name="person" size={30}></Icon>
-                    </View>
-                    <View style={styles.chatRoomDetail}>
-                      <View style={styles.chatRoomDetailTop}>
-                        <View>
-                          <Text style={styles.chatRoomName}>{item.name}</Text>
+                  {({pressed}) => (
+                    <View
+                      style={
+                        pressed
+                          ? styles.chatRoomListPressedStyle
+                          : styles.chatRoomListStyle
+                      }>
+                      <View style={styles.profilePicture}>
+                        <Icon name="person" size={30}></Icon>
+                      </View>
+                      <View style={styles.chatRoomDetail}>
+                        <View style={styles.chatRoomDetailTop}>
+                          <View style={{paddingLeft: 10}}>
+                            <Text style={styles.chatRoomName}>
+                              {item.roomName}
+                            </Text>
+                          </View>
+                          <View>
+                            <Text style={styles.chatRoomLastTime}>
+                              {item.last_time}
+                            </Text>
+                          </View>
                         </View>
-                        <View>
-                          <Text style={styles.chatRoomLastTime}>
-                            {item.last_time}
+                        <View style={styles.chatRoomDetailBottom}>
+                          <Text style={styles.chatRoomLastMessage}>
+                            {' '}
+                            {item.last_message}{' '}
+                          </Text>
+                          <Text style={styles.chatRoomLastCount}>
+                            {' '}
+                            {item.last_count}{' '}
                           </Text>
                         </View>
                       </View>
-                      <View style={styles.chatRoomDetailBottom}>
-                        <Text style={styles.chatRoomLastMessage}>
-                          {' '}
-                          {item.last_message}{' '}
-                        </Text>
-                        <Text style={styles.chatRoomLastCount}>
-                          {' '}
-                          {item.last_count}{' '}
-                        </Text>
-                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  )}
+                </Pressable>
               )}
             />
           </View>
         </View>
       )}
+      {/* 채팅방 목록 화면 끝*/}
+
+      {/* 채팅방 화면 */}
       {page === 'chat' && (
         <View style={styles.container}>
           <View style={styles.leftBar}>
@@ -392,6 +479,7 @@ export default function ManagerChat({navigation}) {
             <TouchableOpacity
               style={styles.leftBtn}
               onPress={() => {
+                setChatRoomList([]);
                 findAllRooms();
                 setPage('chatRoomList');
               }}>
@@ -402,36 +490,90 @@ export default function ManagerChat({navigation}) {
             <FlatList
               style={styles.chatHistroy}
               data={messages}
-              keyExtractor={(item, index) => 'key' + index}
+              keyExtractor={(item, index) => index}
               renderItem={({item}) => (
-                <View
-                  style={
-                    item.sender === '[알림]'
-                      ? styles.noticeChat
-                      : item.sender === sender
-                      ? styles.myChat
-                      : styles.otherChat
-                  }>
-                  <Text
+                <View>
+                  {/*  */}
+                  <View
                     style={
-                      item.sender === '[알림]'
-                        ? styles.noticeChatText
-                        : item.sender === sender
-                        ? styles.myChatText
-                        : styles.otherChatText
+                      item.roomId === roomId && item.sender === userId
+                        ? styles.myChatComponent
+                        : item.roomId === roomId && item.sender !== userId
+                        ? styles.otherChatComponent
+                        : {}
                     }>
-                    {item.message}
-                  </Text>
+                    {/*  */}
+                    {item.roomId === roomId &&
+                      item.type === 'TALK' &&
+                      item.sender !== userId && (
+                        <View style={styles.otherChatProfile}>
+                          <Icon name="person" size={50}></Icon>
+                        </View>
+                      )}
+
+                    <View
+                      style={
+                        (item.type === 'ENTER' ||
+                          item.type === 'QUIT' ||
+                          item.sender !== userId) && {flex: 1}
+                      }>
+                      {/*  */}
+                      {item.roomId === roomId &&
+                        item.type === 'TALK' &&
+                        item.sender !== userId && (
+                          <View style={styles.otherChatName}>
+                            <Text style={{fontWeight: 'bold'}}>
+                              {item.sender}
+                            </Text>
+                          </View>
+                        )}
+
+                      {/*  */}
+                      <View
+                        style={
+                          item.roomId === roomId && item.type === 'ENTER'
+                            ? styles.noticeChat
+                            : item.roomId === roomId && item.sender === userId
+                            ? styles.myChat
+                            : item.roomId === roomId && item.sender !== userId
+                            ? styles.otherChat
+                            : {}
+                        }>
+                        {item.roomId === roomId &&
+                          item.type === 'ENTER' &&
+                          item.sender === userId && (
+                            <Text style={styles.noticeChatText}>
+                              {item.sender}님이 입장하셨습니다.
+                            </Text>
+                          )}
+
+                        {/* */}
+                        {item.roomId === roomId && item.type === 'TALK' && (
+                          <Text
+                            style={
+                              item.sender === userId
+                                ? styles.myChatText
+                                : styles.otherChatText
+                            }>
+                            {item.message}
+                          </Text>
+                        )}
+
+                        {item.roomId === roomId && item.type === 'QUIT' && (
+                          <Text style={styles.noticeChatText}>
+                            {item.sender}님이 퇴장하셨습니다.
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
                 </View>
               )}></FlatList>
             <View style={styles.bottomContainer}>
               <TextInput
                 style={styles.messageInput}
                 multiline={true}
-                onContentSizeChange={event => {
-                  SCREEN_WIDTH, SCREEN_HEIGHT / 15;
-                }}
-                placeholder={'메세지를 입력하세요.'}
+                placeholder={'메세지를 입력하세요'}
                 onChangeText={text => {
                   handleChange(text);
                 }}
@@ -446,6 +588,196 @@ export default function ManagerChat({navigation}) {
           </View>
         </View>
       )}
+      {/* 채팅방 화면 끝 */}
+
+      {/* 채팅방 생성 모달창 */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={createChatVisible}
+        onRequestClose={() => {
+          setCreateChatVisible(!createChatVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.createRoomNameLayout}>
+              <Text>방 제목</Text>
+              <TextInput
+                style={styles.roomNameInput}
+                placeholder={'방 제목을 입력하세요'}
+                placeholderTextColor={roomNamePlaceholder}
+                onChangeText={text => {
+                  RoomNameChange(text);
+                }}
+                value={roomName}
+                maxLength={45}></TextInput>
+            </View>
+            <FlatList
+              contentContainerStyle={{}}
+              data={userList}
+              keyExtractor={(item, index) => index}
+              renderItem={({item, index}) => (
+                <View style={styles.createChatListStyle}>
+                  <View style={styles.userListDetailText}>
+                    <Icon name="person" size={30}></Icon>
+                    <Text style={styles.userListTextStyle}>
+                      {item.name} {item.grade}
+                    </Text>
+                  </View>
+                  <View style={styles.userListDetailIcon}>
+                    <CheckBox
+                      value={createChatCheckBox[index]}
+                      onValueChange={newValue => {
+                        setCreateChatCheckBox(el => {
+                          const newArr = [...el];
+                          newArr[index] = !newArr[index];
+                          return newArr;
+                        });
+                      }}
+                    />
+                  </View>
+                </View>
+              )}
+            />
+
+            <View style={styles.buttonLayout}>
+              <Pressable
+                style={styles.submitButton}
+                onPress={async () => {
+                  if (roomName === '') {
+                    setRoomNamePlaceholder('red');
+                  } else {
+                    await axios({
+                      method: 'post',
+                      url: chat.createRoom(),
+                      params: {
+                        name: roomName,
+                        userId: userId,
+                      },
+                    })
+                      .then(res => {
+                        console.log('결과확인', res.data.roomId, userId);
+
+                        createChatCheckBox.map((item, idx) => {
+                          if (item === true) {
+                            axios({
+                              method: 'post',
+                              url:
+                                chat.invite() +
+                                `${res.data.roomId}/${userList[idx].user_id}/`,
+                            })
+                              .then(res => {
+                                console.log('초대', res.data);
+                              })
+                              .catch(e => {
+                                console.log(e);
+                              });
+                          }
+                        });
+                      })
+                      .catch(e => {
+                        console.log(e);
+                      });
+                    createChatCheckBox.map((item, idx) => {
+                      if (item === true) {
+                        setCreateChatCheckBox(createChatCheckBox => {
+                          const newArr = [...createChatCheckBox];
+                          newArr[idx] = false;
+                          return newArr;
+                        });
+                      }
+                    });
+                    setCreateChatVisible(!createChatVisible);
+                    setRoomName('');
+                    setRoomNamePlaceholder('black');
+                    setChatRoomList([]);
+                    findAllRooms();
+                  }
+                }}>
+                <Text style={styles.createChatButtonTextStyle}>초대</Text>
+              </Pressable>
+              <Pressable
+                style={styles.cancelButton}
+                onPress={() => {
+                  createChatCheckBox.map((item, idx) => {
+                    if (item === true) {
+                      setCreateChatCheckBox(createChatCheckBox => {
+                        const newArr = [...createChatCheckBox];
+                        newArr[idx] = false;
+                        return newArr;
+                      });
+                    }
+                  });
+                  setCreateChatVisible(!createChatVisible);
+                  setRoomName('');
+                  setRoomNamePlaceholder('black');
+                }}>
+                <Text style={styles.createChatButtonTextStyle}>취소</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* 채팅방 생성 모달창 끝 */}
+
+      {/* 채팅방 수정/나가기 모달창 */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={quitChatVisible}
+        onRequestClose={() => {
+          setQuitChatRoomInfo({});
+          setQuitChatVisible(!quitChatVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.quitModalView}>
+            <View style={styles.roomNmaeModal}>
+              <Text style={styles.roomNameModalText}>
+                {quitChatRoomInfo.roomName}
+              </Text>
+            </View>
+            <Pressable onPress={() => {}}>
+              {({pressed}) => (
+                <View
+                  style={
+                    pressed
+                      ? styles.roomNameChangePressed
+                      : styles.roomNameChange
+                  }>
+                  <Text style={styles.roomNameChangeText}>
+                    채팅방 이름 변경
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                axios({
+                  method: 'delete',
+                  url: chat.exitRoom() + `${quitChatRoomInfo.roomId}/${userId}`,
+                })
+                  .then(res => {
+                    console.log('채팅방 삭제', res.data);
+                  })
+                  .catch(e => {
+                    console.log(e);
+                  });
+                setChatRoomList([]);
+                findAllRooms();
+                setQuitChatRoomInfo({});
+                setQuitChatVisible(!quitChatVisible);
+              }}>
+              {({pressed}) => (
+                <View
+                  style={pressed ? styles.exitRoomPressed : styles.exitRoom}>
+                  <Text style={styles.exitRoomText}>채팅방 나가기</Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      {/* 채팅방 수정/나가기 모달창 끝 */}
     </View>
   );
 }
@@ -518,6 +850,19 @@ const styles = StyleSheet.create({
     elevation: 4,
     shadowOpacity: 0.4,
   },
+  chatRoomListPressedStyle: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: '#BDBDBD',
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
+  },
   chatRoomDetail: {
     flex: 1,
     flexDirection: 'column',
@@ -531,7 +876,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chatRoomName: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   chatRoomLastTime: {
@@ -558,48 +903,181 @@ const styles = StyleSheet.create({
   },
   chatHistroy: {
     flex: 1,
-    backgroundColor: 'gray',
   },
-
+  myChatComponent: {
+    flex: 1,
+    flexDirection: 'row-reverse',
+  },
+  otherChatComponent: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  otherChatProfile: {
+    maxWidth: SCREEN_WIDTH / 7,
+  },
+  otherChatName: {
+    marginLeft: 2,
+    paddingLeft: 2,
+  },
   noticeChat: {
     flex: 1,
-    justifyContent: 'center',
+    margin: 1,
+    alignItems: 'center',
   },
   myChat: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    maxWidth: (SCREEN_WIDTH * 4) / 7,
+    backgroundColor: '#58ACFA',
+    borderRadius: 10,
+    margin: 5,
+    padding: 5,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
   otherChat: {
     flex: 1,
-    justifyContent: 'flex-start',
+    maxWidth: (SCREEN_WIDTH * 4) / 7,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    margin: 7,
+    padding: 7,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
   },
+
   noticeChatText: {
-    color: 'blue',
+    fontSize: 16,
+    color: '#BDBDBD',
+    fontWeight: 'bold',
   },
   myChatText: {
-    color: 'red',
+    fontSize: 16,
+    color: 'white',
   },
   otherChatText: {
-    color: 'yellow',
+    fontSize: 16,
+    color: 'black',
   },
   bottomContainer: {
     flexDirection: 'row',
-    backgroundColor: 'gray',
   },
   messageInput: {
     flex: 1,
+    maxHeight: SCREEN_HEIGHT / 7.3,
     fontSize: 15,
-    borderTopLeftRadius: 10,
-    borderBottomRightRadius: 10,
     backgroundColor: 'white',
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 10,
+    shadowOpacity: 0.4,
   },
   buttonStyle: {
-    backgroundColor: '#000',
+    backgroundColor: 'black',
+
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
 
   buttonTextStyle: {
     color: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+  },
+  createChatListStyle: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginVertical: 1,
+    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
+  },
+  buttonLayout: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  submitButton: {
+    alignItems: 'center',
+    padding: 10,
+    margin: 10,
+    backgroundColor: '#58ACFA',
+  },
+  cancelButton: {
+    alignItems: 'center',
+    padding: 10,
+    margin: 10,
+    backgroundColor: 'red',
+  },
+  createChatButtonTextStyle: {
+    fontSize: 16,
+    color: 'white',
+  },
+  createRoomNameLayout: {
+    margin: 10,
+    alignItems: 'center',
+  },
+  roomNameInput: {
+    fontSize: 15,
+  },
+  quitModalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  roomNmaeModal: {
+    padding: 12,
+    marginHorizontal: 3,
+  },
+  roomNameModalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  roomNameChange: {
+    padding: 12,
+    marginHorizontal: 3,
+  },
+  roomNameChangePressed: {
+    backgroundColor: '#E6E6E6',
+    padding: 12,
+    marginHorizontal: 3,
+  },
+  roomNameChangeText: {
+    fontSize: 16,
+  },
+  exitRoom: {
+    padding: 12,
+    marginHorizontal: 3,
+  },
+  exitRoomPressed: {
+    backgroundColor: '#E6E6E6',
+    padding: 12,
+    marginHorizontal: 3,
+  },
+  exitRoomText: {
+    fontSize: 16,
   },
 });
