@@ -13,14 +13,18 @@ import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useEffect} from 'react';
 import {setUser} from '../redux/user';
-
+import {setUserInfo} from '../redux/auth';
+import {setUserList} from '../redux/userList';
+import axios from 'axios';
+import {user} from '../api/api';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
 function ManagerHome({navigation}) {
   const dispatch = useDispatch();
+  const accessToken = useSelector(state => state.auth.accessToken);
   // const user = {name: '최싸피', grade: '관리자'};
-  const user = useSelector(state => state.user); //react-redux를 이용하여 user 정보 받을 예정
+  const userInfo = useSelector(state => state.user); //react-redux를 이용하여 user 정보 받을 예정
   const workList = [
     {region: 1, regionName: '광주과학기술원', driver: 2, total: 50, finish: 30},
     {region: 2, regionName: '전남대학교', driver: 2, total: 25, finish: 25},
@@ -30,8 +34,59 @@ function ManagerHome({navigation}) {
     {region: 6, regionName: '경희대학교', driver: 2, total: 50, finish: 30},
   ];
   useEffect(() => {
-    dispatch(setUser({name: '박싸피', grade: '관리자', userId: 'parkssafy'}));
+    //임시 로그인
+    axios({
+      method: 'post',
+      url: user.login(),
+      data: {
+        email: 'ee@test.com',
+        password: 'test1234',
+      },
+    })
+      .then(res => {
+        console.log(res.headers);
+        const token = res.headers.token;
+        dispatch(
+          setUserInfo({
+            id: res.headers.id,
+            accessToken: res.headers.token,
+            name: res.headers.name,
+            specialkey: res.headers.specialkey,
+          }),
+        );
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        //로그인 성공 시 내 정보 추출하여 redux에 저장
+        axios({
+          method: 'get',
+          url: user.getUserInfo() + `${res.headers.id}`,
+        })
+          .then(res => {
+            console.log(res.data);
+            dispatch(setUser(res.data));
+          })
+          .catch(e => {
+            console.log(e);
+          });
+
+        //로그인 성공 시 내 연락처에 유저 정보 저장
+        axios({
+          metohd: 'get',
+          url: user.getAllUser(),
+        })
+          .then(res => {
+            console.log('All userList', res.data);
+            dispatch(setUserList(res.data));
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -40,10 +95,12 @@ function ManagerHome({navigation}) {
           size={SCREEN_HEIGHT / 8}
           color={identityTextColor}></Icon>
         <View style={styles.topTextLayout}>
-          <Text style={styles.topText}>
-            {' '}
-            {user.name} {user.grade}님
-          </Text>
+          {userInfo.grade === 'MANAGER' && (
+            <Text style={styles.topText}> {userInfo.name} 관리자님</Text>
+          )}
+          {userInfo.grade === 'DRIVER' && (
+            <Text style={styles.topText}> {userInfo.name} 드라이버님</Text>
+          )}
         </View>
       </View>
 

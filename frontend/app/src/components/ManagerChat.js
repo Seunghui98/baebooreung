@@ -24,7 +24,7 @@ export default function ManagerChat({navigation}) {
   const [page, setPage] = useState('user'); // 유저 / 채팅방목록 / 채팅방 분기처리
   const [chatRoomList, setChatRoomList] = useState([]); //채팅방 목록
   const [roomName, setRoomName] = useState(''); // 방 제목
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState(''); // 입장할 방 설정
   const [userCount, setUserCount] = useState(0);
   const [message, setMessage] = useState(''); // 메세지
   const [messages, setMessages] = useState([]); // 채팅 목록
@@ -33,10 +33,14 @@ export default function ManagerChat({navigation}) {
   const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('black');
   const [quitChatVisible, setQuitChatVisible] = useState(false); // 채팅방 수정/나가기 모달창
   const [quitChatRoomInfo, setQuitChatRoomInfo] = useState({});
-  const name = useSelector(state => state.user.name); //메세지를 전송하는 주체
+  const userList = useSelector(state => state.userList.userList);
+  const user = useSelector(state => state.user);
+  const name = user.name; //메세지를 전송하는 주체
+  console.log(name);
   const userId = useSelector(state => state.user.userId);
   const dispatch = useDispatch();
   const client = useRef({});
+
   // const [chatRoomListTemp, setChatRoomListTemp] = useState([
   //   {
   //     id: 1,
@@ -60,45 +64,45 @@ export default function ManagerChat({navigation}) {
   //     last_count: 1,
   //   },
   // ]);
-  const [userList, setUserList] = useState([
-    {
-      user_id: 'kimssafy',
-      grade: '관리자',
-      name: '김싸피',
-      phone: '010-1111-1111',
-      region: 1,
-    },
-    // {
-    //   user_id: 'parkssafy',
-    //   grade: '관리자',
-    //   name: '박싸피',
-    //   phone: '010-2222-2222',
-    //   region: 2,
-    // },
-    {
-      user_id: 'ssafy',
-      grade: '관리자',
-      name: '최싸피',
-      phone: '010-2222-2222',
-      region: 2,
-    },
-    {
-      user_id: 'Leessafy',
-      grade: '드라이버',
-      name: '이싸피',
-      phone: '010-3333-3333',
-      region: 3,
-    },
-  ]);
+  // const [userList, setUserList] = useState([
+  //   {
+  //     user_id: 'kimssafy',
+  //     grade: '관리자',
+  //     name: '김싸피',
+  //     phone: '010-1111-1111',
+  //     region: 1,
+  //   },
+  //   {
+  //     user_id: 'parkssafy',
+  //     grade: '관리자',
+  //     name: '박싸피',
+  //     phone: '010-2222-2222',
+  //     region: 2,
+  //   },
+  //   {
+  //     user_id: 'ssafy',
+  //     grade: '관리자',
+  //     name: '최싸피',
+  //     phone: '010-2222-2222',
+  //     region: 2,
+  //   },
+  //   {
+  //     user_id: 'Leessafy',
+  //     grade: '드라이버',
+  //     name: '이싸피',
+  //     phone: '010-3333-3333',
+  //     region: 3,
+  //   },
+  // ]);
 
   useEffect(() => {
-    userList.map((el, idx) => {
-      setCreateChatCheckBox(createChatCheckBox => {
-        const newArr = [...createChatCheckBox];
-        newArr.push(false);
-        return newArr;
-      });
-    });
+    // userList.map((el, idx) => {
+    //   setCreateChatCheckBox(createChatCheckBox => {
+    //     const newArr = [...createChatCheckBox];
+    //     newArr.push(false);
+    //     return newArr;
+    //   });
+    // });
   }, []);
 
   async function connect() {
