@@ -34,7 +34,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
-const isManager = false;
+const isManager = true;
 
 function HomeStack() {
   return (
@@ -52,19 +52,6 @@ function HomeStack() {
           },
           headerTitleAlign: 'center',
           headerTintColor: identityTextColor,
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}></Stack.Screen>
-      <Stack.Screen
-        name="Gps"
-        component={Gps}
-        options={{
-          headerStyle: {
-            backgroundColor: '#29b6f6',
-          },
-          headerTitleAlign: 'center',
-          headerTintColor: '#ffffff',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
