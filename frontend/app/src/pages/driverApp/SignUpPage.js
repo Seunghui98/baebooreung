@@ -14,6 +14,12 @@ import {isPassword} from '../../utils/inputCheck';
 import {user} from '../../api/api';
 
 const SignUp = () => {
+  const ButtonStyle = {
+    borderWidth: 0.8,
+    borderRadius: 16,
+    overflow: 'hidden',
+    width: '100%',
+  };
   // grade 관련 state,
   const [selectedGrade, setSelectedGrade] = useState('1');
   const grade = [
@@ -228,7 +234,7 @@ const SignUp = () => {
       </ScrollView>
       <View style={styles.btnContainer}>
         <View style={styles.signupBtn}>
-          <CustomButton style={styles.btn} onPress={join}>
+          <CustomButton ButtonStyle={ButtonStyle} onPress={join}>
             <Text>회원가입</Text>
           </CustomButton>
         </View>
