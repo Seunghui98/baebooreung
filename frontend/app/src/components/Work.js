@@ -20,8 +20,78 @@ const Work = () => {
     color: 'white',
     fontWeight: '600',
   };
-
-  const [dummy, setDummy] = useState({
+  const dummy2 = {
+    id: 1,
+    routeName: '전남대',
+    routeType: 'launch',
+    done: false,
+    date: '2022-11-09',
+    scheduledStartTime: '12:10:00',
+    actualStartTime: '12:00:10',
+    deliveryList: [
+      {
+        id: 1,
+        delName: null,
+        address: '상무초밥',
+        latitude: 35.178507645020005,
+        longitude: 126.89725214329398,
+        sequence: 1,
+        type: 'pickup',
+        check: false,
+        delScheduledTime: null,
+        orderNum: 0,
+      },
+      {
+        id: 2,
+        delName: null,
+        address: '제주돈사촌',
+        latitude: 35.176550165280155,
+        longitude: 126.89545696747228,
+        sequence: 2,
+        type: 'pickup',
+        check: false,
+        delScheduledTime: null,
+        orderNum: 0,
+      },
+      {
+        id: 3,
+        delName: null,
+        address: '민속촌 용봉점',
+        latitude: 35.17463418534095,
+        longitude: 126.89476782582572,
+        sequence: 3,
+        type: 'pickup',
+        check: false,
+        delScheduledTime: null,
+        orderNum: 0,
+      },
+      {
+        id: 4,
+        delName: null,
+        address: '수목원관리동',
+        latitude: 35.173417033980826,
+        longitude: 126.89970379232675,
+        sequence: 4,
+        type: 'delivery',
+        check: false,
+        delScheduledTime: null,
+        orderNum: 0,
+      },
+      {
+        id: 5,
+        delName: null,
+        address: '법학도서관',
+        latitude: 35.17402792458988,
+        longitude: 126.90273835097409,
+        sequence: 5,
+        type: 'delivery',
+        check: false,
+        delScheduledTime: null,
+        orderNum: 0,
+      },
+    ],
+  };
+  const dummy = {
     date: '2022-11-05',
     workList: [
       {
@@ -29,73 +99,103 @@ const Work = () => {
         type: 'pickup',
         store: '청화당',
         time: '12:05',
+        count: '14',
       },
       {
         id: 2,
         type: 'pickup',
         store: '김가네',
         time: '12:15',
+        count: '14',
       },
       {
         id: 3,
         type: 'pickup',
         store: '김밥천국',
         time: '12:20',
+        count: '14',
       },
       {
         id: 4,
         type: 'pickup',
         store: '이디야',
         time: '12:25',
+        count: '14',
       },
       {
         id: 5,
         type: 'pickup',
         store: '스타벅스',
         time: '12:35',
+        count: '14',
       },
       {
         id: 6,
         type: 'delivery',
         store: '행정동',
         time: '12:40',
+        count: 20,
       },
       {
         id: 7,
         type: 'delivery',
         store: '기숙사동',
         time: '12:50',
+        count: 12,
       },
       {
         id: 8,
         type: 'delivery',
         store: '체육관',
         time: '13:00',
+        count: 10,
       },
     ],
-  });
+  };
   return (
     <View style={styles.workRootContainer}>
       <View style={styles.workContainer}>
         <View style={styles.workTitle}>
           <View style={styles.workDate}>
-            <Text style={styles.workDateText}>11월 05일(목)</Text>
+            <Text style={styles.workDateText}>{dummy2.date}</Text>
+            <Text style={styles.routeName}>{dummy2.routeName}</Text>
           </View>
-          <View style={styles.workIndicator}>
-            <Text style={styles.workIndicatorText}>배송 예정</Text>
+          <View>
+            {dummy2.actualStartTime === null && dummy2.done === false ? (
+              <View style={styles.workReady}>
+                <Text style={styles.workIndicatorText}>배송 예정</Text>
+              </View>
+            ) : null}
+            {dummy2.actualStartTime !== null && dummy2.done === false ? (
+              <View style={styles.workStart}>
+                <Text style={styles.workIndicatorText}>배송 중</Text>
+              </View>
+            ) : null}
+            {dummy2.actualStartTime !== null && dummy2.done !== false ? (
+              <View style={styles.workEnd}>
+                <Text style={styles.workIndicatorText}>배송 완료</Text>
+              </View>
+            ) : null}
           </View>
         </View>
         <View style={styles.workRoute}>
           <View style={styles.workRouteDate}>
-            <Text style={styles.routeTime}>12 : 10</Text>
-            <Text style={styles.routeTime}>13 : 10</Text>
+            <Text style={styles.routeTime}>배송 시작</Text>
+            <Text style={styles.routeTime}>
+              {dummy2.scheduledStartTime.split(':')[0]} :{' '}
+              {dummy2.scheduledStartTime.split(':')[1]}
+            </Text>
           </View>
           <View style={styles.routeImage}>
             <Image source={line} style={styles.lineImage} />
           </View>
           <View style={styles.arrival}>
-            <Text style={styles.arrivalText}>초돈삼겹살</Text>
-            <Text style={styles.arrivalText}>삼성전자 2공장</Text>
+            <Text style={styles.arrivalText}>
+              {dummy2.deliveryList[0].address}
+            </Text>
+            <Text style={styles.arrivalText}>
+              {dummy2.deliveryList[dummy2.deliveryList.length - 1].address}
+            </Text>
           </View>
         </View>
         <View style={styles.footer}>
@@ -103,7 +203,7 @@ const Work = () => {
             title="상세보기"
             ButtonStyle={ButtonStyle}
             TextStyle={TextStyle}
-            workData={dummy}
+            data={dummy2}
           />
         </View>
       </View>
@@ -139,13 +239,35 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 10,
   },
+  routeName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
   workDateText: {
     fontSize: 20,
     fontWeight: 'bold',
   },
-  workIndicator: {
+  workReady: {
     // borderWidth: 1,
     backgroundColor: '#5d91de',
+    padding: 5,
+    borderRadius: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 4,
+  },
+  workStart: {
+    // borderWidth: 1,
+    backgroundColor: '#a091ec',
+    padding: 5,
+    borderRadius: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 4,
+  },
+  workEnd: {
+    // borderWidth: 1,
+    backgroundColor: '#ec9191',
     padding: 5,
     borderRadius: 5,
     shadowOpacity: 0.25,
@@ -179,4 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     width: '100%',
   },
+  deliveryReady: {},
+  deliveryStart: {},
+  deliveryEnd: {},
 });
