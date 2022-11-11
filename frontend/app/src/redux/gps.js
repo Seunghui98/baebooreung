@@ -15,4 +15,6 @@ export const gpsSlice = createSlice({
 });
 
 export const {setGps} = gpsSlice.actions;
+export const lat = state => state.lat;
+export const lng = state => state.lng;
 export default gpsSlice.reducer;

@@ -19,6 +19,12 @@ import CustomButton from '../../components/CustomButton';
 import {isEmail, isPassword} from '../../utils/inputCheck';
 
 const Login = () => {
+  const ButtonStyle = {
+    borderWidth: 0.8,
+    borderRadius: 16,
+    overflow: 'hidden',
+    width: '100%',
+  };
   const dispatch = useDispatch();
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +33,18 @@ const Login = () => {
   // const [isId, setIsId] = useState(false);
   // const [isPw, setIsPw] = useState(false);
 
+  const fetchUserInfo = id => {
+    axios({
+      method: 'get',
+      url: user.getUserInfo() + `${id}`, //path variable로 id값을 받는다.
+    })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   const login = async () => {
     await axios({
       method: 'POST',
@@ -37,17 +55,24 @@ const Login = () => {
       },
     })
       .then(res => {
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${res.headers.token}`;
         //redux
         dispatch(
           setUserInfo({
             id: res.headers.id,
             accessToken: res.headers.token,
             specialkey: res.headers.specialkey,
+            name: res.headers.name,
           }),
         );
+        fetchUserInfo(res.headers.id);
+        console.log('Login Success!');
       })
       .catch(err => {
         console.log(err);
+        console.log('Login failed!');
       });
   };
   // id 유효성 검사
@@ -56,10 +81,10 @@ const Login = () => {
     if (isEmail(ID)) {
       setId(ID);
       setIdMessage('올바른 이메일 형식입니다.');
-      setIsId(true);
+      // setIsId(true);
     } else {
       setIdMessage('이메일 형식으로 입력해주세요.');
-      setIsId(false);
+      // setIsId(false);
     }
   };
   // 비밀번호 유효성 검사
@@ -68,12 +93,12 @@ const Login = () => {
     if (isPassword(PW)) {
       setPwMessage('올바른 비밀번호입니다.');
       setPassword(PW);
-      setIsPw(true);
+      // setIsPw(true);
     } else {
       setPwMessage(
         '비밀번호는 영문자, 숫자, 특수기호를 포함하여  8 ~ 16자로 입력해주세요.',
       );
-      setIsPw(false);
+      // setIsPw(false);
     }
   };
   return (
@@ -103,7 +128,7 @@ const Login = () => {
       </View>
       <View style={styles.footer}>
         <View style={styles.btnContainer}>
-          <CustomButton onPress={login}>
+          <CustomButton onPress={login} ButtonStyle={ButtonStyle}>
             <Text>로그인</Text>
           </CustomButton>
         </View>
