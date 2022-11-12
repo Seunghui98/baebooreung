@@ -33,59 +33,60 @@ function ManagerHome({navigation}) {
     {region: 5, regionName: '건국대학교', driver: 3, total: 45, finish: 25},
     {region: 6, regionName: '경희대학교', driver: 2, total: 50, finish: 30},
   ];
-  useEffect(() => {
-    //임시 로그인
-    axios({
-      method: 'post',
-      url: user.login(),
-      data: {
-        email: 'ee@test.com',
-        password: 'test1234',
-      },
-    })
-      .then(res => {
-        console.log(res.headers);
-        const token = res.headers.token;
-        dispatch(
-          setUserInfo({
-            id: res.headers.id,
-            accessToken: res.headers.token,
-            name: res.headers.name,
-            specialkey: res.headers.specialkey,
-          }),
-        );
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        //로그인 성공 시 내 정보 추출하여 redux에 저장
-        axios({
-          method: 'get',
-          url: user.getUserInfo() + `${res.headers.id}`,
-        })
-          .then(res => {
-            console.log(res.data);
-            dispatch(setUser(res.data));
-          })
-          .catch(e => {
-            console.log(e);
-          });
+  // useEffect(() => {
+  //   //임시 로그인
+  //   axios({
+  //     method: 'post',
+  //     url: user.login(),
+  //     data: {
+  //       email: 'ee@test.com',
+  //       password: 'test1234',
+  //     },
+  //   })
+  //     .then(res => {
+  //       console.log(res.headers);
+  //       const token = res.headers.token;
+  //       dispatch(
+  //         setUserInfo({
+  //           id: res.headers.id,
+  //           accessToken: res.headers.token,
+  //           name: res.headers.name,
+  //           specialkey: res.headers.specialkey,
+  //         }),
+  //       );
+  //       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        //로그인 성공 시 내 연락처에 유저 정보 저장
-        axios({
-          metohd: 'get',
-          url: user.getAllUser(),
-        })
-          .then(res => {
-            console.log('All userList', res.data);
-            dispatch(setUserList(res.data));
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }, []);
+  //       //로그인 성공 시 내 정보 추출하여 redux에 저장
+  //       axios({
+  //         method: 'get',
+  //         url: user.getUserInfo() + `${res.headers.id}`,
+  //       })
+  //         .then(res => {
+  //           console.log(res.data);
+  //           dispatch(setUser(res.data));
+  //         })
+  //         .catch(e => {
+  //           console.log(e);
+  //         });
+
+  //       //로그인 성공 시 내 연락처에 유저 정보 저장
+  //       axios({
+  //         metohd: 'get',
+  //         url: user.getAllUser(),
+  //       })
+  //         .then(res => {
+  //           console.log('All userList', res.data);
+  //           dispatch(setUserList(res.data));
+  //         })
+  //         .catch(e => {
+  //           console.log(e);
+  //         });
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // }, []);
 
   return (
     <View style={styles.container}>
