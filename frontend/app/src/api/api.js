@@ -1,5 +1,6 @@
 // chatting 관련 기능 api
 const VOICE = 'http://k7c207.p.ssafy.io:5000/';
+const STT = 'speechtotext-service/';
 const CHAT = 'https://k7c207.p.ssafy.io:8080/api/chat/';
 
 const chat = {
@@ -15,7 +16,7 @@ const chat = {
 
 //음성호출 관련 기능
 const voice = {
-  file: () => VOICE + 'file',
+  speechToText: () => VOICE + STT + 'stt',
 };
 
 // user 관련 기능 api
