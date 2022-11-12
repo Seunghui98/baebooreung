@@ -40,11 +40,11 @@ const Login = ({navigation}) => {
     //유저 연락처 업데이트 이후 권한에 따라 각 페이지로 보내기
     if (id !== '' && userInfo.grade === 'MANAGER') {
       fetchOthersInfo();
-      navigation.navigate('ManagerTab');
+      navigation.reset({routes: [{name: 'ManagerTab'}]});
     }
     if (id !== '' && userInfo.grade === 'DRIVER') {
       fetchOthersInfo();
-      navigation.navigate('DriverTab');
+      navigation.reset({routes: [{name: 'DriverTab'}]});
     }
   }, [userInfo]);
 
