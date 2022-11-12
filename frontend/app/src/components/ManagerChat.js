@@ -36,7 +36,6 @@ export default function ManagerChat({navigation}) {
   const userList = useSelector(state => state.userList.userList);
   const user = useSelector(state => state.user);
   const name = user.name; //메세지를 전송하는 주체
-  console.log(name);
   const userId = useSelector(state => state.user.userId);
   const dispatch = useDispatch();
   const client = useRef({});
@@ -96,13 +95,13 @@ export default function ManagerChat({navigation}) {
   // ]);
 
   useEffect(() => {
-    // userList.map((el, idx) => {
-    //   setCreateChatCheckBox(createChatCheckBox => {
-    //     const newArr = [...createChatCheckBox];
-    //     newArr.push(false);
-    //     return newArr;
-    //   });
-    // });
+    userList.map((item, idx) => {
+      setCreateChatCheckBox(createChatCheckBox => {
+        const newArr = [...createChatCheckBox];
+        newArr.push(false);
+        return newArr;
+      });
+    });
   }, []);
 
   async function connect() {
@@ -137,7 +136,6 @@ export default function ManagerChat({navigation}) {
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
-
     await client.current.activate();
   }
 
@@ -182,10 +180,6 @@ export default function ManagerChat({navigation}) {
     axios({
       method: 'get',
       url: chat.getInfo() + `${roomId}/${user}`,
-      // params: {
-      //   roomId: roomId,
-      //   userId: user,
-      // },
     })
       .then(res => {
         console.log('getInfo', res.data.isEnter, res.data.isSubscribe);
@@ -199,8 +193,10 @@ export default function ManagerChat({navigation}) {
             })
             .catch(e => {
               console.log(e);
+            })
+            .finally(() => {
+              subscribe(roomId, user);
             });
-          subscribe(roomId, user);
         }
 
         if (res.data.isEnter === false) {
@@ -217,8 +213,10 @@ export default function ManagerChat({navigation}) {
             })
             .catch(e => {
               console.log(e);
+            })
+            .finally(() => {
+              enter(roomId, user);
             });
-          enter(roomId, user);
         }
       })
       .catch(e => {
@@ -290,17 +288,17 @@ export default function ManagerChat({navigation}) {
     });
   }
 
-  // async function quit(roomId) {
-  //   await client.current.publish({
-  //     destination: '/api/pub/chat/message',
-  //     headers: {},
-  //     body: JSON.stringify({
-  //       type: 'QUIT',
-  //       roomId: roomId,
-  //       sender: sender,
-  //     }),
-  //   });
-  // }
+  async function quit(roomId, userId) {
+    await client.current.publish({
+      destination: '/api/pub/chat/message',
+      headers: {},
+      body: JSON.stringify({
+        type: 'QUIT',
+        roomId: roomId,
+        sender: userId,
+      }),
+    });
+  }
 
   useEffect(() => {
     setChatRoomList([]);
@@ -339,7 +337,7 @@ export default function ManagerChat({navigation}) {
             <FlatList
               style={styles.list}
               data={userList}
-              keyExtractor={item => item.user_id}
+              keyExtractor={(item, idx) => idx}
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
@@ -405,7 +403,7 @@ export default function ManagerChat({navigation}) {
             </Pressable>
             <FlatList
               data={chatRoomList}
-              keyExtractor={item => item.roomId}
+              keyExtractor={(item, idx) => idx}
               renderItem={({item}) => (
                 <Pressable
                   activeOpacity={0.6}

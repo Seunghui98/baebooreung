@@ -20,8 +20,7 @@ const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function AudioRecord() {
   const [mic, setMic] = useState(false);
-  const [folderName, setFolderName] = useState('');
-  const [voiceBase64, setVoiceBase64] = useState();
+  const [text, setText] = useState('마이크를 눌러 보세요!');
   const formData = new FormData();
 
   const requestRecordingAudioPermission = async () => {
@@ -44,7 +43,6 @@ export default function AudioRecord() {
       await SoundRecorder.start(
         SoundRecorder.PATH_DOCUMENT + '/voice.mp4',
       ).then(function () {
-        setFolderName(SoundRecorder.PATH_DOCUMENT + '/voice.mp4');
         console.log(
           'started recording : ' + SoundRecorder.PATH_DOCUMENT + '/voice.mp4',
         );
@@ -58,61 +56,28 @@ export default function AudioRecord() {
     await SoundRecorder.stop().then(function (res) {
       console.log('stopped recording, audio file saved at: ' + res.path);
     });
-    // await RNFS.readDir(RNFS.DocumentDirectoryPath).then(result => {
-    //   const file = result.find(item => item.name === 'voice.mp4');
-    //   // console.log('GOT RESULT', result);
-    //   console.log(file);
-    //   formData.append('file', {
-    //     uri: 'file://' + file.path,
-    //     type: 'video/mp4',
-    //     name: 'voice.mp4',
-    //   });
-    //   return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-    // });
 
     await RNFS.readFile(
       RNFS.DocumentDirectoryPath + '/voice.mp4',
       'base64',
     ).then(result => {
-      setVoiceBase64(result);
-      console.log(result);
-      console.log(voiceBase64);
-      // axios({
-      //   url: voice.file(),
-      //   method: 'post',
-
-      // });
+      const base64Result = result.toString();
+      axios({
+        url: voice.speechToText(),
+        method: 'post',
+        data: {
+          file: base64Result,
+        },
+      })
+        .then(res => {
+          setText(res.data.text);
+          console.log(res.data.text);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     });
-    // axios({
-    //   url: voice.file(),
-    //   method: 'post',
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    //   data: formData,
-    //   transformRequest: (data, headers) => {
-    //     return data;
-    //   },
-    // })
-    //   .then(res => {
-    //     console.log(res);
-    //   })
-    //   .catch(e => {
-    //     console.log(e);
-    //   });
   };
-
-  // Usage with Options:
-
-  //  SoundRecorder.start(
-  //         SoundRecorder.PATH_CACHE + '/' + fileName + '.mp3',
-  //         {
-  //           quality: SoundRecorder.QUALITY_MAX,
-  //           format : SoundRecorder.FORMAT_AAC_ADTS,
-  //         }
-  //       ).then(function () {
-  //         console.log('started recording');
-  //       });
 
   useEffect(() => {
     requestRecordingAudioPermission();
@@ -138,7 +103,7 @@ export default function AudioRecord() {
           <Image source={MicOFF} style={styles.image} />
         </Pressable>
       )}
-      <Text>{folderName}</Text>
+      <Text>{text}</Text>
     </View>
   );
 }
