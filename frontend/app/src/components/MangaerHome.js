@@ -2,28 +2,21 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Dimensions,
   FlatList,
-  TouchableHighlight,
-  TouchableOpacity,
   Pressable,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useEffect, useState} from 'react';
-import {setUser} from '../redux/user';
-import {setUserInfo} from '../redux/auth';
-import {setUserList} from '../redux/userList';
 import axios from 'axios';
-import {business_service, user_service} from '../api/api';
+import {business_service} from '../api/api';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
 const date = new Date();
 
 function ManagerHome({navigation}) {
-  const dispatch = useDispatch();
   const userInfo = useSelector(state => state.user);
   const userList = useSelector(state => state.userList.userList);
   const [tempList, setTempList] = useState([]);
@@ -83,7 +76,6 @@ function ManagerHome({navigation}) {
                         '드라이버가 저장한 루트id를 통해 얻을 수 있는 정보',
                         result.data,
                       );
-
                       // 루트 정보의 date값과 routeType을 비교하여(ex)date : 2022-01-01 routeType : lunch)
                       // if(realDate === result.data.date && realType === result.data.routeType){
                       // }
@@ -235,8 +227,8 @@ function ManagerHome({navigation}) {
 
   useEffect(() => {
     if (list.length !== 0) {
-      console.log('list update');
-      console.log('업데이트 worklist', list);
+      // console.log('list update');
+      // console.log('업데이트 worklist', list);
     }
   }, [list]);
 
