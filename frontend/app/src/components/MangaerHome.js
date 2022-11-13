@@ -24,25 +24,26 @@ const date = new Date();
 
 function ManagerHome({navigation}) {
   const dispatch = useDispatch();
-  // const user = {name: '최싸피', grade: '관리자'};
-  const userInfo = useSelector(state => state.user); //react-redux를 이용하여 user 정보 받을 예정
+  const userInfo = useSelector(state => state.user);
   const userList = useSelector(state => state.userList.userList);
   const [tempList, setTempList] = useState([]);
   const [ok, setOk] = useState(false);
   const [list, setList] = useState([]);
   const [driverList, setDriverList] = useState([]);
   const [university, setUniversity] = useState('');
-  const [total, setTotal] = useState(0);
-  const [finish, setFinish] = useState(0);
+  const [pickupTotal, setPickupTotal] = useState(0);
+  const [pickupFinish, setPickupFinish] = useState(0);
+  const [deliveryTotal, setDeliveryTotal] = useState(0);
+  const [deliveryFinish, setDeliveryFinish] = useState(0);
   const [index, setIndex] = useState(0);
-  const workList = [
-    {regionName: '광주과학기술원', driver: 2, total: 50, finish: 30},
-    {regionName: '전남대학교', driver: 2, total: 25, finish: 25},
-    {regionName: '서울대학교', driver: 5, total: 70, finish: 50},
-    {regionName: '연세대학교', driver: 3, total: 50, finish: 50},
-    {regionName: '건국대학교', driver: 3, total: 45, finish: 25},
-    {regionName: '경희대학교', driver: 2, total: 50, finish: 30},
-  ];
+  // const workList = [
+  //   {regionName: '광주과학기술원', driver: 2, total: 50, finish: 30},
+  //   {regionName: '전남대학교', driver: 2, total: 25, finish: 25},
+  //   {regionName: '서울대학교', driver: 5, total: 70, finish: 50},
+  //   {regionName: '연세대학교', driver: 3, total: 50, finish: 50},
+  //   {regionName: '건국대학교', driver: 3, total: 45, finish: 25},
+  //   {regionName: '경희대학교', driver: 2, total: 50, finish: 30},
+  // ];
 
   useEffect(() => {
     //userList(나를 제외한 유저리스트)가 갱신되었을 때 실행
@@ -145,8 +146,10 @@ function ManagerHome({navigation}) {
           //list에 대학교가 있는지 여부 판단 후 없으면 리스트에 객체 추가
           //이때 배달기사는 하나의 학교(RouteName)에만 배달을 한다고 가정하고 진행
           setUniversity(item.routeInfo.routeName);
-          setTotal(totalDeliverySum);
-          setFinish(finishDeliverySum);
+          setPickupTotal(totalPickupSum);
+          setPickupFinish(finishPickupSum);
+          setDeliveryTotal(totalDeliverySum);
+          setDeliveryFinish(finishDeliverySum);
           const index = list.findIndex(find => {
             find.routeName === item.routeInfo.routeName;
           });
@@ -172,8 +175,10 @@ function ManagerHome({navigation}) {
             if (check) {
               setList(list => {
                 const newList = [...list];
-                newList[index].total += totalDeliverySum;
-                newList[index].finish += finishDeliverySum;
+                newList[index].pickupTotal += totalPickupSum;
+                newList[index].pickupFinish += finishPickupSum;
+                newList[index].deliveryTotal += totalDeliverySum;
+                newList[index].deliveryFinish += finishDeliverySum;
                 return newList;
               });
             }
@@ -186,8 +191,10 @@ function ManagerHome({navigation}) {
                   name: item.name,
                 });
                 newList[index].driverNum += 1;
-                newList[index].total += totalDeliverySum;
-                newList[index].finish += finishDeliverySum;
+                newList[index].pickupTotal += totalPickupSum;
+                newList[index].pickupFinish += finishPickupSum;
+                newList[index].deliveryTotal += totalDeliverySum;
+                newList[index].deliveryFinish += finishDeliverySum;
                 return newList;
               });
             }
@@ -207,11 +214,17 @@ function ManagerHome({navigation}) {
           routeName: university,
           driver: [driverList[driverList.length - 1]],
           driverNum: 1,
-          total: total,
-          finish: finish,
+          pickupTotal: pickupTotal,
+          pickupFinish: pickupFinish,
+          deliveryTotal: deliveryTotal,
+          deliveryFinish: deliveryFinish,
         });
         return newList;
       });
+      setPickupTotal(0);
+      setPickupFinish(0);
+      setDeliveryTotal(0);
+      setDeliveryFinish(0);
       setIndex(0);
     }
   }, [index]);
@@ -268,11 +281,13 @@ function ManagerHome({navigation}) {
               <Pressable
                 onPress={() => {
                   navigation.navigate('DetailWork', {
-                    headerTitle: `${item.regionName}`,
+                    headerTitle: `${item.routeName}`,
                     driver: item.driver,
                     driverNum: item.driverNum,
-                    total: item.total,
-                    finish: item.finish,
+                    pickupTotal: item.pickupTotal,
+                    pickupFinish: item.pickupFinish,
+                    deliveryTotal: item.deliveryTotal,
+                    deliveryFinish: item.deliveryFinish,
                   });
                 }}>
                 {({pressed}) => (
@@ -292,30 +307,63 @@ function ManagerHome({navigation}) {
                           flexDirection: 'row',
                           justifyContent: 'flex-end',
                         }}>
-                        {item.total === item.finish && (
-                          <Text style={styles.dailyWorkFinishText}>완료</Text>
+                        {item.pickupTotal === item.pickupFinish && (
+                          <Text style={styles.dailyWorkFinishText}>
+                            픽업 완료
+                          </Text>
                         )}
-                        {item.total !== item.finish && (
+                        {item.pickupTotal !== item.pickupFinish && (
                           <View
                             style={{
                               flex: 1,
                               flexDirection: 'row',
                               justifyContent: 'flex-end',
                             }}>
+                            <Text> 픽업 현황 : </Text>
                             <Text style={styles.dailyWorkText}>
-                              {item.finish}{' '}
+                              {item.pickupFinish}{' '}
                             </Text>
                             <Text style={{fontWeight: 'bold'}}>
-                              / {item.total}
+                              / {item.pickupTotal}
                             </Text>
                           </View>
                         )}
                       </View>
                     </View>
-                    <View>
-                      <Text style={styles.driverNumText}>
-                        드라이버 {item.driverNum}명
-                      </Text>
+                    <View style={styles.dailWorkFirstLine}>
+                      <View style={{flex: 1}}>
+                        <Text style={styles.driverNumText}>
+                          드라이버 {item.driverNum}명
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                        }}>
+                        {item.deliveryTotal === item.deliveryFinish && (
+                          <Text style={styles.dailyWorkFinishText}>
+                            배달 완료
+                          </Text>
+                        )}
+                        {item.deliveryTotal !== item.deliveryFinish && (
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              justifyContent: 'flex-end',
+                            }}>
+                            <Text> 배달 현황 : </Text>
+                            <Text style={styles.dailyWorkText}>
+                              {item.deliveryFinish}{' '}
+                            </Text>
+                            <Text style={{fontWeight: 'bold'}}>
+                              / {item.deliveryTotal}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </View>
                 )}
