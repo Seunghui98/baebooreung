@@ -158,7 +158,7 @@ const Login = ({navigation}) => {
           placeholder="아이디를 입력하세요."
           onChange={onChangeId}
         />
-        <Text>{idMessage}</Text>
+
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
           style={styles.passwordForm}
