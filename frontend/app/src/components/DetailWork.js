@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -18,116 +18,54 @@ const identityColor = '#0B0B3B';
 const identityTextColor = '#F7FE2E';
 
 export default function DetailWork(props) {
-  // const [tab,setTab]=useState(false); // 드라이버업무현황 / 드라이버업무변경 분기처리
+  const [ok, setOk] = useState(false);
   const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
-  const [ID, setID] = useState(-1);
+  const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const driver = [
-    {id: 1, region: props.region, regionName: props.regionName, name: '김싸피'},
-    {id: 2, region: props.region, regionName: props.regionName, name: '이싸피'},
-    {id: 3, region: props.region, regionName: props.regionName, name: '박싸피'},
-    {id: 4, region: props.region, regionName: props.regionName, name: '최싸피'},
-    {id: 5, region: props.region, regionName: props.regionName, name: '전싸피'},
-    {id: 6, region: props.region, regionName: props.regionName, name: '남싸피'},
-    {id: 7, region: props.region, regionName: props.regionName, name: '강싸피'},
-    {id: 8, region: props.region, regionName: props.regionName, name: '안싸피'},
-    {id: 9, region: props.region, regionName: props.regionName, name: '나싸피'},
-  ];
+  const [driverList, setDriverList] = useState([]);
 
-  const driverPickupWorkList = [
-    {
-      restaurant_id: 1,
-      restaurant_name: '한솥도시락',
-      pickup_time: '11:20',
-      pickup_finish: true,
-      photo: '',
-      order_quantity: 15,
-    },
-    {
-      restaurant_id: 2,
-      restaurant_name: '봉구스밥버거',
-      pickup_time: '11:25',
-      pickup_finish: true,
-      photo: '',
-      order_quantity: 20,
-    },
-    {
-      restaurant_id: 3,
-      restaurant_name: '김밥나라',
-      pickup_time: '11:30',
-      pickup_finish: true,
-      photo: '',
-      order_quantity: 18,
-    },
-    {
-      restaurant_id: 4,
-      restaurant_name: '덮덮밥',
-      pickup_time: '11:35',
-      pickup_finish: true,
-      photo: '',
-      order_quantity: 7,
-    },
-  ];
+  useEffect(() => {
+    //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
+    props.routeList.map((item, idx) => {
+      setDriverList(driverList => {
+        const newDriverList = [...driverList];
+        newDriverList.push({
+          id: item.userId,
+          name: item.name,
+          routeName: props.routeName,
+          routeInfo: item.routeInfo,
+        });
+        return newDriverList;
+      });
+    });
+    setOk(true);
+  }, []);
 
-  const driverDeliveryWorkList = [
-    {
-      deliveryLocation_id: 1,
-      deliveryLocation_name: '생활관 A동',
-      delivery_time: '12:10',
-      delivery_finish: true,
-      delivery_quantity: 15,
-    },
-    {
-      deliveryLocation_id: 2,
-      deliveryLocation_name: '생활관 B동',
-      delivery_time: '12:13',
-      delivery_finish: true,
-      delivery_quantity: 10,
-    },
-    {
-      deliveryLocation_id: 3,
-      deliveryLocation_name: '생활관 C동',
-      delivery_time: '12:17',
-      delivery_finish: false,
-      delivery_quantity: 5,
-    },
-    {
-      deliveryLocation_id: 4,
-      deliveryLocation_name: '생활관 D동',
-      delivery_time: '12:20',
-      delivery_finish: false,
-      delivery_quantity: 12,
-    },
-  ];
+  useEffect(() => {
+    if (driverList.length !== 0) {
+      console.log('');
+      console.log('driverList목록 : item 값', driverList[0]);
+      console.log('');
+      console.log('driverList목록 : routerInfo값', driverList[0].routeInfo);
+      console.log('');
+      console.log(
+        'driverList목록 : deliveryList값',
+        driverList[0].routeInfo.deliveryList,
+      );
+      console.log('');
+      console.log(
+        'driverList목록 : deliveryList의 첫번째 요소값',
+        driverList[0].routeInfo.deliveryList[0],
+      );
+    }
+  }, [ok]);
 
   return (
     <View style={styles.container}>
-      {/* // 헤더(드라이버 업무현황 / 드라이버 업무변경)
-      <View style={styles.header}>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={() => {
-            setID(-1);
-          }}>
-          <Text style={tab ? styles.headerText : styles.headerClickText}>
-            드라이버 업무 현황
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={() => {
-            setTab(true);
-            setID(-1);
-          }}>
-          <Text style={tab ? styles.headerClickText : styles.headerText}>
-            드라이버 업무 변경
-          </Text>
-        </TouchableOpacity>
-      </View> */}
       <FlatList
         style={styles.driverListLayout}
-        data={driver}
-        keyExtractor={item => item.id}
+        data={driverList}
+        keyExtractor={(item, idx) => idx}
         renderItem={({item}) => (
           <View>
             <TouchableOpacity
@@ -137,7 +75,7 @@ export default function DetailWork(props) {
                   setID(item.id);
                   setWorkType(false);
                 } else {
-                  setID(-1);
+                  setID('');
                   setWorkType(false);
                 }
               }}>
@@ -153,7 +91,7 @@ export default function DetailWork(props) {
                           ? styles.driverListClickText
                           : styles.driverListText
                       }>
-                      {item.regionName} {item.name} 드라이버
+                      {item.routeName} {item.name} 드라이버
                     </Text>
                   </View>
                   <View style={styles.driverListImageLayout}>
@@ -195,43 +133,50 @@ export default function DetailWork(props) {
                   </TouchableOpacity>
                 </View>
                 {workType === false && (
+                  //이중 FlatList 사용시 주의 (실제 renderItem은 (item,index값을 받음))
                   <FlatList
                     style={styles.pickupListLayout}
-                    data={driverPickupWorkList}
-                    keyExtractor={item => item.restaurant_id}
-                    renderItem={({item}) => (
-                      <View style={styles.pickupLayout}>
-                        <View style={styles.pickupRestaurantName}>
-                          <Text style={styles.pickupRestaurantNameText}>
-                            {item.restaurant_name}
-                          </Text>
-                          <Text style={styles.pickupOrderQuantityText}>
-                            {item.order_quantity}건
-                          </Text>
-                        </View>
-                        <View style={styles.pickupTime}>
-                          <Text style={styles.pickupTimeText}>
-                            {item.pickup_time}
-                          </Text>
-                        </View>
-                        <View style={styles.pickupFinish}>
-                          {item.pickup_finish === true && (
-                            <Pressable
-                              onPress={() => {
-                                setModalVisible(!modalVisible);
-                              }}>
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={styles.pickupFinishText}>
-                                  픽업 완료
+                    data={item.routeInfo.deliveryList}
+                    keyExtractor={(el, idx) => 'key' + idx}
+                    renderItem={el => (
+                      <View>
+                        {el.item.type === 'pickup' && (
+                          <View style={styles.pickupLayout}>
+                            <View style={styles.pickupRestaurantName}>
+                              <Text style={styles.pickupRestaurantNameText}>
+                                {el.item.delName}
+                              </Text>
+                              <Text style={styles.pickupOrderQuantityText}>
+                                {el.item.orderNum}건
+                              </Text>
+                            </View>
+                            <View style={styles.pickupTime}>
+                              <Text style={styles.pickupTimeText}>
+                                {el.item.delScheduledTime.substr(0, 5)}
+                              </Text>
+                            </View>
+                            <View style={styles.pickupFinish}>
+                              {el.item.check === true && (
+                                <Pressable
+                                  onPress={() => {
+                                    setModalVisible(!modalVisible);
+                                  }}>
+                                  <View style={{flexDirection: 'row'}}>
+                                    <Text style={styles.pickupFinishText}>
+                                      픽업 완료
+                                    </Text>
+                                    <Icon name="image-search" size={18}></Icon>
+                                  </View>
+                                </Pressable>
+                              )}
+                              {el.item.check === false && (
+                                <Text style={styles.pickupFailText}>
+                                  미완료
                                 </Text>
-                                <Icon name="image-search" size={18}></Icon>
-                              </View>
-                            </Pressable>
-                          )}
-                          {item.pickup_finish === false && (
-                            <Text style={styles.pickupFailText}>미완료</Text>
-                          )}
-                        </View>
+                              )}
+                            </View>
+                          </View>
+                        )}
                       </View>
                     )}></FlatList>
                 )}
@@ -239,41 +184,48 @@ export default function DetailWork(props) {
                 {workType === true && (
                   <FlatList
                     style={styles.deliveryListLayout}
-                    data={driverDeliveryWorkList}
-                    keyExtractor={item => item.deliveryLocation_id}
-                    renderItem={({item}) => (
-                      <View style={styles.deliveryLayout}>
-                        <View style={styles.deliveryLocationName}>
-                          <Text style={styles.deliveryLocationNameText}>
-                            {item.deliveryLocation_name}
-                          </Text>
-                          <Text style={styles.deliveryQuantityText}>
-                            {item.delivery_quantity}건
-                          </Text>
-                        </View>
-                        <View style={styles.deliveryTime}>
-                          <Text style={styles.deliveryTimeText}>
-                            {item.delivery_time}
-                          </Text>
-                        </View>
-                        <View style={styles.deliveryFinish}>
-                          {item.delivery_finish === true && (
-                            <Pressable
-                              onPress={() => {
-                                setModalVisible(!modalVisible);
-                              }}>
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={styles.deliveryFinishText}>
-                                  수령 완료
+                    data={item.routeInfo.deliveryList}
+                    keyExtractor={(el, idx) => idx}
+                    renderItem={el => (
+                      <View>
+                        {console.log(el)}
+                        {el.item.type === 'delivery' && (
+                          <View style={styles.deliveryLayout}>
+                            <View style={styles.deliveryLocationName}>
+                              <Text style={styles.deliveryLocationNameText}>
+                                {el.item.delName}
+                              </Text>
+                              <Text style={styles.deliveryQuantityText}>
+                                {el.item.orderNum}건
+                              </Text>
+                            </View>
+                            <View style={styles.deliveryTime}>
+                              <Text style={styles.deliveryTimeText}>
+                                {el.item.delScheduledTime.substr(0, 5)}
+                              </Text>
+                            </View>
+                            <View style={styles.deliveryFinish}>
+                              {el.item.check === true && (
+                                <Pressable
+                                  onPress={() => {
+                                    setModalVisible(!modalVisible);
+                                  }}>
+                                  <View style={{flexDirection: 'row'}}>
+                                    <Text style={styles.deliveryFinishText}>
+                                      수령 완료
+                                    </Text>
+                                    <Icon name="image-search" size={18}></Icon>
+                                  </View>
+                                </Pressable>
+                              )}
+                              {el.item.check === false && (
+                                <Text style={styles.deliveryFailText}>
+                                  미완료
                                 </Text>
-                                <Icon name="image-search" size={18}></Icon>
-                              </View>
-                            </Pressable>
-                          )}
-                          {item.delivery_finish === false && (
-                            <Text style={styles.deliveryFailText}>미완료</Text>
-                          )}
-                        </View>
+                              )}
+                            </View>
+                          </View>
+                        )}
                       </View>
                     )}></FlatList>
                 )}

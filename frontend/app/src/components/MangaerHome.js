@@ -48,6 +48,21 @@ function ManagerHome({navigation}) {
   useEffect(() => {
     //userList(나를 제외한 유저리스트)가 갱신되었을 때 실행
     if (userList !== null) {
+      //현재 날짜를 받음
+      const realDate = toStringByFormatting(new Date());
+      console.log(realDate);
+      //현재 시간을 받음
+      const realTime = new Date().getHours();
+      console.log(realTime);
+      //오후 10시부터 오후 2시까지는 점심정보를 띄움,오후 2시부터 오후 10시까지는 저녁정보를 띄움
+
+      let realType; //점심, 저녁에 대한 정보를 시간에 따라 저장
+      if (realTime >= 14 && realTime < 22) {
+        realType = 'dinner';
+      } else {
+        realType = 'lunch';
+      }
+
       // 먼저 유저리스트에서 grade가 DRIVER인 유저만 추출하여 드라이버가 가지고있는 루트ID를 추출
       userList
         .filter(item => item.grade === 'DRIVER')
@@ -77,7 +92,10 @@ function ManagerHome({navigation}) {
                         result.data,
                       );
 
-                      // 모든 루트 정보를 (userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
+                      // 루트 정보의 date값과 routeType을 비교하여(ex)date : 2022-01-01 routeType : lunch)
+                      // if(realDate === result.data.date && realType === result.data.routeType){
+                      // }
+                      // (userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
                       setTempList(tempList => {
                         const newTempList = [...tempList];
                         newTempList.push({
@@ -105,12 +123,6 @@ function ManagerHome({navigation}) {
   }, [userList]);
 
   useEffect(() => {
-    //현재 날짜를 받음
-    const realDate = toStringByFormatting(new Date());
-    console.log(realDate);
-    //현재 시간을 받음
-    const realTime = new Date().getHours();
-    console.log(realTime);
     //모든 루트 정보가 저장되었을 시 실행
     if (tempList.length !== 0) {
       console.log(tempList);
@@ -282,12 +294,7 @@ function ManagerHome({navigation}) {
                 onPress={() => {
                   navigation.navigate('DetailWork', {
                     headerTitle: `${item.routeName}`,
-                    driver: item.driver,
-                    driverNum: item.driverNum,
-                    pickupTotal: item.pickupTotal,
-                    pickupFinish: item.pickupFinish,
-                    deliveryTotal: item.deliveryTotal,
-                    deliveryFinish: item.deliveryFinish,
+                    routeList: tempList,
                   });
                 }}>
                 {({pressed}) => (
