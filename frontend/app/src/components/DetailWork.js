@@ -188,7 +188,6 @@ export default function DetailWork(props) {
                     keyExtractor={(el, idx) => idx}
                     renderItem={el => (
                       <View>
-                        {console.log(el)}
                         {el.item.type === 'delivery' && (
                           <View style={styles.deliveryLayout}>
                             <View style={styles.deliveryLocationName}>

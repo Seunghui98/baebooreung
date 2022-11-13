@@ -1,7 +1,8 @@
 import {StyleSheet, View, Text} from 'react-native';
-
+import {useSelector} from 'react-redux';
 export default function ManagerGPS() {
-  const user = useSelector(state => state.user); //react-redux를 이용하여 user 정보 받을 예정
+  const userInfo = useSelector(state => state.user);
+  const userList = useSelector(state => state.userList.userList);
   return (
     <View>
       <Text></Text>
