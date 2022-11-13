@@ -134,7 +134,6 @@ const NowLocation = () => {
       strokeStyle: "solid",
       strokeLineCap: "round",
       strokeWeight: 8
-
     })
   }, [test_course_now]);
 
@@ -159,7 +158,7 @@ const NowLocation = () => {
 
   useEffect(() => {
     cal_course()
-  }, [now_loc, params_temp])
+  }, [now_loc, params_temp, zoom])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -167,7 +166,9 @@ const NowLocation = () => {
         <div className={styles.app_width}>
           <div>
             <div className={styles.profileList}>
-              <button className={styles.profileImageContent}>
+              <button className={styles.profileImageContent} onClick={() => {
+                setZoom(15)
+              }}>
                 <img className={styles.profileImage} src={jnu} alt="" />
                 <div className={styles.profileContent}>전남대A</div>
               </button>
