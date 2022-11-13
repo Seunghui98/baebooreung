@@ -1,9 +1,9 @@
 import {Text, View, StyleSheet} from 'react-native';
 import ManagerGPS from '../../components/ManagerGPS';
-function GPSScreen() {
+function GPSScreen({navigation}) {
   return (
     <View style={styles.container}>
-      <ManagerGPS></ManagerGPS>
+      <ManagerGPS navigation={navigation}></ManagerGPS>
     </View>
   );
 }

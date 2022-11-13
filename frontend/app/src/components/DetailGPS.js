@@ -10,9 +10,14 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import {useSelector, useDispatch} from 'react-redux';
 import Truck from '../assets/images/truck.png';
 import Sample from '../assets/images/sample.png';
+import ManagerMap from './ManagerMap';
+import axios from 'axios';
+import {gps_service} from '../api/api';
+
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#F7FE2E';
@@ -43,20 +48,13 @@ export default function DetailGPS(props) {
 
   useEffect(() => {
     if (driverList.length !== 0) {
-      // console.log('');
-      // console.log('driverList목록 : item 값', driverList[0]);
-      // console.log('');
-      // console.log('driverList목록 : routerInfo값', driverList[0].routeInfo);
-      // console.log('');
-      // console.log(
-      //   'driverList목록 : deliveryList값',
-      //   driverList[0].routeInfo.deliveryList,
-      // );
-      // console.log('');
-      // console.log(
-      //   'driverList목록 : deliveryList의 첫번째 요소값',
-      //   driverList[0].routeInfo.deliveryList[0],
-      // );
+      console.log(driverList);
+      // axios({
+      //   method : 'get',
+      //   url : gps_service.getRealTimeGPS()+`${}`
+      // }).then(res=>{
+      // }).catch(e=>{
+      // });
     }
   }, [ok]);
 
@@ -100,136 +98,7 @@ export default function DetailGPS(props) {
                 </View>
               </View>
             </TouchableOpacity>
-            {ID === item.id && (
-              <View style={styles.ScrollList}>
-                <View style={styles.driverHeader}>
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => {
-                      return setWorkType(false);
-                    }}>
-                    <Text
-                      style={
-                        workType
-                          ? styles.driverHeaderText
-                          : styles.driverHeaderClickText
-                      }>
-                      픽업 장소
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => {
-                      return setWorkType(true);
-                    }}>
-                    <Text
-                      style={
-                        workType
-                          ? styles.driverHeaderClickText
-                          : styles.driverHeaderText
-                      }>
-                      수령 장소
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                {workType === false && (
-                  //이중 FlatList 사용시 주의 (실제 renderItem은 (item,index값을 받음))
-                  <FlatList
-                    style={styles.pickupListLayout}
-                    data={item.routeInfo.deliveryList}
-                    keyExtractor={(el, idx) => 'key' + idx}
-                    renderItem={el => (
-                      <View>
-                        {el.item.type === 'pickup' && (
-                          <View style={styles.pickupLayout}>
-                            <View style={styles.pickupRestaurantName}>
-                              <Text style={styles.pickupRestaurantNameText}>
-                                {el.item.delName}
-                              </Text>
-                              <Text style={styles.pickupOrderQuantityText}>
-                                {el.item.orderNum}건
-                              </Text>
-                            </View>
-                            <View style={styles.pickupTime}>
-                              <Text style={styles.pickupTimeText}>
-                                {el.item.delScheduledTime.substr(0, 5)}
-                              </Text>
-                            </View>
-                            <View style={styles.pickupFinish}>
-                              {el.item.check === true && (
-                                <Pressable
-                                  onPress={() => {
-                                    setModalVisible(!modalVisible);
-                                  }}>
-                                  <View style={{flexDirection: 'row'}}>
-                                    <Text style={styles.pickupFinishText}>
-                                      픽업 완료
-                                    </Text>
-                                    <Icon name="image-search" size={18}></Icon>
-                                  </View>
-                                </Pressable>
-                              )}
-                              {el.item.check === false && (
-                                <Text style={styles.pickupFailText}>
-                                  미완료
-                                </Text>
-                              )}
-                            </View>
-                          </View>
-                        )}
-                      </View>
-                    )}></FlatList>
-                )}
-
-                {workType === true && (
-                  <FlatList
-                    style={styles.deliveryListLayout}
-                    data={item.routeInfo.deliveryList}
-                    keyExtractor={(el, idx) => idx}
-                    renderItem={el => (
-                      <View>
-                        {el.item.type === 'delivery' && (
-                          <View style={styles.deliveryLayout}>
-                            <View style={styles.deliveryLocationName}>
-                              <Text style={styles.deliveryLocationNameText}>
-                                {el.item.delName}
-                              </Text>
-                              <Text style={styles.deliveryQuantityText}>
-                                {el.item.orderNum}건
-                              </Text>
-                            </View>
-                            <View style={styles.deliveryTime}>
-                              <Text style={styles.deliveryTimeText}>
-                                {el.item.delScheduledTime.substr(0, 5)}
-                              </Text>
-                            </View>
-                            <View style={styles.deliveryFinish}>
-                              {el.item.check === true && (
-                                <Pressable
-                                  onPress={() => {
-                                    setModalVisible(!modalVisible);
-                                  }}>
-                                  <View style={{flexDirection: 'row'}}>
-                                    <Text style={styles.deliveryFinishText}>
-                                      수령 완료
-                                    </Text>
-                                    <Icon name="image-search" size={18}></Icon>
-                                  </View>
-                                </Pressable>
-                              )}
-                              {el.item.check === false && (
-                                <Text style={styles.deliveryFailText}>
-                                  미완료
-                                </Text>
-                              )}
-                            </View>
-                          </View>
-                        )}
-                      </View>
-                    )}></FlatList>
-                )}
-              </View>
-            )}
+            <ManagerMap></ManagerMap>
           </View>
         )}></FlatList>
 
