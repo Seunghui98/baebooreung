@@ -36,14 +36,6 @@ function ManagerHome({navigation}) {
   const [deliveryTotal, setDeliveryTotal] = useState(0);
   const [deliveryFinish, setDeliveryFinish] = useState(0);
   const [index, setIndex] = useState(0);
-  // const workList = [
-  //   {regionName: '광주과학기술원', driver: 2, total: 50, finish: 30},
-  //   {regionName: '전남대학교', driver: 2, total: 25, finish: 25},
-  //   {regionName: '서울대학교', driver: 5, total: 70, finish: 50},
-  //   {regionName: '연세대학교', driver: 3, total: 50, finish: 50},
-  //   {regionName: '건국대학교', driver: 3, total: 45, finish: 25},
-  //   {regionName: '경희대학교', driver: 2, total: 50, finish: 30},
-  // ];
 
   useEffect(() => {
     //userList(나를 제외한 유저리스트)가 갱신되었을 때 실행
