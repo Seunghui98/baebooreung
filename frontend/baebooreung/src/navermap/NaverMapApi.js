@@ -126,20 +126,20 @@ export default function NaverMapApi() {
       })
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      axios({
-        url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/2`,
-        method: 'get'
-      }).then((res) => {
-        setStart(res.data.longitude + ',' + res.data.latitude)
-      })
-      setParamsTemp(params_temp + 1)
-      // setCenter((parseFloat(center.split(',')[0]) + 0.001) + ',' + center.split(',')[1])
-      // setStart((parseFloat(center.split(',')[0]) + 0.001) + ',' + center.split(',')[1])
-    }
-      , 3000)
-  }, [params_temp])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     axios({
+  //       url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/2`,
+  //       method: 'get'
+  //     }).then((res) => {
+  //       setStart(res.data.longitude + ',' + res.data.latitude)
+  //     })
+  //     setParamsTemp(params_temp + 1)
+  //     // setCenter((parseFloat(center.split(',')[0]) + 0.001) + ',' + center.split(',')[1])
+  //     // setStart((parseFloat(center.split(',')[0]) + 0.001) + ',' + center.split(',')[1])
+  //   }
+  //     , 3000)
+  // }, [params_temp])
 
   useEffect(() => {
     cal_course()
