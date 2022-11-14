@@ -13,6 +13,9 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { setToken } from '../redux/user';
+import { useDispatch } from 'react-redux';
+
 
 const theme = createTheme({
   overrides: {
@@ -50,6 +53,9 @@ const CssTextField = styled(TextField)({
 });
 
 const Login = ({ history }) => {
+
+const dispatch = useDispatch();
+
   const navigate = useNavigate();
   const [Id, setId] = useState('');
   const [Password, setPassword] = useState('');
@@ -78,12 +84,11 @@ const Login = ({ history }) => {
         password: Password
       },
     }).then((res) => {
-      console.log(res.headers.token)
-      localStorage.setItem("Token", res.headers.token)
+      // console.log(res.headers.token)
+      dispatch(setToken(res.headers.token))
       axios.defaults.headers.common["Authorization"] = `Bearer ${res.headers.token}`;
       // 로그아웃 시 토큰 없애고, 디폴트 헤더 커몬 어스에 빈 문자열 넣기
-      localStorage.setItem("specialKey", res.headers.specialkey)
-      navigate("/main", { replace: true });
+      // document.location.href = '/main'
     }).catch(() => {
       let timerInterval
       Swal.fire({
@@ -99,7 +104,6 @@ const Login = ({ history }) => {
           timerInterval = setInterval(() => {
             b.textContent = Math.floor(Swal.getTimerLeft() / 1000, 2) + 1
           }, 10)
-
         },
         willClose: () => {
           clearInterval(timerInterval)
@@ -204,8 +208,8 @@ const Login = ({ history }) => {
           </div>
           <div></div>
           <div className={styles.copyright}>
-            <img style={{ width: "50px", height: "50px", marginRight: "5px" }} src={team_logo} alt="" />
-            <div>
+            <img style={{ width: "47px", height: "47px", marginRight: "5px" }} src={team_logo} alt="" />
+            <div style={{fontSize:"13px"}}>
               우) 62218 광주광역시 광산구 하남산단6번로 107<br />
               COPYRIGHT (c) 2022. TEAM_93%. All rights reserved.
             </div>

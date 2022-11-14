@@ -2,17 +2,16 @@ import * as React from 'react';
 import { useState } from 'react';
 import styles from './MainPage.module.css';
 
-import RealTime from './1RealTime'
 import AllWork from './2AllWork';
 import RouteAnalysis from './3RouteAnalysis';
 import Chatting from './4Chatting';
-import Notice from './5Notice';
 import MainFrame from './MainFrame';
+import NowLocation from '../nowlocation/NowLocation';
 
 // import NaverMapApi from '../navermap/NaverMapApi';
-import NowLocation from '../nowlocation/NowLocation';
 import fold_on from '../assets/images/fold_on.png'
 import fold_off from '../assets/images/fold_off.png'
+import search from '../assets/images/search.png';
 
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +22,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { createTheme, styled, ThemeProvider } from '@mui/material/styles';
+import { nodeName } from 'jquery';
+import { display } from '@mui/system';
+
 
 
 
@@ -43,7 +45,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    "fontFamily": "S-CoreDream-3Light"
+    "fontFamily": "BMJUA"
   }
 });
 
@@ -60,7 +62,6 @@ const CssTextField = styled(TextField)({
     },
   },
 });
-
 
 const MainPage = () => {
   const [pickDate, pickDateValue] = React.useState(null);
@@ -97,20 +98,19 @@ const MainPage = () => {
   }
 
   const contents = {
-    5: <RealTime />,
+    0: <NowLocation />,
     1: <AllWork />,
     2: <RouteAnalysis />,
     3: <Chatting />,
-    4: <Notice />,
-    0: <NowLocation />
   }
   const menu_header = {
     0: '실시간 업무 현황',
     1: '업무 내역',
     2: '경로 분석',
     3: '채팅',
-    4: '공지사항',
-    5: '네이버지도'
+  }
+  function searchRoute () {
+
   }
 
   return (
@@ -129,60 +129,90 @@ const MainPage = () => {
         <div style={{ height: "100%", width: "100%" }}>
           <div className={styles.menu_header_after} id="menu_header">
             <div>{menu_header[MenuId]}</div>
-            <div >
-              {/* 지역 선택 */}
-              <FormControl sx={{ m: 0, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small">지역</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={region}
-                  label="Age"
-                  onChange={handleChange1}
-                >
-                  <MenuItem value={"seoul"}>서울</MenuItem>
-                  <MenuItem value={"gwangju"}>광주</MenuItem>
-                </Select>
-              </FormControl>
-              {/* 대학 선택 */}
-              <FormControl sx={{ marginLeft: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small">대학</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={univ}
-                  label="Age"
-                  onChange={handleChange2}
-                >
-                  <MenuItem value={10}>전남대학교</MenuItem>
-                  <MenuItem value={20}>광주과학기술원</MenuItem>
-                </Select>
-              </FormControl>
-              {/* 시간 선택 */}
-              <FormControl sx={{ marginLeft: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small">시간</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={taskTime}
-                  label="Age"
-                  onChange={handleChange3}
-                >
-                  <MenuItem value={"lunch"}>점심</MenuItem>
-                  <MenuItem value={"dinner"}>저녁</MenuItem>
-                </Select>
-              </FormControl>
-              {/* 날짜 선택 */}
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="날짜"
-                  value={pickDate}
-                  onChange={(newValue) => {
-                    pickDateValue(newValue);
-                  }}
-                  renderInput={(params) => <TextField size='small' sx={{ marginRight: 3, marginLeft: 1, width: 150 }} {...params} />}
-                />
-              </LocalizationProvider>
+            <div className={styles.menu_setting}>
+              <ThemeProvider theme={theme}>
+                {/* 지역 선택 */}
+                <FormControl color="mymaincolor" sx={{ m: 0, minWidth: 120 }} size="small">
+                  <InputLabel 
+                    id="demo-select-small"
+                    color="mymaincolor"
+                    sx={{
+                      fontFamily:"BMJUA",
+                      color:"mymaincolor"
+                    }}>지역</InputLabel>
+                  <Select
+                    labelId="demo-select-small"
+                    id="demo-select-small"
+                    value={region}
+                    label="Age"
+                    onChange={handleChange1}
+                    sx={{
+                      color: "warning",
+                    }}
+                  >
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={"seoul"}>서울</MenuItem>
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={"gwangju"}>광주</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* 대학 선택 */}
+                <FormControl color="mymaincolor" sx={{ marginLeft: 1, minWidth: 120 }} size="small">
+                  <InputLabel sx={{fontFamily:"BMJUA"}}  color="mymaincolor" id="demo-select-small">대학</InputLabel>
+                  <Select
+                    labelId="demo-select-small"
+                    id="demo-select-small"
+                    value={univ}
+                    label="Age"
+                    onChange={handleChange2}
+                  >
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={'jnu'}>전남대학교</MenuItem>
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={'gist'}>광주과학기술원</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* 시간 선택 */}
+                <FormControl color="mymaincolor" sx={{ marginLeft: 1, minWidth: 120, fontFamily:"BMJUA" }} size="small">
+                  <InputLabel sx={{fontFamily:"BMJUA"}} placeholder="시간" color="mymaincolor" id="demo-select-small">시간</InputLabel>
+                  <Select
+                    labelId="demo-select-small"
+                    id="demo-select-small"
+                    value={taskTime}
+                    label="Age"
+                    onChange={handleChange3}
+                  >
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={"lunch"}>점심</MenuItem>
+                    <MenuItem sx={{fontFamily:"BMJUA"}} value={"dinner"}>저녁</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* 날짜 선택 */}
+                <LocalizationProvider sx={{fontFamily:"BMJUA"}} color="mymaincolor" dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    inputFormat='YYYY년 MM월 DD일'
+                    fontFamily="BMJUA"
+                    color="mymaincolor"
+                    label="날짜"
+                    pla
+                    value={pickDate}
+                    sx={{fontFamily:"BMJUA"}}
+                    maxDate={new Date()}
+                    onChange={(newValue) => {
+                      pickDateValue(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField color="mymaincolor"
+                        size="small"
+                        sx={{ marginRight: 1, marginLeft: 1, width: 200, fontFamily:"BMJUA" }}
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          placeholder: "2022년 01월 01일"
+                        }}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </ThemeProvider>
+              <button className={styles.searchBUtton} onClick={searchRoute}>
+                <img style={{width:"25px", height:"25px", marginTop:"2px", marginRight:"10px"}} src={search} alt="" />
+              </button>
             </div>
           </div>
           <div className={styles.menu_content}>{contents[MainId]}</div>
