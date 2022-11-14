@@ -9,6 +9,7 @@ export const userSlice = createSlice({
     name: '',
     routeList: [],
     specialKey: '',
+    profile: '',
   },
   reducers: {
     setUser: (state, action) => {
@@ -18,6 +19,9 @@ export const userSlice = createSlice({
       state.name = action.payload.name;
       state.routeList = action.payload.routeList;
       state.specialKey = action.payload.specialKey;
+    },
+    setProfile: (state, action) => {
+      state.profile = action.payload;
     },
     logoutUser: state => {
       state.email = '';
@@ -29,6 +33,6 @@ export const userSlice = createSlice({
     },
   },
 });
-export const {setUser, logoutUser} = userSlice.actions;
+export const {setUser, setProfile, logoutUser} = userSlice.actions;
 
 export default userSlice.reducer;
