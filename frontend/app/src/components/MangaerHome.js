@@ -101,7 +101,20 @@ function ManagerHome({navigation}) {
         },
       })
         .then(res => {
-          console.log(res);
+          console.log('파일업로드', res.data);
+          axios({
+            method: 'get',
+            url: camera_service.getFile(),
+            params: {
+              userId: userInfo.id,
+            },
+          })
+            .then(result => {
+              console.log('파일가져오기', result.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
         })
         .catch(e => {
           console.log(e);

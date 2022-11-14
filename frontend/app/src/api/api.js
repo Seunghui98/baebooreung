@@ -75,8 +75,8 @@ const gps_service = {
 
 const CAMERA_SERVICE = 's3-service/';
 const camera_service = {
-  uploadFile: () => BASE_URL + CAMERA_SERVICE + 'upload',
-  getFile: () => BASE_URL + CAMERA_SERVICE + 'get',
+  uploadFile: () => BASE_URL + CAMERA_SERVICE + 'upload/',
+  getFile: () => BASE_URL + CAMERA_SERVICE + 'getProfile/',
 };
 export {
   chat,
