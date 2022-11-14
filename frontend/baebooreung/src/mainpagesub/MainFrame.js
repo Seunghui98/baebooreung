@@ -25,7 +25,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
     1: "업무 내역",
     2: "경로 분석",
     3: "채팅",
-    4: "공지사항",
+    4: "테스트용"
   }
   const menus_fold = {
     0: "",
@@ -113,7 +113,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
             }}
           >
             <img className={styles.main_frame_logo_image} src={notice} alt="" />
-            &nbsp;&nbsp;&nbsp;공지사항
+            &nbsp;&nbsp;&nbsp;테스트용
           </button>
         </div>
         <div>

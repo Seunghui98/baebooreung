@@ -7,6 +7,7 @@ import RouteAnalysis from './3RouteAnalysis';
 import Chatting from './4Chatting';
 import MainFrame from './MainFrame';
 import NowLocation from '../nowlocation/NowLocation';
+import Testpage from './testpage';
 
 // import NaverMapApi from '../navermap/NaverMapApi';
 import fold_on from '../assets/images/fold_on.png'
@@ -18,6 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -102,12 +104,14 @@ const MainPage = () => {
     1: <AllWork />,
     2: <RouteAnalysis />,
     3: <Chatting />,
+    4: <Testpage />,
   }
   const menu_header = {
     0: '실시간 업무 현황',
     1: '업무 내역',
     2: '경로 분석',
     3: '채팅',
+    4: '테스트',
   }
   function searchRoute () {
 

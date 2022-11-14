@@ -8,9 +8,11 @@ import $, { now } from "jquery";
 const { naver } = window;
 
 const NowLocation = () => {
+  const cloudStoneLatLng = [126.8523,35.1423]
   // const [start, setStart] = useState("126.8116,35.2053") // SSAFY 광주 캠퍼스 출발지
+  // const [now_loc, setStart] = useState([126.8938, 35.1785]) // 전남대A출발지
   const [zoom, setZoom] = useState(15)
-  const [now_loc, setStart] = useState([126.8938, 35.1785]) // 전남대A출발지
+  const [now_loc, setStart] = useState([126.8523,35.1423]) // 전남대A출발지
   const [center, setCenter] = useState(now_loc)
   let waypoints = [
     [126.8982, 35.1786], // 킹스샌드
