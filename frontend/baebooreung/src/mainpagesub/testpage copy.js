@@ -1,39 +1,19 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns'
 const { naver } = window;
 
 const BASE_URL = "https://k7c207.p.ssafy.io:8000"
 
-
-const TestPage = (props) => {
-  async function search_route() {
-    await axios({
-      url: BASE_URL + '/business-service/route/navigps',
-      method: "post",
-      data: {
-        region: props.myParams.region,
-        date: `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-${new Date(props.myParams.pickDate).getDate()}`
-      }
-    }).then((res) => {
-      console.log(res)
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
-
+const TestPage = () => {
   function make_LatLng(now_loc_temp) {
     return `${now_loc_temp.join(',')}`
   }
-  function setTwoCenter(a, b) {
+  function setTowCenter(a, b) {
     return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
   }
-  const [zoom, setZoom] = useState(13)
-  const [now_loc, setStart] = useState([126.8116, 35.2053]) // 전남대A출발지
-
   const ssafyLatLng = [126.8116, 35.2053]
   const cloudStoneLatLng = [126.85224, 35.14228]
-  const [center, setCenter] = useState(setTwoCenter(ssafyLatLng, cloudStoneLatLng))
+  const [center, setCenter] = useState(cloudStoneLatLng)
   const ssafy_cloudstone_route_temp = {
     start: make_LatLng(ssafyLatLng),
     goal: make_LatLng(cloudStoneLatLng),
@@ -49,19 +29,42 @@ const TestPage = (props) => {
       data: route,
     }).then((res) => {
       const path = res.data.route.trafast[0].path
+      console.log(path)
       for (let i = 0; i <= path.length - 1; i++) {
         course.push(new naver.maps.LatLng(path[i][1], path[i][0]))
       }
-      setSsafyCloudStoneCourse(course)
+      console.log(course)
+      // setSsafyCloudStoneCourse()
+    })
+  }
+  cal_course(ssafy_cloudstone_route_temp)
+
+  function dateFormat(date) {
+    let dateFormat2 = date.getFullYear() +
+      '-' + ((date.getMonth() + 1) < 9 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1)) +
+      '-' + ((date.getDate()) < 9 ? "0" + (date.getDate()) : (date.getDate()));
+    return dateFormat2;
+  }
+  let toDay = dateFormat(new Date('2022-11-09'));
+  async function search_region_date_all_route() {
+    await axios({
+      url: BASE_URL + '/business-service/route/navigps',
+      method: "post",
+      data: {
+        region: "GWANGJU",
+        date: "2022-11-09"
+      }
+    }).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
     })
   }
 
-  const [params_temp, setParamsTemp] = useState(0)
-
   useEffect(() => {
     let map = new naver.maps.Map('map', {
-      center: center,
-      zoom: zoom,
+      center: setTowCenter(ssafyLatLng, cloudStoneLatLng),
+      zoom: 13,
       zoomControl: true,
       zoomControlOptions: {
         position: naver.maps.Position.TOP_RIGHT
@@ -94,24 +97,16 @@ const TestPage = (props) => {
     let polyline = new naver.maps.Polyline({
       map: map,
       path: SsafyCloudStoneCourse,
-      strokeColor: "#0094EE",
+      strokeColor: "#000000",
       strokeStyle: "solid",
       strokeLineCap: "round",
-      strokeWeight: 15,
+      strokeWeight: 5,
       strokeOpacity: 1
     })
-  }, [SsafyCloudStoneCourse]);
+  }, []);
 
-
-  useEffect(() => {
-    setTimeout(() => {
-      setParamsTemp(params_temp + 1)
-    }, 3000)
-  }, [params_temp])
-
-  useEffect(() => {
-    cal_course(ssafy_cloudstone_route_temp)
-  }, [params_temp, zoom])
+  // console.log(SsafyCloudStoneCourse)
+  // console.log(SsafyCloudStoneCourse)
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
