@@ -92,7 +92,7 @@ const TestPage = (props) => {
       for (let i = 0; i <= path.length - 1; i++) {
         course.push(new naver.maps.LatLng(path[i][1], path[i][0]))
       }
-      // push된 값을 53줄의 모든 경로를 담을 리스트에 넣는다.
+      // push된 값을 77줄의 모든 경로를 담을 리스트에 넣는다.
       setSsafyCloudStoneCourse(course)
     })
   }
