@@ -28,7 +28,8 @@ const user_service = {
   authdriver: () => BASE_URL + USER_SERVICE + 'authdriver/', // 관리자 드라이버 인증
   getUserInfo: () => BASE_URL + USER_SERVICE + 'user/', // 사용자 정보 요청
   getAllUser: () => BASE_URL + USER_SERVICE + 'users', // 전체 사용자 정보 출력
-  // profile: () => USER_BASE_URL + USER + 'profile', // 프로필 사진 수정
+  // profile: () => BASE_URL + USER_SERVICE + 'save/profile/', // 프로필 사진 수정
+  getProfile: () => BASE_URL + USER_SERVICE + 'user/profile/',
   saveFCMToken: () => BASE_URL + USER_SERVICE + 'fcm/' + 'saveToken',
 };
 

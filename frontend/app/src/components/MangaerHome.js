@@ -6,6 +6,7 @@ import {
   FlatList,
   Pressable,
   PermissionsAndroid,
+  Image,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -35,6 +36,7 @@ function ManagerHome({navigation}) {
   const [deliveryTotal, setDeliveryTotal] = useState(0);
   const [deliveryFinish, setDeliveryFinish] = useState(0);
   const [index, setIndex] = useState(0);
+  const [profileImage, setProfileImage] = useState('');
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   const requestCameraPermission = async () => {
@@ -101,7 +103,7 @@ function ManagerHome({navigation}) {
         },
       })
         .then(res => {
-          console.log('파일업로드', res.data);
+          console.log('파일업로드');
           axios({
             method: 'get',
             url: camera_service.getFile(),
@@ -125,18 +127,17 @@ function ManagerHome({navigation}) {
   useEffect(() => {
     requestCameraPermission();
     requestStoragePermission();
+    setProfileImage(userInfo.profile);
     setPermissionGranted(true);
   }, []);
 
-  useEffect(() => {
+  const setInfoList = async () => {
     //userList(나를 제외한 유저리스트)가 갱신되었을 때 실행
     if (userList !== null) {
       //현재 날짜를 받음
       const realDate = toStringByFormatting(new Date());
-      console.log(realDate);
       //현재 시간을 받음
       const realTime = new Date().getHours();
-      console.log(realTime);
       //오후 10시부터 오후 2시까지는 점심정보를 띄움,오후 2시부터 오후 10시까지는 저녁정보를 띄움
 
       let realType; //점심, 저녁에 대한 정보를 시간에 따라 저장
@@ -147,52 +148,66 @@ function ManagerHome({navigation}) {
       }
 
       // 먼저 유저리스트에서 grade가 DRIVER인 유저만 추출하여 드라이버가 가지고있는 루트ID를 추출
+      //영선코드
+      // const newTemp = [];
       userList
         .filter(item => item.grade === 'DRIVER')
-        .map((item, idx) => {
-          axios({
+        .map(async (item, idx) => {
+          await axios({
             method: 'get',
             url: business_service.getDriverRoute() + `${item.id}/` + 'routes/',
           })
-            .then(res => {
+            .then(async res => {
               console.log(
                 item.name,
                 '드라이버의 id를 통해 얻을 수 있는 정보',
                 res.data,
               );
 
-              //추출된 루트ID를 가지고 그 루트ID가 가지고있는 경로 정보 모두 추출
               if (res.data.length !== 0) {
-                res.data.map((el, idx) => {
+                //추출된 루트ID를 가지고 그 루트ID가 가지고있는 경로 정보 모두 추출
+                res.data.map(async (el, idx) => {
                   axios({
                     method: 'get',
                     url: business_service.getRoute() + `${el.id}`,
                   })
                     .then(result => {
-                      console.log(
-                        item.name,
-                        '드라이버가 저장한 루트id를 통해 얻을 수 있는 정보',
-                        result.data,
-                      );
+                      console.log(realType, result.data.routeType);
+                      // console.log(
+                      //   item.name,
+                      //   '드라이버가 저장한 루트id를 통해 얻을 수 있는 정보',
+                      //   result.data,
+                      // );
                       // 루트 정보의 date값과 routeType을 비교하여(ex)date : 2022-01-01 routeType : lunch)
-                      // if(realDate === result.data.date && realType === result.data.routeType){
-                      // }
-                      // (userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
-                      setTempList(tempList => {
-                        const newTempList = [...tempList];
-                        newTempList.push({
-                          userId: item.email,
-                          name: item.name,
-                          routeInfo: result.data,
+                      // (id, userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
+                      if (
+                        // true
+                        // realDate === result.data.date &&
+                        realType === result.data.routeType
+                      ) {
+                        //영선코드
+                        // newTemp.push({
+                        //   id: item.id,
+                        //   userId: item.email,
+                        //   name: item.name,
+                        //   routeInfo: result.data,
+                        // });
+                        console.log('실행');
+                        setTempList(tempList => {
+                          const newTempList = [...tempList];
+                          newTempList.push({
+                            id: item.id,
+                            userId: item.email,
+                            name: item.name,
+                            routeInfo: result.data,
+                          });
+                          return newTempList;
                         });
-                        return newTempList;
-                      });
+                        console.log('끝');
+                      }
                     })
                     .catch(e => {
                       console.log(e);
-                    })
-                    .finally(fin => {
-                      setOk(true);
                     });
                 });
               }
@@ -201,13 +216,21 @@ function ManagerHome({navigation}) {
               console.log(e);
             });
         });
+      // setOk(!ok);
+      // console.log(newTemp);
+      // setTempList(newTemp);
     }
+  };
+
+  useEffect(() => {
+    setInfoList();
   }, [userList]);
 
   useEffect(() => {
+    console.log(ok, tempList);
     //모든 루트 정보가 저장되었을 시 실행
     if (tempList.length !== 0) {
-      console.log(tempList);
+      console.log('땀뿌리스트', tempList);
       tempList.map(item => {
         //routeInfo의 done이 false일때만 진행
         if (!item.routeInfo.done) {
@@ -244,10 +267,13 @@ function ManagerHome({navigation}) {
           setPickupFinish(finishPickupSum);
           setDeliveryTotal(totalDeliverySum);
           setDeliveryFinish(finishDeliverySum);
-          const index = list.findIndex(find => {
-            find.routeName === item.routeInfo.routeName;
+
+          const index = list.findIndex(function (find) {
+            return find.routeName === item.routeInfo.routeName;
           });
+          console.log('index', index);
           if (index === -1) {
+            console.log('대학교추가');
             setDriverList(driverList => {
               const newDriverList = [...driverList];
               newDriverList.push({userId: item.userId, name: item.name});
@@ -265,19 +291,24 @@ function ManagerHome({navigation}) {
                 check = true;
               }
             });
+            console.log(check);
             //이미 존재하는 드라이버인 경우
             if (check) {
-              setList(list => {
-                const newList = [...list];
-                newList[index].pickupTotal += totalPickupSum;
-                newList[index].pickupFinish += finishPickupSum;
-                newList[index].deliveryTotal += totalDeliverySum;
-                newList[index].deliveryFinish += finishDeliverySum;
-                return newList;
-              });
+              console.log('여기는 이미존재하는 드라이버 추가하는곳');
+              // setList(list => {
+              //   const newList = [...list];
+              //   newList[index].pickupTotal += totalPickupSum;
+              //   newList[index].pickupFinish += finishPickupSum;
+              //   newList[index].deliveryTotal += totalDeliverySum;
+              //   newList[index].deliveryFinish += finishDeliverySum;
+              //   return newList;
+              // });
             }
             //존재하지 않는 드라이버인 경우 드라이버 추가, 드라이버 숫자 업데이트
             else {
+              console.log(
+                '여기는 존재하지 않는 드라이버인 경우 드라이버 추가하는 곳',
+              );
               setList(list => {
                 const newList = [...list];
                 newList[index].driver.push({
@@ -296,11 +327,10 @@ function ManagerHome({navigation}) {
         }
       });
     }
-  }, [ok]);
+  }, [tempList]);
 
   useEffect(() => {
     //새로 추가되는 학교일 때 실행(list 배열에 새로운 객체 업데이트)
-    console.log('useEffec문 실행', index);
     if (index === -1) {
       setList(list => {
         const newList = [...list];
@@ -344,7 +374,6 @@ function ManagerHome({navigation}) {
 
     return [year, month, day].join(delimiter);
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -353,10 +382,18 @@ function ManagerHome({navigation}) {
             changeProfile();
             // uploadPicture();
           }}>
-          <Icon
-            name="person"
-            size={SCREEN_HEIGHT / 8}
-            color={identityTextColor}></Icon>
+          {profileImage === '' && (
+            <Icon
+              name="person"
+              size={SCREEN_HEIGHT / 8}
+              color={identityTextColor}></Icon>
+          )}
+          {profileImage !== '' && (
+            <Image
+              source={{uri: profileImage}}
+              // style={{resizeMode: 'contain', height: '70', width: '70'}}
+            />
+          )}
         </Pressable>
         <View style={styles.topTextLayout}>
           {userInfo.grade === 'MANAGER' && (

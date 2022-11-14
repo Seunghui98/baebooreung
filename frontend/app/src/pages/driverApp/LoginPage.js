@@ -14,7 +14,7 @@ import {user_service} from '../../api/api';
 // redux
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserInfo} from '../../redux/auth';
-import {setUser} from '../../redux/user';
+import {setUser, setProfile} from '../../redux/user';
 import {setUserList} from '../../redux/userList';
 //component and function
 import CustomButton from '../../components/CustomButton';
@@ -57,11 +57,25 @@ const Login = ({navigation}) => {
       url: user_service.getUserInfo() + `${id}`, //path variable로 id값을 받는다.
     })
       .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         dispatch(setUser(res.data));
       })
       .catch(err => {
         console.log(err);
+      });
+  };
+
+  const fetchUserProfile = async id => {
+    await axios({
+      method: 'get',
+      url: user_service.getProfile() + `${id}`,
+    })
+      .then(res => {
+        // console.log('프로필 이미지 : ', res.data);
+        dispatch(setProfile(res.data));
+      })
+      .catch(e => {
+        console.log(e);
       });
   };
 
@@ -71,16 +85,16 @@ const Login = ({navigation}) => {
       url: user_service.getAllUser(),
     })
       .then(res => {
-        console.log('All userList', res.data);
+        // console.log('All userList', res.data);
         //나를 제외한 모든 유저들 연락처에 저장
         const userList = [];
         res.data
           .filter(item => item.id !== userInfo.id)
           .map((item, idx) => {
-            console.log(item.id);
+            // console.log(item.id);
             userList.push(item);
           });
-        console.log(userList);
+        // console.log(userList);
         dispatch(setUserList(userList));
       })
       .catch(e => {
@@ -121,6 +135,7 @@ const Login = ({navigation}) => {
         }),
       );
       fetchUserInfo(res.headers.id);
+      fetchUserProfile(res.headers.id);
       console.log('Login Success!');
       messaging()
         .getToken()
@@ -134,7 +149,7 @@ const Login = ({navigation}) => {
             },
           })
             .then(res => {
-              console.log(res);
+              // console.log(res);
             })
             .catch(err => {
               console.log(err);
