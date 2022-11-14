@@ -1,0 +1,23 @@
+.effect {
+    width:100%;
+    height:100%;
+    position: absolute;
+    /* background-color: rgba(#0F1839, 0.5); */
+    /* rgba( 255, 255, 255, 0.5 ); */
+    background-color: rgba(15, 24, 57, 0.2);
+    z-index: 3;
+    text-align: end;
+    font-family: "BMJUA";
+    color:black;
+    font-size:30px;
+}
+
+.ment {
+    position: absolute;
+    top:2%;
+    right:7%;
+    padding: 12px;
+    background-color: rgba( 255, 255, 255, 1 );
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 2px rgba( 0, 0, 0, 0.1 ) ;
+}

@@ -25,7 +25,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
     1: "업무 내역",
     2: "경로 분석",
     3: "채팅",
-    4: "테스트용"
+    4: "테스트"
   }
   const menus_fold = {
     0: "",
@@ -48,8 +48,8 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
     <div className={styles.main_display_flex} style={{ height: "100%" }}>
       <div className={styles.main_justify_content_space_between}>
         <div className={styles.main_display_flex_direction_col}>
-            {/* <img className={styles.main_logo_fold_image} src={logo_fold} alt="" /> */}
-            <img className={styles.main_logo_image} onClick={onClickImg} src={logo} alt="" />
+          {/* <img className={styles.main_logo_fold_image} src={logo_fold} alt="" /> */}
+          <img className={styles.main_logo_image} onClick={onClickImg} src={logo} alt="" />
           <button
             id="button_1"
             className={styles.button_style_pick}
