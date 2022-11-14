@@ -72,9 +72,9 @@ function HomeStack() {
 
 function GPSStack() {
   return (
-    <Stack.Navigator initialRouteName="GPS">
+    <Stack.Navigator initialRouteName="GPSHome">
       <Stack.Screen
-        name="GPS"
+        name="GPSHome"
         component={GPSScreen}
         options={{
           headerStyle: {

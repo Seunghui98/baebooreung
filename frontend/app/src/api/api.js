@@ -69,4 +69,20 @@ const business_service = {
   // 사진 찍기
 };
 
-export {chat, voice, user_service, business_service};
+const gps_service = {
+  getRealTimeGPS: () => BASE_URL + 'api/gps/',
+};
+
+const CAMERA_SERVICE = 's3-service/';
+const camera_service = {
+  uploadFile: () => BASE_URL + CAMERA_SERVICE + 'upload',
+  getFile: () => BASE_URL + CAMERA_SERVICE + 'get',
+};
+export {
+  chat,
+  voice,
+  user_service,
+  business_service,
+  gps_service,
+  camera_service,
+};
