@@ -28,7 +28,7 @@ const NowLocation = () => {
   ]
 
   const route = {
-    start: make_LatLng(now_loc),
+    start: make_LatLng(waypoints[0]),
     goal: make_LatLng(waypoints[waypoints.length - 1]),
     option: "trafast",
     waypoints: make_waypoints(waypoints)
