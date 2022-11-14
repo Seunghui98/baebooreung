@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns'
+import zIndex from '@mui/material/styles/zIndex';
 const { naver } = window;
 
 const BASE_URL = "https://k7c207.p.ssafy.io:8000"
@@ -15,7 +16,7 @@ const TestPage = (props) => {
       method: "post",
       data: {
         region: props.myParams.region,
-        date: `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-${new Date(props.myParams.pickDate).getDate()}`
+        date: new Date(props.myParams.pickDate).getMonth() + 1 > 10 ? (new Date(props.myParams.pickDate).getDate() > 10 ? `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-${new Date(props.myParams.pickDate).getDate()}` : `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`) : `${new Date(props.myParams.pickDate).getFullYear()}-0${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`
       }
     }).then((res) => {
       console.log(res)
@@ -45,20 +46,20 @@ const TestPage = (props) => {
   const [center, setCenter] = useState(setTwoCenter(ssafyLatLng, cloudStoneLatLng))
 
   // 경유지가 있다고 임의로 가정
-  let waypoints = [
-    [126.8982, 35.1786], // 킹스샌드
-    [126.9043, 35.1777], // 알촌
-    [126.9030, 35.1777], // 봉구스밥버거
-    [126.9028, 35.1779], // 카츠앤맘
-    [126.9021, 35.1774], // 덮덮밥 광주용봉점
-    [126.9011, 35.1779], // 마라미녀
-    [126.9012, 35.1798], // 오늘하루가
-    [126.9029, 35.1807], // 김밥나라
-    [126.9101, 35.1813], // 생핼관4동입구
-    [126.9109, 35.1802], // 생핼관6동입구
-    [126.8997, 35.1765], // 8동생활관콜라자판기옆
-    [126.9108, 35.1804]  // 생활관5동입구
-  ]
+  // let waypoints = [
+  //   [126.8982, 35.1786], // 킹스샌드
+  //   [126.9043, 35.1777], // 알촌
+  //   [126.9030, 35.1777], // 봉구스밥버거
+  //   [126.9028, 35.1779], // 카츠앤맘
+  //   [126.9021, 35.1774], // 덮덮밥 광주용봉점
+  //   [126.9011, 35.1779], // 마라미녀
+  //   [126.9012, 35.1798], // 오늘하루가
+  //   [126.9029, 35.1807], // 김밥나라
+  //   [126.9101, 35.1813], // 생핼관4동입구
+  //   [126.9109, 35.1802], // 생핼관6동입구
+  //   [126.8997, 35.1765], // 8동생활관콜라자판기옆
+  //   [126.9108, 35.1804]  // 생활관5동입구
+  // ]
   // 결과적으로 waypoints는 126.8982,35.1786|126.9043,35.1777|126.9030,35.1777:의 형태를 나타내게 된다.
   // 경유지 좌표를 위도, 경도 순서로 잇고, |를 구분자로 정하고, 마지막을 :로 정리한다.
   function make_waypoints(waypoints_temp) {
@@ -105,6 +106,7 @@ const TestPage = (props) => {
       zoom: zoom,
       zoomControl: true,
       zoomControlOptions: {
+        style: naver.maps.ZoomControlStyle.SMALL,
         position: naver.maps.Position.TOP_RIGHT
       }
     });
@@ -147,15 +149,17 @@ const TestPage = (props) => {
   useEffect(() => {
     setTimeout(() => {
       setParamsTemp(params_temp + 1)
-    }, 3000)
+    }, 300000)
   }, [params_temp])
 
   useEffect(() => {
-    cal_course(ssafy_cloudstone_route_temp)
+    search_route()
+    // cal_course(ssafy_cloudstone_route_temp)
   }, [params_temp, zoom])
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <div style={{ width: '100%', height: '100%', position: "relative" }}>
+      <div style={{ width: "100%", height: "100%", position: "absolute", backgroundColor: "blue", zIndex: "3", textAlign: "center", }}>안녕하세요?</div>
       <div id="map" style={{ width: '100%', height: '100%' }}></div>
     </div>
   )
