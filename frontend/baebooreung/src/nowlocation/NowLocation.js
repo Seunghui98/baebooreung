@@ -8,11 +8,11 @@ import $, { now } from "jquery";
 const { naver } = window;
 
 const NowLocation = () => {
-  const cloudStoneLatLng = [126.8523,35.1423]
+  const cloudStoneLatLng = [126.8523, 35.1423]
   // const [start, setStart] = useState("126.8116,35.2053") // SSAFY 광주 캠퍼스 출발지
   // const [now_loc, setStart] = useState([126.8938, 35.1785]) // 전남대A출발지
   const [zoom, setZoom] = useState(15)
-  const [now_loc, setStart] = useState([126.8523,35.1423]) // 전남대A출발지
+  const [now_loc, setStart] = useState([126.8523, 35.1423]) // 전남대A출발지
   const [center, setCenter] = useState(now_loc)
   let waypoints = [
     [126.8982, 35.1786], // 킹스샌드
@@ -71,6 +71,7 @@ const NowLocation = () => {
         for (let i = 0; i <= path.length - 1; i++) {
           course.push(new naver.maps.LatLng(path[i][1], path[i][0]))
         }
+        console.log(course)
         setTestCourse(course)
       })
     await axios({
@@ -142,25 +143,15 @@ const NowLocation = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      // axios({
-      //   url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/2`,
-      //   method: 'get'
-      // }).then((res) => {
-      //   console.log(res.data.longitude + ',' + res.data.latitude)
-      //   setStart(res.data.longitude + ',' + res.data.latitude)
-      // })
       setParamsTemp(params_temp + 1)
-      console.log(now_loc)
       cal_course()
-      setStart([parseFloat(now_loc[0]) - 0.001, now_loc[1]])
-      setCenter(now_loc)
-    }
-      , 3000000)
+    }, 3000)
   }, [params_temp])
 
   useEffect(() => {
     cal_course()
-  }, [now_loc, params_temp, zoom])
+
+  }, [params_temp, zoom])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -194,15 +185,6 @@ const NowLocation = () => {
                 <img className={styles.profileImage} src={gist} alt="" />
                 <div className={styles.profileContent}>지스트C</div>
               </button>
-              {/* <input
-                type="text"
-                onChange={(e) => {
-                  setZoom(e.target.value);
-                }
-                }
-                style={{ width: "20px" }}
-                value={zoom}
-              ></input> */}
             </div>
           </div>
           <div id="map" style={{ width: '100%', height: '100%' }}></div>
