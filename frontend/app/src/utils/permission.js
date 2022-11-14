@@ -15,6 +15,7 @@ export const getLocationPermission = async () => {
     return false;
   }
 };
+
 export const requestCameraPermission = async () => {
   try {
     const granted = await PermissionsAndroid.request(
@@ -38,3 +39,18 @@ export const requestCameraPermission = async () => {
     return false;
   }
 };
+
+// export const requestStoragePermission = async () => {
+//   try {
+//     const granted = await PermissionsAndroid.request(
+//       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+//     );
+//     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } catch (err) {
+//     return false;
+//   }
+// };
