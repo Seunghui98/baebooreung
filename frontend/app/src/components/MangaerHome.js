@@ -5,12 +5,17 @@ import {
   Dimensions,
   FlatList,
   Pressable,
+  PermissionsAndroid,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import {business_service} from '../api/api';
+import {business_service, camera_service} from '../api/api';
+import ImagePicker, {
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
@@ -18,6 +23,7 @@ const date = new Date();
 
 function ManagerHome({navigation}) {
   const userInfo = useSelector(state => state.user);
+  const token = useSelector(state => state.auth.accessToken);
   const userList = useSelector(state => state.userList.userList);
   const [tempList, setTempList] = useState([]);
   const [ok, setOk] = useState(false);
@@ -29,6 +35,85 @@ function ManagerHome({navigation}) {
   const [deliveryTotal, setDeliveryTotal] = useState(0);
   const [deliveryFinish, setDeliveryFinish] = useState(0);
   const [index, setIndex] = useState(0);
+  const [permissionGranted, setPermissionGranted] = useState(false);
+
+  const requestCameraPermission = async () => {
+    try {
+      granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the CAMERA');
+      } else {
+        console.log('CAMERA permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const requestStoragePermission = async () => {
+    try {
+      granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the STORAGE');
+      } else {
+        console.log('STORAGE permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const changeProfile = () => {
+    const image = {
+      uri: '',
+      type: 'image/jpeg',
+      name: 'test',
+    };
+    //launchImageLibrary : 사용자 앨범 접근
+    launchImageLibrary({}, res => {
+      if (res.didCancel) {
+        console.log('user cancelled image Picker');
+      } else if (res.errorCode) {
+        console.log('ImagePicker Error: ', res.errorCode);
+      } else if (res.assets) {
+        //정상적으로 사진을 반환 받았을 때
+        console.log('ImagePicker res', res);
+        image.name = res.assets[0].fileName;
+        image.type = res.assets[0].type;
+        image.uri = res.assets[0].uri;
+      }
+      const formdata = new FormData();
+      formdata.append('image', image);
+      formdata.append('userId', userInfo.id);
+      axios({
+        method: 'post',
+        url: camera_service.uploadFile(),
+        data: formdata,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        transformRequest: (data, headers) => {
+          return data;
+        },
+      })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    });
+  };
+
+  useEffect(() => {
+    requestCameraPermission();
+    requestStoragePermission();
+    setPermissionGranted(true);
+  }, []);
 
   useEffect(() => {
     //userList(나를 제외한 유저리스트)가 갱신되었을 때 실행
@@ -250,10 +335,16 @@ function ManagerHome({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <Icon
-          name="person"
-          size={SCREEN_HEIGHT / 8}
-          color={identityTextColor}></Icon>
+        <Pressable
+          onPress={async () => {
+            changeProfile();
+            // uploadPicture();
+          }}>
+          <Icon
+            name="person"
+            size={SCREEN_HEIGHT / 8}
+            color={identityTextColor}></Icon>
+        </Pressable>
         <View style={styles.topTextLayout}>
           {userInfo.grade === 'MANAGER' && (
             <Text style={styles.topText}> {userInfo.name} 관리자님</Text>

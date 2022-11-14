@@ -23,38 +23,46 @@ const identityColor = '#0B0B3B';
 const identityTextColor = '#F7FE2E';
 
 export default function DetailGPS(props) {
+  const userList = useSelector(state => state.userList.userList);
   const [ok, setOk] = useState(false);
-  const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
+  const [LocationList, setLocationList] = useState([]);
 
   useEffect(() => {
-    //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
-    props.routeList.map((item, idx) => {
-      setDriverList(driverList => {
-        const newDriverList = [...driverList];
-        newDriverList.push({
-          id: item.userId,
-          name: item.name,
-          routeName: props.routeName,
-          routeInfo: item.routeInfo,
+    props.routeList //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
+      .map((item, idx) => {
+        setDriverList(driverList => {
+          const newDriverList = [...driverList];
+          newDriverList.push({
+            userId: item.userId,
+            name: item.name,
+            routeName: props.routeName,
+            routeInfo: item.routeInfo,
+            id: item.id,
+          });
+          return newDriverList;
         });
-        return newDriverList;
       });
-    });
     setOk(true);
   }, []);
 
   useEffect(() => {
     if (driverList.length !== 0) {
       console.log(driverList);
-      // axios({
-      //   method : 'get',
-      //   url : gps_service.getRealTimeGPS()+`${}`
-      // }).then(res=>{
-      // }).catch(e=>{
-      // });
+      driverList.map((item, idx) => {
+        axios({
+          method: 'get',
+          url: gps_service.getRealTimeGPS() + `${item.id}`,
+        })
+          .then(res => {
+            console.log('gps 정보 출력', res.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      });
     }
   }, [ok]);
 
@@ -70,11 +78,10 @@ export default function DetailGPS(props) {
               activeOpacity={0.9}
               onPress={() => {
                 if (ID !== item.id) {
+                  axios.get;
                   setID(item.id);
-                  setWorkType(false);
                 } else {
                   setID('');
-                  setWorkType(false);
                 }
               }}>
               <View>
@@ -98,32 +105,10 @@ export default function DetailGPS(props) {
                 </View>
               </View>
             </TouchableOpacity>
+            {/* {ID === item.id && } */}
             <ManagerMap></ManagerMap>
           </View>
         )}></FlatList>
-
-      {/* 이미지 모달창 */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text></Text>
-            <View style={{alignItems: 'center'}}>
-              <Image source={Sample} style={styles.modalImage} />
-            </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>확인</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
