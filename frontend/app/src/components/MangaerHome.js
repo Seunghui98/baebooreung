@@ -348,14 +348,15 @@ function ManagerHome({navigation}) {
   };
 
   useEffect(() => {
-    console.log('프로필 이미지 redux', userInfo.profile);
-    console.log('auth정보', token);
-    setProfileImage(userInfo.profile);
     requestCameraPermission();
     requestStoragePermission();
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (userInfo.profile !== '') {
+      setProfileImage(userInfo.profile);
+    }
+  }, [userInfo.profile]);
   return (
     <View style={styles.container}>
       <View style={styles.top}>
