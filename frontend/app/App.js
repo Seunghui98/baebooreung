@@ -77,6 +77,7 @@ function GPSStack() {
         name="GPSHome"
         component={GPSScreen}
         options={{
+          title: '드라이버 위치확인',
           headerStyle: {
             backgroundColor: identityColor,
           },

@@ -39,6 +39,7 @@ function ManagerHome({navigation}) {
   const [deliveryFinish, setDeliveryFinish] = useState(0);
   const [index, setIndex] = useState(0);
   const [profileImage, setProfileImage] = useState(userInfo.profile);
+  const [date, setDate] = useState('');
   const dispatch = useDispatch();
 
   const setInfoList = async () => {
@@ -46,6 +47,7 @@ function ManagerHome({navigation}) {
     if (userList !== null) {
       //현재 날짜를 받음
       const realDate = toStringByFormatting(new Date());
+      setDate(realDate);
       //현재 시간을 받음
       const realTime = new Date().getHours();
       //오후 10시부터 오후 2시까지는 점심정보를 띄움,오후 2시부터 오후 10시까지는 저녁정보를 띄움
@@ -114,9 +116,6 @@ function ManagerHome({navigation}) {
               console.log(e);
             });
         });
-      // setOk(!ok);
-      // console.log(newTemp);
-      // setTempList(newTemp);
     }
   };
 
@@ -125,8 +124,24 @@ function ManagerHome({navigation}) {
   }, [userList]);
 
   useEffect(() => {
+    // axios({
+    //   method: 'get',
+    //   url: business_service.getOrderCount() + 3,
+    // })
+    //   .then(res => {
+    //     console.log(res.data);
+    //   })
+    //   .catch(e => {
+    //     console.log(e);
+    //   });
+  }, []);
+  useEffect(() => {
+    console.log('list 출력', list);
+  }, [list]);
+  useEffect(() => {
     //모든 루트 정보가 저장되었을 시 실행
     if (tempList.length !== 0) {
+      console.log('실행', tempList);
       tempList.map(item => {
         //routeInfo의 done이 false일때만 진행
         if (!item.routeInfo.done) {
@@ -160,9 +175,13 @@ function ManagerHome({navigation}) {
           //이때 배달기사는 하나의 학교(RouteName)에만 배달을 한다고 가정하고 진행
           setUniversity(item.routeInfo.routeName);
           setPickupTotal(totalPickupSum);
+          console.log('totalPickupSum', totalPickupSum);
           setPickupFinish(finishPickupSum);
+          console.log('finishPickupSum', finishPickupSum);
           setDeliveryTotal(totalDeliverySum);
+          console.log('totalDeliverySum', totalDeliverySum);
           setDeliveryFinish(finishDeliverySum);
+          console.log('finishDeliverySum', finishDeliverySum);
 
           const index = list.findIndex(function (find) {
             return find.routeName === item.routeInfo.routeName;
@@ -394,7 +413,7 @@ function ManagerHome({navigation}) {
 
       <View style={styles.dailyWorkLayout}>
         <View style={styles.dailyWorkTitleTextLayout}>
-          <Text style={styles.dailyWorkTitleText}>업무현황</Text>
+          <Text style={styles.dailyWorkTitleText}>업무현황 ({date}) </Text>
         </View>
         <View style={styles.dailyWork}>
           <FlatList

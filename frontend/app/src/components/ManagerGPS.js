@@ -102,9 +102,6 @@ export default function ManagerGPS({navigation}) {
               console.log(e);
             });
         });
-      // setOk(!ok);
-      // console.log(newTemp);
-      // setTempList(newTemp);
     }
   };
 
