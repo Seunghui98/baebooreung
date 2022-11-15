@@ -145,7 +145,7 @@ function ManagerTab() {
             <Icon name="gps-fixed" color={color} size={size}></Icon>
           ),
         }}></Tab.Screen>
-      <Tab.Screen
+      {/* <Tab.Screen
         name="STT"
         component={STTScreen}
         options={{
@@ -161,7 +161,7 @@ function ManagerTab() {
           tabBarIcon: ({color, size}) => (
             <Icon name="mic" color={color} size={size}></Icon>
           ),
-        }}></Tab.Screen>
+        }}></Tab.Screen> */}
     </Tab.Navigator>
   );
 }

@@ -29,7 +29,7 @@ const user_service = {
   getUserInfo: () => BASE_URL + USER_SERVICE + 'user/', // 사용자 정보 요청
   getAllUser: () => BASE_URL + USER_SERVICE + 'users', // 전체 사용자 정보 출력
   // profile: () => BASE_URL + USER_SERVICE + 'save/profile/', // 프로필 사진 수정
-  getProfile: () => BASE_URL + USER_SERVICE + 'user/profile/',
+  getProfile: () => BASE_URL + USER_SERVICE + 'user/profile/', // 프로필 이미지 조회
   saveFCMToken: () => BASE_URL + USER_SERVICE + 'fcm/' + 'saveToken',
 };
 
@@ -72,9 +72,9 @@ const business_service = {
   getOrderCount: () => BASE_URL + BUSINESS_SERVICE + 'order/cnt/',
   //routeID 의 주문건수 API
 };
-
+const GPS_SERVICE = 'gps-service/';
 const gps_service = {
-  getRealTimeGPS: () => BASE_URL + 'api/gps/',
+  getRealTimeGPS: () => BASE_URL + GPS_SERVICE + 'gps/',
 };
 
 const CAMERA_SERVICE = 's3-service/';

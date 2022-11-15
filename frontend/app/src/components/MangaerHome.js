@@ -28,6 +28,7 @@ const date = new Date();
 
 function ManagerHome({navigation}) {
   const userInfo = useSelector(state => state.user);
+  const token = useSelector(state => state.auth);
   const userList = useSelector(state => state.userList.userList);
   const [tempList, setTempList] = useState([]);
   const [list, setList] = useState([]);
@@ -135,13 +136,10 @@ function ManagerHome({navigation}) {
     //     console.log(e);
     //   });
   }, []);
-  useEffect(() => {
-    console.log('list 출력', list);
-  }, [list]);
+
   useEffect(() => {
     //모든 루트 정보가 저장되었을 시 실행
     if (tempList.length !== 0) {
-      console.log('실행', tempList);
       tempList.map(item => {
         //routeInfo의 done이 false일때만 진행
         if (!item.routeInfo.done) {
@@ -175,13 +173,9 @@ function ManagerHome({navigation}) {
           //이때 배달기사는 하나의 학교(RouteName)에만 배달을 한다고 가정하고 진행
           setUniversity(item.routeInfo.routeName);
           setPickupTotal(totalPickupSum);
-          console.log('totalPickupSum', totalPickupSum);
           setPickupFinish(finishPickupSum);
-          console.log('finishPickupSum', finishPickupSum);
           setDeliveryTotal(totalDeliverySum);
-          console.log('totalDeliverySum', totalDeliverySum);
           setDeliveryFinish(finishDeliverySum);
-          console.log('finishDeliverySum', finishDeliverySum);
 
           const index = list.findIndex(function (find) {
             return find.routeName === item.routeInfo.routeName;
@@ -305,7 +299,7 @@ function ManagerHome({navigation}) {
     //launchImageLibrary : 사용자 앨범 접근
     launchImageLibrary({}, res => {
       if (res.didCancel) {
-        console.log('user cancelled image Picker');
+        // console.log('user cancelled image Picker');
       } else if (res.errorCode) {
         console.log('ImagePicker Error: ', res.errorCode);
       } else if (res.assets) {
@@ -354,11 +348,15 @@ function ManagerHome({navigation}) {
   };
 
   useEffect(() => {
-    console.log(userInfo.profile);
-    setProfileImage(userInfo.profile);
     requestCameraPermission();
     requestStoragePermission();
   }, []);
+
+  useEffect(() => {
+    if (userInfo.profile !== '') {
+      setProfileImage(userInfo.profile);
+    }
+  }, [userInfo.profile]);
 
   return (
     <View style={styles.container}>
@@ -425,6 +423,7 @@ function ManagerHome({navigation}) {
                 onPress={() => {
                   navigation.navigate('DetailWork', {
                     headerTitle: `${item.routeName}`,
+                    routeName: item.routeName,
                     routeList: tempList,
                   });
                 }}>
