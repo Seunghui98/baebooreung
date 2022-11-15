@@ -30,7 +30,8 @@ export default function DetailWork(props) {
       setDriverList(driverList => {
         const newDriverList = [...driverList];
         newDriverList.push({
-          id: item.userId,
+          id: item.id,
+          userId: item.userId,
           name: item.name,
           routeName: props.routeName,
           routeInfo: item.routeInfo,
@@ -43,20 +44,20 @@ export default function DetailWork(props) {
 
   useEffect(() => {
     if (driverList.length !== 0) {
-      // console.log('');
-      // console.log('driverList목록 : item 값', driverList[0]);
-      // console.log('');
-      // console.log('driverList목록 : routerInfo값', driverList[0].routeInfo);
-      // console.log('');
-      // console.log(
-      //   'driverList목록 : deliveryList값',
-      //   driverList[0].routeInfo.deliveryList,
-      // );
-      // console.log('');
-      // console.log(
-      //   'driverList목록 : deliveryList의 첫번째 요소값',
-      //   driverList[0].routeInfo.deliveryList[0],
-      // );
+      console.log('');
+      console.log('driverList목록 : item 값', driverList[0]);
+      console.log('');
+      console.log('driverList목록 : routerInfo값', driverList[0].routeInfo);
+      console.log('');
+      console.log(
+        'driverList목록 : deliveryList값',
+        driverList[0].routeInfo.deliveryList,
+      );
+      console.log('');
+      console.log(
+        'driverList목록 : deliveryList의 첫번째 요소값',
+        driverList[0].routeInfo.deliveryList[0],
+      );
     }
   }, [ok]);
 

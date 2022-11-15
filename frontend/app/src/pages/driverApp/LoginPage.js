@@ -14,7 +14,7 @@ import {user_service} from '../../api/api';
 // redux
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserInfo} from '../../redux/auth';
-import {setUser} from '../../redux/user';
+import {setUser, setProfile} from '../../redux/user';
 import {setUserList} from '../../redux/userList';
 //component and function
 import CustomButton from '../../components/CustomButton';
@@ -64,13 +64,27 @@ const Login = ({navigation}) => {
       });
   };
 
+  const fetchUserProfile = async id => {
+    await axios({
+      method: 'get',
+      url: user_service.getProfile() + `${id}`,
+    })
+      .then(res => {
+        // console.log('프로필 이미지 : ', res.data);
+        dispatch(setProfile(res.data));
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
   const fetchOthersInfo = async () => {
     await axios({
       metohd: 'get',
       url: user_service.getAllUser(),
     })
       .then(res => {
-        console.log('All userList', res.data);
+        // console.log('All userList', res.data);
         //나를 제외한 모든 유저들 연락처에 저장
         const userList = [];
         res.data
@@ -107,6 +121,7 @@ const Login = ({navigation}) => {
         }),
       );
       fetchUserInfo(res.headers.id);
+      fetchUserProfile(res.headers.id);
       console.log('Login Success!');
       messaging()
         .getToken()
@@ -120,7 +135,7 @@ const Login = ({navigation}) => {
             },
           })
             .then(res => {
-              console.log(res);
+              // console.log(res);
             })
             .catch(err => {
               console.log(err);
