@@ -38,7 +38,6 @@ export default function DetailGPS(props) {
           newDriverList.push({
             userId: item.userId,
             name: item.name,
-            routeName: props.routeName,
             routeInfo: item.routeInfo,
             id: item.id,
           });
@@ -96,7 +95,7 @@ export default function DetailGPS(props) {
                           ? styles.driverListClickText
                           : styles.driverListText
                       }>
-                      {item.routeName} {item.name} 드라이버
+                      {item.routeInfo.routeName} {item.name} 드라이버
                     </Text>
                   </View>
                   <View style={styles.driverListImageLayout}>
