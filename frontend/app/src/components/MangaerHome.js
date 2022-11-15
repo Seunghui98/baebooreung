@@ -299,7 +299,7 @@ function ManagerHome({navigation}) {
     //launchImageLibrary : 사용자 앨범 접근
     launchImageLibrary({}, res => {
       if (res.didCancel) {
-        console.log('user cancelled image Picker');
+        // console.log('user cancelled image Picker');
       } else if (res.errorCode) {
         console.log('ImagePicker Error: ', res.errorCode);
       } else if (res.assets) {
@@ -357,6 +357,7 @@ function ManagerHome({navigation}) {
       setProfileImage(userInfo.profile);
     }
   }, [userInfo.profile]);
+
   return (
     <View style={styles.container}>
       <View style={styles.top}>

@@ -12,12 +12,14 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat, user} from '../api/api';
+import {chat, user, user_service} from '../api/api';
 import CheckBox from '@react-native-community/checkbox';
-
+import Truck from '../assets/images/truck.png';
+import AudioRecord from '../components/AudioRecord';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default function ManagerChat({navigation}) {
@@ -34,6 +36,7 @@ export default function ManagerChat({navigation}) {
   const [quitChatVisible, setQuitChatVisible] = useState(false); // 채팅방 수정/나가기 모달창
   const [quitChatRoomInfo, setQuitChatRoomInfo] = useState({});
   const userList = useSelector(state => state.userList.userList);
+  const [userProfileList, setUserProfileList] = useState([]);
   const user = useSelector(state => state.user);
   const name = user.name; //메세지를 전송하는 주체
   const dispatch = useDispatch();
@@ -252,6 +255,29 @@ export default function ManagerChat({navigation}) {
   }, []);
 
   useEffect(() => {
+    // 유저목록 프로필사진 가능하면...?
+    // if (userList.length !== 0 && userList !== undefined) {
+    //   userList.map(item => {
+    //     axios({
+    //       method: 'get',
+    //       url: user_service.getProfile() + `${item.id}`,
+    //     })
+    //       .then(res => {
+    //         console.log('파일가져오기', res.data);
+    //         setUserProfileList(userProfileList => {
+    //           const newUserProfileList = [...userProfileList];
+    //           newUserProfileList.push({
+    //             email: item.email,
+    //             grade: item.grade,
+    //             id: item.id,
+    //             name: item.name,
+    //             profile: res.data,
+    //           });
+    //         });
+    //       })
+    //       .catch(e => {});
+    //   });
+    // }
     connect();
     return () => disconnect();
   }, []);
@@ -287,13 +313,13 @@ export default function ManagerChat({navigation}) {
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
-                    <Icon name="person" size={30}></Icon>
+                    {<Image source={Truck} style={styles.image} />}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
                       {item.grade === 'DRIVER' && '드라이버'}
                     </Text>
                   </View>
-                  <View style={styles.userListDetailIcon}>
+                  {/* <View style={styles.userListDetailIcon}>
                     <TouchableOpacity>
                       <Icon name="phone-forwarded" size={30}></Icon>
                     </TouchableOpacity>
@@ -309,7 +335,7 @@ export default function ManagerChat({navigation}) {
                         size={30}
                         style={styles.userMessageIcon}></Icon>
                     </TouchableOpacity>
-                  </View>
+                  </View> */}
                 </View>
               )}
             />
@@ -521,6 +547,7 @@ export default function ManagerChat({navigation}) {
                 </View>
               )}></FlatList>
             <View style={styles.bottomContainer}>
+              <AudioRecord propFunction={handleChange}></AudioRecord>
               <TextInput
                 style={styles.messageInput}
                 multiline={true}
@@ -712,6 +739,7 @@ export default function ManagerChat({navigation}) {
                 })
                   .then(res => {
                     console.log('채팅방 삭제', res.data);
+                    quit(quitChatRoomInfo.roomId, user.email);
                   })
                   .catch(e => {
                     console.log(e);
@@ -919,9 +947,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   messageInput: {
-    flex: 1,
+    flex: 5,
     maxHeight: SCREEN_HEIGHT / 7.3,
     fontSize: 15,
+    borderTopLeftRadius: 10,
     backgroundColor: 'white',
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
@@ -1033,5 +1062,10 @@ const styles = StyleSheet.create({
   },
   exitRoomText: {
     fontSize: 16,
+  },
+  image: {
+    resizeMode: 'stretch',
+    width: 50,
+    height: 40,
   },
 });

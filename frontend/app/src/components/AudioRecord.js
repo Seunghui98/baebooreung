@@ -18,9 +18,8 @@ import axios from 'axios';
 import {voice} from '../api/api';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
-export default function AudioRecord() {
+export default function AudioRecord(props) {
   const [mic, setMic] = useState(false);
-  const [text, setText] = useState('마이크를 눌러 보세요!');
   const formData = new FormData();
 
   const requestRecordingAudioPermission = async () => {
@@ -70,7 +69,7 @@ export default function AudioRecord() {
         },
       })
         .then(res => {
-          setText(res.data.text);
+          props.propFunction(res.data.text);
           console.log(res.data.text);
         })
         .catch(e => {
@@ -103,7 +102,7 @@ export default function AudioRecord() {
           <Image source={MicOFF} style={styles.image} />
         </Pressable>
       )}
-      <Text>{text}</Text>
+      {/* <Text>{text}</Text> */}
     </View>
   );
 }
@@ -113,10 +112,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
+    margin: 5,
+    padding: 5,
+    borderRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 10,
+    shadowOpacity: 0.4,
   },
   image: {
     resizeMode: 'stretch',
-    width: 200,
-    height: 200,
+    width: 30,
+    height: 30,
   },
 });

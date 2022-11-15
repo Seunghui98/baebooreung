@@ -117,7 +117,7 @@ const Login = ({navigation}) => {
       url: user_service.getProfile() + `${id}`,
     })
       .then(res => {
-        console.log('프로필 이미지 : ', res.data);
+        // console.log('프로필 이미지 : ', res.data);
         dispatch(setProfile(res.data));
       })
       .catch(e => {
