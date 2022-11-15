@@ -70,7 +70,7 @@ const Login = ({navigation}) => {
       url: user_service.getProfile() + `${id}`,
     })
       .then(res => {
-        // console.log('프로필 이미지 : ', res.data);
+        console.log('프로필 이미지 : ', res.data);
         dispatch(setProfile(res.data));
       })
       .catch(e => {
@@ -111,6 +111,8 @@ const Login = ({navigation}) => {
       axios.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${res.headers.token}`;
+      axios.defaults.headers.common['id'] = res.headers.id; //<- 여기추가
+      axios.defaults.headers.common['specialkey'] = res.headers.specialkey; //<- 여기추가
       //redux
       dispatch(
         setUserInfo({

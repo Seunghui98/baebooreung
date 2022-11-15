@@ -5,6 +5,13 @@ import Map from './Map';
 import {useSelector} from 'react-redux';
 import separator from '../assets/images/separator.png';
 import Cam from '../components/Cam';
+import ImagePicker, {
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
+import {useEffect} from 'react';
+import {requestStoragePermission} from '../utils/permission';
+import {camera_service} from '../api/api';
 
 const DetailJob = props => {
   const lat = useSelector(state => state.gps.lat);
@@ -13,10 +20,64 @@ const DetailJob = props => {
     latitude: lat,
     longitude: lng,
   };
+
   const activeCam = () => {
-    console.log('실행되냐?');
+    const image = {
+      uri: '',
+      type: 'image/jpeg',
+      name: 'test',
+    };
+    launchCamera({}, res => {
+      if (res.didCancel) {
+        console.log('user cancelled image Picker');
+      } else if (res.errorCode) {
+        console.log('ImagePicker Error: ', res.errorCode);
+      } else if (res.assets) {
+        //정상적으로 사진을 반환 받았을 때
+        console.log('ImagePicker res', res);
+        image.name = res.assets[0].fileName;
+        image.type = res.assets[0].type;
+        image.uri = res.assets[0].uri;
+      }
+      const formdata = new FormData();
+      formdata.append('image', image);
+      formdata.append('delId', 1); //delId 값 넣으면 됩니당
+      axios({
+        method: 'post',
+        url: camera_service.uploadCheckIn(),
+        data: formdata,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        transformRequest: (data, headers) => {
+          return data;
+        },
+      })
+        .then(res => {
+          console.log('체크인 이미지 업로드');
+          axios({
+            method: 'get',
+            url: camera_service.getCheckIn(),
+            params: {
+              delId: 1, // delId 값 넣으면 됩니당
+            },
+          })
+            .then(result => {
+              console.log('체크인 이미지 가져오기', result.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    });
     return <Cam />;
   };
+  useEffect(() => {
+    requestStoragePermission();
+  }, []);
   return (
     <View style={styles.DetailJobcontainer}>
       <View style={styles.header}>
