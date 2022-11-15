@@ -5,6 +5,7 @@ import styles from './1RealTime.module.css'
 
 import jnu from '../assets/images/전남대학교.png';
 import gist from '../assets/images/지스트.png';
+import yonsei from '../assets/images/연세대.png';
 
 const { naver } = window;
 
@@ -13,11 +14,11 @@ const BASE_URL = "https://k7c207.p.ssafy.io:8000"
 
 const RealTime = (props) => {
   const [myuniv, setMyUniv] = useState([])
-  const JNU = [126.9063,35.1767]
-  const GIST = [126.8465,35.2240]
-  const GWANGJU = setTwoCenter(JNU, GIST)
-  const YONSEI = [126.935,37.5578]
-  const SEOUL = [126.9701,37.5558]
+  const JNU = [126.9063, 35.1767]
+  const GIST = [126.8465, 35.2240]
+  const GWANGJU = [126.8800, 35.1980]
+  const YONSEI = [126.938, 37.5628]
+  const SEOUL = [126.9901, 37.5258]
   const ssafyLatLng = [126.8116, 35.2053]
   const cloudStoneLatLng = [126.85224, 35.14228]
   const [SsafyCloudStoneCourse, setSsafyCloudStoneCourse] = useState([])
@@ -26,11 +27,14 @@ const RealTime = (props) => {
     goal: make_LatLng(cloudStoneLatLng),
     option: "trafast",
   }
+  const [test_course, setTestCourse] = useState([])
   const [zoom, setZoom] = useState(12)
   // const [now_loc, setStart] = useState([126.8116, 35.2053]) // 전남대A출발지
   const [center, setCenter] = useState(setTwoCenter(ssafyLatLng, cloudStoneLatLng))
+  const [temp_test, setTempTest] = useState(0)
   const [params_temp, setParamsTemp] = useState(0)
-
+  const [routeColor, setRouteColor] = useState([])
+  const [routeId, setRouteId] = useState(0)
   function make_LatLng(now_loc_temp) {
     return `${now_loc_temp.join(',')}`
   }
@@ -41,8 +45,8 @@ const RealTime = (props) => {
   function make_waypoints(waypoints_temp) {
     return waypoints_temp.join('|') + ':'
   }
-  
-  async function cal_course(requestBody, Callbackfunction) {
+
+  async function cal_course(requestBody) {
     const course = []
     await axios({
       url: "https://k7c207.p.ssafy.io:8000/user-service/map",
@@ -53,8 +57,8 @@ const RealTime = (props) => {
       for (let i = 0; i <= path.length - 1; i++) {
         course.push(new naver.maps.LatLng(path[i][1], path[i][0]))
       }
-      Callbackfunction(course)
     })
+    return course
   }
 
   const [allTask, setAllTask] = useState([])
@@ -67,8 +71,15 @@ const RealTime = (props) => {
         date: new Date(props.myParams.pickDate).getMonth() + 1 > 10 ? (new Date(props.myParams.pickDate).getDate() > 10 ? `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-${new Date(props.myParams.pickDate).getDate()}` : `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`) : `${new Date(props.myParams.pickDate).getFullYear()}-0${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`
       }
     }).then((res) => {
-      // console.log(res.data)
-      setAllTask(res.data)
+      setAllTask(res.data.sort(function (a, b) {
+        if (a.routeName < b.routeName) {
+          return 1;
+        }
+        if (a.routeName > b.routeName) {
+          return -1;
+        }
+        return 0;
+      }))
     }).catch((err) => {
       console.log(err)
     })
@@ -84,8 +95,15 @@ const RealTime = (props) => {
         date: new Date(props.myParams.pickDate).getMonth() + 1 > 10 ? (new Date(props.myParams.pickDate).getDate() > 10 ? `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-${new Date(props.myParams.pickDate).getDate()}` : `${new Date(props.myParams.pickDate).getFullYear()}-${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`) : `${new Date(props.myParams.pickDate).getFullYear()}-0${new Date(props.myParams.pickDate).getMonth() + 1}-0${new Date(props.myParams.pickDate).getDate()}`
       }
     }).then((res) => {
-      // console.log(res.data)
-      setAllTask(res.data)
+      setAllTask(res.data.sort(function (a, b) {
+        if (a.routeName < b.routeName) {
+          return 1;
+        }
+        if (a.routeName > b.routeName) {
+          return -1;
+        }
+        return 0;
+      }))
     }).catch((err) => {
       console.log(err)
     })
@@ -101,21 +119,20 @@ const RealTime = (props) => {
   //     }
   //   }).then((res) => {
   //     // console.log(res.data)
-  //     setAllRegionDateTask(res.data)
+  //     setallTask(res.data)
   //   }).catch((err) => {
   //     console.log(err)
   //   })
   // }
-  const [test_course, setTestCourse] = useState([])
 
-  const [temp_test, setTempTest] = useState(0)
-
-  useEffect(() => {
-    cal_course(ssafy_cloudstone_route_temp, setSsafyCloudStoneCourse)
-  }, [])
 
 
   useEffect(() => {
+    // if (props.myParams.univ) {
+
+    // }
+    console.log('allTask', allTask)
+    routeColor.length = 0;
     let map = new naver.maps.Map('map', {
       center: center,
       zoom: zoom,
@@ -124,10 +141,10 @@ const RealTime = (props) => {
         style: naver.maps.ZoomControlStyle.SMALL,
         position: naver.maps.Position.BOTTOM_LEFT
       },
-      logoControl:false,
-      scaleControl:false,
-      mapTypeControl:false,
-      mapDataControl:false,
+      logoControl: false,
+      scaleControl: false,
+      mapTypeControl: false,
+      mapDataControl: false,
     });
 
     let marker_default_1 = new naver.maps.Marker({
@@ -167,7 +184,7 @@ const RealTime = (props) => {
     })
     let markerSet_default = [marker_default_1, marker_default_2]
     if (props.myParams.region) {
-      markerSet_default.map((marker,idx)=>{
+      markerSet_default.map((marker, idx) => {
         marker.setMap(null);
         polyline_default.setMap(null);
       })
@@ -179,7 +196,7 @@ const RealTime = (props) => {
         setZoom(13)
         setCenter(GWANGJU)
         if (props.myParams.univ === "전남대학교") {
-          setZoom(15)
+          setZoom(16)
           setCenter(JNU)
         }
         if (props.myParams.univ === "광주과학기술원") {
@@ -188,50 +205,79 @@ const RealTime = (props) => {
         }
       }
       else if (props.myParams.region === "SEOUL") {
-        setZoom(14)
+        setZoom(13)
         setCenter(SEOUL)
         if (props.myParams.univ === "연세대학교") {
           setZoom(16)
           setCenter(YONSEI)
-        } 
+        }
       }
-      for (let i = 0; i <= allTask.length - 1 ; i ++) {
+
+      for (let i = 0; i <= allTask.length - 1; i++) {
         myuniv.push(allTask[i].routeName)
         if (allTask[i].deliveryDtoList.length) {
-          for (let j = 0 ; j <= allTask[i].deliveryDtoList.length - 1; j ++) {
-            let marker = new naver.maps.Marker({
-              map: map,
-              position: new naver.maps.LatLng([allTask[i].deliveryDtoList[j].longitude, allTask[i].deliveryDtoList[j].latitude]),
-              // animation: 1,
-              icon: {
-                content: '<div style="display:flex;justify-content:center;align-items:center;text-align:center"><img src="https://user-images.githubusercontent.com/97590478/201535636-aa05a014-2697-4016-81e6-e639593a68c5.png" alt="" ' +
-                  'style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; ' +
-                  '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;">' +
-                  `<div class=${styles.mydiv}>${j + 1}</div>` + '</div>',
-                size: new naver.maps.Size(22, 35),
-                anchor: new naver.maps.Point(11, 35)
+          let randomBrightColor = () => {
+            let color_r = Math.floor(Math.random() * 127 + 128).toString(16);
+            let color_g = Math.floor(Math.random() * 127 + 128).toString(16);
+            let color_b = Math.floor(Math.random() * 127 + 128).toString(16);
+            return `#${color_r + color_g + color_b}`;
+          }
+          let color_temp = randomBrightColor()
+          routeColor.push(color_temp)
+          // console.log(routeColor)
+          if (allTask[i].deliveryDtoList.length) {
+            if (!routeId || allTask[i].routeId === routeId) {
+              const waypoints_temp = []
+              for (let j = 0; j <= allTask[i].deliveryDtoList.length - 1; j++) {
+                new naver.maps.Marker({
+                  map: map,
+                  position: new naver.maps.LatLng([allTask[i].deliveryDtoList[j].longitude, allTask[i].deliveryDtoList[j].latitude]),
+                  // animation: 1,
+                  icon: {
+                    content:
+                      `<div class=${styles.mydiv} style="outline-style:solid; outline-width:7px; outline-color:${color_temp};">${j + 1}</div>`,
+                    // content: '<div style="display:flex;justify-content:center;align-items:center;text-align:center"><img src="https://user-images.githubusercontent.com/97590478/201535636-aa05a014-2697-4016-81e6-e639593a68c5.png" alt="" ' +
+                    //   'style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; ' +
+                    //   '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;">' +
+                    //   `<div class=${styles.mydiv}>${j + 1}</div>` + '</div>',
+                    // outline-color:${randomBrightColor};
+                    size: new naver.maps.Size(22, 35),
+                    anchor: new naver.maps.Point(11, 35)
+                  }
+                })
+                waypoints_temp.push([allTask[i].deliveryDtoList[j].longitude, allTask[i].deliveryDtoList[j].latitude])
               }
-            })
+              const course_temp = {
+                start: make_LatLng([allTask[i].deliveryDtoList[0].longitude, allTask[i].deliveryDtoList[0].latitude]),
+                goal: make_LatLng([allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].longitude, allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].latitude]),
+                option: "trafast",
+                waypoints: make_waypoints(waypoints_temp)
+              }
+              cal_course(course_temp).then((appData) => {
+                new naver.maps.Polyline({
+                  map: map,
+                  path: appData,
+                  strokeColor: color_temp,
+                  strokeStyle: "solid",
+                  strokeLineCap: "round",
+                  strokeWeight: 10,
+                  strokeOpacity: 1
+                })
+              })
+            }
           }
         }
-        // const course = {
-        //   start: make_LatLng([allRegionDateTask[i].deliveryDtoList[0].longitude, allRegionDateTask[i].deliveryDtoList[0].latitude]),
-        //   goal: make_LatLng([allRegionDateTask[i].deliveryDtoList[-1].longitude, allRegionDateTask[i].deliveryDtoList[-1].latitude]),
-        //   option: "trafast",
-        // }
-        // let polyline = new naver.maps.polyline({
-        //   map: map,
-        //   path: cal_course(test_course, setTestCourse),
-        //   strokeColor: "#000000",
-        //   strokeStyle: "solid",
-        //   strokeLineCap: "round",
-        //   strokeWeight: 5,
-        //   strokeOpacity: 0.4
-        // })
       }
     }
-  // return map.setMap(null); 
-  }, [SsafyCloudStoneCourse, allTask, temp_test, zoom]);
+    console.log(routeColor)
+  }, [SsafyCloudStoneCourse, allTask, zoom, routeId]);
+
+  useEffect(() => {
+    cal_course(ssafy_cloudstone_route_temp).then((appData) => {
+      setSsafyCloudStoneCourse(appData)
+    })
+  }, [])
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -240,24 +286,30 @@ const RealTime = (props) => {
   }, [params_temp])
 
   useEffect(() => {
+    console.log("지역바뀜")
     setTempTest(temp_test + 1)
     searchRegionDate()
     setMyUniv([])
+    setRouteColor([])
+    setRouteId(0)
   }, [props.myParams.region])
 
   useEffect(() => {
+    console.log("대학바뀜")
     setTempTest(temp_test + 1)
+    setRouteColor([])
     searchRegionDateUniv()
     setMyUniv([])
+    setRouteId(0)
   }, [props.myParams.univ])
 
   // useEffect(() => {
   //   searchRegionDateUnivTime()
   // }, [props.myParams.Date])
-  
+
   const [AllWork, setAllWork] = useState([])
-  function findAllWork (Id) {
-    
+  function findAllWork(Id) {
+
   }
 
   return (
@@ -273,54 +325,101 @@ const RealTime = (props) => {
       }
       <div>
         <div className={styles.profileList}>
-          {       
-            allTask.map((route, index) => {
-              if (props.myParams.region === "GWANGJU") {
-                if (props.myParams.univ === "전남대학교") {
-                  return (
-                    <div>
-                      <button className={styles.profileImageContent} onClick={() => {alert('hi')}}>
-                        <img className={styles.profileImage} src={jnu} alt="" />
-                        <div className={styles.profileContent}>
-                          {route.routeName}&nbsp;
-                          {String.fromCharCode(index + 65)}
+          {
+            (function () {
+              if (props.myParams.region === "GWANGJU" && props.myParams.univ === "전남대학교") {
+                return (
+                  allTask.map((route, index) => {
+                    return (
+                      <div>
+                        {/* <button className={styles.profileImageContent} style="background-color:white;" onClick={() => { setRoute(route.routeId) }}> */}
+                        <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                          {/* <button className={styles.profileImageContent} style={{ outlineColor: routeColor[index], outlineStyle: "solid", outlineWidth: "4px" }}> */}
+                          <img className={styles.profileImage} src={jnu} alt="" />
+                          <div className={styles.profileContent} >
+                            {route.routeName}&nbsp;
+                            {String.fromCharCode(index + 65)}
+                          </div>
+                        </button>
+                      </div>
+                    )
+                  }))
+              } else if (props.myParams.region === "GWANGJU" && props.myParams.univ === "광주과학기술원") {
+                return (
+                  allTask.map((route, index) => {
+                    return (
+                      <div>
+                        <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                          <img className={styles.profileImage} src={gist} alt="" />
+                          <div className={styles.profileContent}>
+                            {route.routeName}&nbsp;
+                            {String.fromCharCode(index + 65)}
+                          </div>
+                        </button>
+                      </div>
+                    )
+                  }))
+              } else if (props.myParams.region === "GWANGJU") {
+                return (
+                  allTask.map((route, index) => {
+                    if (route.routeName === "전남대학교") {
+                      return (
+                        <div>
+                          <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                            <img className={styles.profileImage} src={jnu} alt="" />
+                            <div className={styles.profileContent}>
+                              {route.routeName}&nbsp;
+                              {String.fromCharCode(index + 65)}
+                            </div>
+                          </button>
                         </div>
-                      </button>
-                    </div>
-                  );
-                } else if (props.myParams.univ === "광주과학기술원") {
-                  return (
-                    <div>
-                      <button className={styles.profileImageContent}>
-                        <img className={styles.profileImage} src={gist} alt="" />
-                        <div className={styles.profileContent}>
-                          {route.routeName}&nbsp;
-                          {String.fromCharCode(index + 65)}
+                      )
+                    } else if (route.routeName === "광주과학기술원") {
+                      return (
+                        <div>
+                          <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                            <img className={styles.profileImage} src={gist} alt="" />
+                            <div className={styles.profileContent}>
+                              {route.routeName}&nbsp;
+                              {String.fromCharCode(index + 60)}
+                            </div>
+                          </button>
                         </div>
-                      </button>
-                    </div>
-                  );
-                } else {
-
-                }
+                      )
+                    }
+                  }))
+              } else if (props.myParams.region === "SEOUL" && props.myParams.univ === "연세대학교") {
+                return (
+                  allTask.map((route, index) => {
+                    return (
+                      <div>
+                        <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                          <img className={styles.profileImage} src={yonsei} alt="" />
+                          <div className={styles.profileContent}>
+                            {route.routeName}&nbsp;
+                            {String.fromCharCode(index + 65)}
+                          </div>
+                        </button>
+                      </div>
+                    )
+                  }))
+              } else if (props.myParams.region === "SEOUL") {
+                return (
+                  allTask.map((route, index) => {
+                    return (
+                      <div>
+                        <button className={styles.profileImageContent} style={{ color: routeColor[index] }} onClick={() => { setRouteId(route.routeId) }}>
+                          <img className={styles.profileImage} src={yonsei} alt="" />
+                          <div className={styles.profileContent}>
+                            {route.routeName}&nbsp;
+                            {String.fromCharCode(index + 65)}
+                          </div>
+                        </button>
+                      </div>
+                    )
+                  }))
               }
-              else if (props.myParams.region === "SEOUL") {
-                if (props.myParams.univ === "연세대학교") {
-                  // return (
-                  //   <div>
-                  //     <button className={styles.profileImageContent}>
-                  //       <img className={styles.profileImage} src={yonsei} alt="" />
-                  //       <div className={styles.profileContent}>
-                  //         {route.routeName}&nbsp;
-                  //         {String.fromCharCode(index + 65)}
-                  //       </div>
-                  //     </button>
-                  //   </div>
-                  // );
-                } else {
-                }
-              }
-            })
+            })()
           }
         </div>
       </div>
