@@ -8,7 +8,7 @@ import $, { now } from "jquery";
 const { naver } = window;
 
 const NowLocation = (props) => {
-  const myuniv = ['전남대A', '전남대B', '전남대C', '지스트A', '지스트B', '지스트C']
+  const myuniv = []
   const cloudStoneLatLng = [126.8523, 35.1423]
   // const [start, setStart] = useState("126.8116,35.2053") // SSAFY 광주 캠퍼스 출발지
   // const [now_loc, setStart] = useState([126.8938, 35.1785]) // 전남대A출발지
@@ -145,12 +145,12 @@ const NowLocation = (props) => {
   useEffect(() => {
     setTimeout(() => {
       setParamsTemp(params_temp + 1)
-      // cal_course()
+      cal_course()
     }, 3000)
   }, [params_temp])
 
   useEffect(() => {
-    // cal_course()
+    cal_course()
 
   }, [params_temp, zoom])
 

@@ -87,6 +87,8 @@ const dispatch = useDispatch();
       // console.log(res.headers.token)
       dispatch(setToken(res.headers.token))
       axios.defaults.headers.common["Authorization"] = `Bearer ${res.headers.token}`;
+      axios.defaults.headers.common['id'] = res.headers.id;
+      axios.defaults.headers.common['specialkey'] = res.headers.specialkey; 
       // 로그아웃 시 토큰 없애고, 디폴트 헤더 커몬 어스에 빈 문자열 넣기
       // document.location.href = '/main'
     }).catch(() => {

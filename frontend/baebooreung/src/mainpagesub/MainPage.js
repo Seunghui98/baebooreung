@@ -192,8 +192,7 @@ const MainPage = () => {
 
                         onChange={handleChange2}
                       >
-                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'jnu'}>서울대학교</MenuItem>
-                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'gist'}>연세대학교</MenuItem>
+                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'연세대학교'}>연세대학교</MenuItem>
                       </Select>
                     </FormControl>
                     :
@@ -210,8 +209,8 @@ const MainPage = () => {
                         label="Age"
                         onChange={handleChange2}
                       >
-                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'jnu'}>전남대학교</MenuItem>
-                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'gist'}>광주과학기술원</MenuItem>
+                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'전남대학교'}>전남대학교</MenuItem>
+                        <MenuItem sx={{ fontFamily: "BMJUA" }} value={'광주과학기술원'}>광주과학기술원</MenuItem>
                       </Select>
                     </FormControl>
                     :
@@ -281,7 +280,7 @@ const MainPage = () => {
                         fontFamily="BMJUA"
                         color="mymaincolor"
                         label="날짜"
-                        // disabled={true}
+                        disabled={true}
                         value={pickDate}
                         sx={{ fontFamily: "BMJUA" }}
                         maxDate={new Date()}
