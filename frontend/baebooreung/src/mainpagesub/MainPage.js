@@ -76,6 +76,7 @@ const MainPage = () => {
 
   const handleChange1 = (event) => {
     setRegion(event.target.value);
+
   };
   const handleChange2 = (event) => {
     setUniv(event.target.value);
@@ -120,6 +121,10 @@ const MainPage = () => {
     setTaskTime('')
     pickDateValue(new Date().getMonth() + 1 > 10 ? (new Date().getDate() > 10 ? `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}` : `${new Date().getFullYear()}-${new Date().getMonth() + 1}-0${new Date().getDate()}`) : `${new Date().getFullYear()}-0${new Date().getMonth() + 1}-0${new Date().getDate()}`)
   }, [MainId])
+
+  React.useEffect(() => {
+    setUniv('')
+  }, [myParams.region])
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -189,7 +194,6 @@ const MainPage = () => {
                         id="demo-select-small"
                         value={univ}
                         label="Age"
-
                         onChange={handleChange2}
                       >
                         <MenuItem sx={{ fontFamily: "BMJUA" }} value={'연세대학교'}>연세대학교</MenuItem>
