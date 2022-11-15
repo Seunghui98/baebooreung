@@ -643,7 +643,7 @@ export default function ManagerChat({navigation}) {
                               method: 'post',
                               url:
                                 chat.invite() +
-                                `${res.data.roomId}/${userList[idx].user_id}/`,
+                                `${res.data.roomId}/${userList[idx].email}/`,
                             })
                               .then(res => {
                                 console.log('초대', res.data);
