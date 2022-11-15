@@ -72,9 +72,9 @@ const business_service = {
   getOrderCount: () => BASE_URL + BUSINESS_SERVICE + 'order/cnt/',
   //routeID 의 주문건수 API
 };
-
+const GPS_SERVICE = 'gps-service/';
 const gps_service = {
-  getRealTimeGPS: () => BASE_URL + 'api/gps/',
+  getRealTimeGPS: () => BASE_URL + GPS_SERVICE + 'gps/',
 };
 
 const CAMERA_SERVICE = 's3-service/';

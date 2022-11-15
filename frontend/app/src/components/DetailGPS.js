@@ -14,9 +14,16 @@ import {
 import {useSelector, useDispatch} from 'react-redux';
 import Truck from '../assets/images/truck.png';
 import Sample from '../assets/images/sample.png';
-import ManagerMap from './ManagerMap';
+// import ManagerMap from './ManagerMap';
 import axios from 'axios';
 import {gps_service} from '../api/api';
+import NaverMapView, {
+  Circle,
+  Marker,
+  Path,
+  Polyline,
+  Polygon,
+} from 'react-native-nmap';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
@@ -28,7 +35,7 @@ export default function DetailGPS(props) {
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
-  const [LocationList, setLocationList] = useState([]);
+  const [location, setLocation] = useState({});
 
   useEffect(() => {
     props.routeList //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
@@ -48,21 +55,10 @@ export default function DetailGPS(props) {
   }, []);
 
   useEffect(() => {
-    if (driverList.length !== 0) {
-      console.log(driverList);
-      driverList.map((item, idx) => {
-        axios({
-          method: 'get',
-          url: gps_service.getRealTimeGPS() + `${item.id}`,
-        })
-          .then(res => {
-            console.log('gps 정보 출력', res.data);
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      });
-    }
+    // if (driverList.length !== 0) {
+    //   driverList.map((item, idx) => {
+    //   });
+    // }
   }, [ok]);
 
   return (
@@ -73,39 +69,74 @@ export default function DetailGPS(props) {
         keyExtractor={(item, idx) => idx}
         renderItem={({item}) => (
           <View>
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => {
-                if (ID !== item.id) {
-                  axios.get;
-                  setID(item.id);
-                } else {
-                  setID('');
-                }
-              }}>
+            {item.routeInfo.routeName === props.routeName && (
               <View>
-                <View
-                  style={
-                    ID === item.id ? styles.driverListClick : styles.driverList
+                <NaverMapView
+                  style={{width: '100%', height: '100%'}}
+                  showsMyLocationButton={true}
+                  center={{...location, zoom: 16}}
+                  onTouch={e =>
+                    console.warn('onTouch', JSON.stringify(e.nativeEvent))
+                  }
+                  onCameraChange={e =>
+                    console.warn('onCameraChange', JSON.stringify(e))
+                  }
+                  onMapClick={e =>
+                    console.warn('onMapClick', JSON.stringify(e))
                   }>
-                  <View style={styles.driverListTextLayout}>
-                    <Text
+                  <Marker
+                    coordinate={location}
+                    onClick={() => console.warn('onClick! p0')}
+                  />
+                </NaverMapView>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  onPress={() => {
+                    if (ID !== item.id) {
+                      setID(item.id);
+                      axios({
+                        method: 'get',
+                        url: gps_service.getRealTimeGPS() + `${item.id}`,
+                      })
+                        .then(res => {
+                          console.log('gps 정보 출력', res.data);
+                          setLocation({
+                            latitude: res.data.latitude,
+                            longitude: res.data.longitude,
+                          });
+                        })
+                        .catch(e => {
+                          console.log(e);
+                        });
+                    } else {
+                      setID('');
+                    }
+                  }}>
+                  <View>
+                    <View
                       style={
                         ID === item.id
-                          ? styles.driverListClickText
-                          : styles.driverListText
+                          ? styles.driverListClick
+                          : styles.driverList
                       }>
-                      {item.routeInfo.routeName} {item.name} 드라이버
-                    </Text>
+                      <View style={styles.driverListTextLayout}>
+                        <Text
+                          style={
+                            ID === item.id
+                              ? styles.driverListClickText
+                              : styles.driverListText
+                          }>
+                          {item.routeInfo.routeName} {item.name} 드라이버
+                        </Text>
+                      </View>
+                      <View style={styles.driverListImageLayout}>
+                        <Image source={Truck} style={styles.image} />
+                      </View>
+                    </View>
                   </View>
-                  <View style={styles.driverListImageLayout}>
-                    <Image source={Truck} style={styles.image} />
-                  </View>
-                </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-            {/* {ID === item.id && } */}
-            <ManagerMap></ManagerMap>
+            )}
           </View>
         )}></FlatList>
     </View>
