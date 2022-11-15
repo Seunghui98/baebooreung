@@ -148,8 +148,6 @@ function ManagerHome({navigation}) {
       }
 
       // 먼저 유저리스트에서 grade가 DRIVER인 유저만 추출하여 드라이버가 가지고있는 루트ID를 추출
-      //영선코드
-      // const newTemp = [];
       userList
         .filter(item => item.grade === 'DRIVER')
         .map(async (item, idx) => {
@@ -158,11 +156,11 @@ function ManagerHome({navigation}) {
             url: business_service.getDriverRoute() + `${item.id}/` + 'routes/',
           })
             .then(async res => {
-              console.log(
-                item.name,
-                '드라이버의 id를 통해 얻을 수 있는 정보',
-                res.data,
-              );
+              // console.log(
+              //   item.name,
+              //   '드라이버의 id를 통해 얻을 수 있는 정보',
+              //   res.data,
+              // );
 
               if (res.data.length !== 0) {
                 //추출된 루트ID를 가지고 그 루트ID가 가지고있는 경로 정보 모두 추출
@@ -172,7 +170,6 @@ function ManagerHome({navigation}) {
                     url: business_service.getRoute() + `${el.id}`,
                   })
                     .then(result => {
-                      console.log(realType, result.data.routeType);
                       // console.log(
                       //   item.name,
                       //   '드라이버가 저장한 루트id를 통해 얻을 수 있는 정보',
@@ -185,14 +182,6 @@ function ManagerHome({navigation}) {
                         // realDate === result.data.date &&
                         realType === result.data.routeType
                       ) {
-                        //영선코드
-                        // newTemp.push({
-                        //   id: item.id,
-                        //   userId: item.email,
-                        //   name: item.name,
-                        //   routeInfo: result.data,
-                        // });
-                        console.log('실행');
                         setTempList(tempList => {
                           const newTempList = [...tempList];
                           newTempList.push({
@@ -203,7 +192,6 @@ function ManagerHome({navigation}) {
                           });
                           return newTempList;
                         });
-                        console.log('끝');
                       }
                     })
                     .catch(e => {
@@ -227,10 +215,8 @@ function ManagerHome({navigation}) {
   }, [userList]);
 
   useEffect(() => {
-    console.log(ok, tempList);
     //모든 루트 정보가 저장되었을 시 실행
     if (tempList.length !== 0) {
-      console.log('땀뿌리스트', tempList);
       tempList.map(item => {
         //routeInfo의 done이 false일때만 진행
         if (!item.routeInfo.done) {
@@ -271,9 +257,7 @@ function ManagerHome({navigation}) {
           const index = list.findIndex(function (find) {
             return find.routeName === item.routeInfo.routeName;
           });
-          console.log('index', index);
           if (index === -1) {
-            console.log('대학교추가');
             setDriverList(driverList => {
               const newDriverList = [...driverList];
               newDriverList.push({userId: item.userId, name: item.name});
@@ -291,24 +275,9 @@ function ManagerHome({navigation}) {
                 check = true;
               }
             });
-            console.log(check);
-            //이미 존재하는 드라이버인 경우
-            if (check) {
-              console.log('여기는 이미존재하는 드라이버 추가하는곳');
-              // setList(list => {
-              //   const newList = [...list];
-              //   newList[index].pickupTotal += totalPickupSum;
-              //   newList[index].pickupFinish += finishPickupSum;
-              //   newList[index].deliveryTotal += totalDeliverySum;
-              //   newList[index].deliveryFinish += finishDeliverySum;
-              //   return newList;
-              // });
-            }
+
             //존재하지 않는 드라이버인 경우 드라이버 추가, 드라이버 숫자 업데이트
-            else {
-              console.log(
-                '여기는 존재하지 않는 드라이버인 경우 드라이버 추가하는 곳',
-              );
+            if (!check) {
               setList(list => {
                 const newList = [...list];
                 newList[index].driver.push({
@@ -352,13 +321,6 @@ function ManagerHome({navigation}) {
       setIndex(0);
     }
   }, [index]);
-
-  useEffect(() => {
-    if (list.length !== 0) {
-      // console.log('list update');
-      // console.log('업데이트 worklist', list);
-    }
-  }, [list]);
 
   function leftPad(value) {
     if (value >= 10) {
