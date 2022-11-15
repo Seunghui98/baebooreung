@@ -425,6 +425,7 @@ function ManagerHome({navigation}) {
                 onPress={() => {
                   navigation.navigate('DetailWork', {
                     headerTitle: `${item.routeName}`,
+                    routeName: item.routeName,
                     routeList: tempList,
                   });
                 }}>

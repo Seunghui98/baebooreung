@@ -248,6 +248,7 @@ export default function ManagerGPS({navigation}) {
                 onPress={() => {
                   navigation.navigate('DetailGPS', {
                     headerTitle: `${item.routeName}`,
+                    routeName: item.routeName,
                     routeList: tempList,
                   });
                 }}>
