@@ -35,7 +35,10 @@ export default function DetailGPS(props) {
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
-  const [location, setLocation] = useState({});
+  const [location, setLocation] = useState({
+    latitude: 35.2028,
+    longitude: 126.8091,
+  });
 
   useEffect(() => {
     props.routeList //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
@@ -63,6 +66,12 @@ export default function DetailGPS(props) {
 
   return (
     <View style={styles.container}>
+      <NaverMapView
+        style={{width: '100%', height: '70%'}}
+        center={{...location, zoom: 16}}>
+        <Marker coordinate={location} pinColor="red" />
+      </NaverMapView>
+
       <FlatList
         style={styles.driverListLayout}
         data={driverList}
@@ -71,24 +80,6 @@ export default function DetailGPS(props) {
           <View>
             {item.routeInfo.routeName === props.routeName && (
               <View>
-                <NaverMapView
-                  style={{width: '100%', height: '100%'}}
-                  showsMyLocationButton={true}
-                  center={{...location, zoom: 16}}
-                  onTouch={e =>
-                    console.warn('onTouch', JSON.stringify(e.nativeEvent))
-                  }
-                  onCameraChange={e =>
-                    console.warn('onCameraChange', JSON.stringify(e))
-                  }
-                  onMapClick={e =>
-                    console.warn('onMapClick', JSON.stringify(e))
-                  }>
-                  <Marker
-                    coordinate={location}
-                    onClick={() => console.warn('onClick! p0')}
-                  />
-                </NaverMapView>
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={() => {
@@ -99,17 +90,17 @@ export default function DetailGPS(props) {
                         url: gps_service.getRealTimeGPS() + `${item.id}`,
                       })
                         .then(res => {
-                          console.log('gps 정보 출력', res.data);
+                          // console.log('gps 정보 출력', res.data);
+                          const latitude = parseFloat(res.data.latitude);
+                          const longitude = parseFloat(res.data.longitude);
                           setLocation({
-                            latitude: res.data.latitude,
-                            longitude: res.data.longitude,
+                            latitude: latitude,
+                            longitude: longitude,
                           });
                         })
                         .catch(e => {
                           console.log(e);
                         });
-                    } else {
-                      setID('');
                     }
                   }}>
                   <View>
@@ -146,25 +137,6 @@ export default function DetailGPS(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    height: SCREEN_HEIGHT / 12,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    shadowOffset: {width: 0, height: 1},
-    shadowRadius: 2,
-    elevation: 10,
-    shadowOpacity: 0.4,
-  },
-  headerText: {
-    fontSize: 18,
-  },
-  headerClickText: {
-    fontSize: 18,
-    color: '#00BFFF',
-    fontWeight: 'bold',
   },
   driverListLayout: {
     flex: 1,
@@ -217,139 +189,5 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: 70,
     height: 50,
-  },
-  ScrollList: {
-    marginHorizontal: 15,
-    backgroundColor: 'white',
-  },
-  driverHeader: {
-    height: SCREEN_HEIGHT / 15,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    borderColor: 'black',
-  },
-  driverHeaderText: {
-    fontSize: 15,
-  },
-  driverHeaderClickText: {
-    fontSize: 15,
-    color: '#00BFFF',
-    fontWeight: 'bold',
-  },
-  pickupListLayout: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  pickupLayout: {
-    height: SCREEN_HEIGHT / 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  pickupRestaurantName: {
-    flex: 3,
-    alignItems: 'flex-start',
-    paddingLeft: 10,
-  },
-  pickupRestaurantNameText: {
-    fontWeight: 'bold',
-  },
-  pickupOrderQuantityText: {
-    color: 'red',
-  },
-  pickupTime: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  pickupTimeText: {},
-  pickupFinish: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  pickupFinishText: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  pickupFailText: {
-    color: 'red',
-  },
-  deliveryListLayout: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  deliveryLayout: {
-    height: SCREEN_HEIGHT / 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  deliveryLocationName: {
-    flex: 3,
-    alignItems: 'flex-start',
-    paddingLeft: 10,
-  },
-  deliveryLocationNameText: {
-    fontWeight: 'bold',
-  },
-  deliveryQuantityText: {
-    color: 'red',
-  },
-  deliveryTime: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  deliveryTimeText: {},
-  deliveryFinish: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  deliveryFinishText: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  deliveryFailText: {
-    color: 'red',
-  },
-
-  //모달 css
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 10,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: identityColor,
-  },
-  textStyle: {
-    color: identityTextColor,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalImage: {
-    resizeMode: 'stretch',
-    width: (SCREEN_WIDTH * 2) / 3,
-    height: SCREEN_HEIGHT / 3,
-    marginVertical: 10,
   },
 });
