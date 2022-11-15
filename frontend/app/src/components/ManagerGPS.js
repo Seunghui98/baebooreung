@@ -78,31 +78,34 @@ export default function ManagerGPS({navigation}) {
                         result.data,
                       );
                       // 루트 정보의 date값과 routeType을 비교하여(ex)date : 2022-01-01 routeType : lunch)
-                      // if(realDate === result.data.date && realType === result.data.routeType){
-                      // }
-                      // (userId, name, driverId, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
-                      setTempList(tempList => {
-                        const newTempList = [...tempList];
-                        newTempList.push({
-                          userId: item.email,
-                          driverId: item.id,
-                          name: item.name,
-                          routeInfo: result.data,
+                      // (id,userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
+                      if (
+                        // realDate === result.data.date &&
+                        realType === result.data.routeType
+                      ) {
+                        setTempList(tempList => {
+                          const newTempList = [...tempList];
+                          newTempList.push({
+                            userId: item.email,
+                            id: item.id,
+                            name: item.name,
+                            routeInfo: result.data,
+                          });
+                          return newTempList;
                         });
-                        return newTempList;
-                      });
+                      }
                     })
                     .catch(e => {
                       console.log(e);
-                    })
-                    .finally(fin => {
-                      setOk(true);
                     });
                 });
               }
             })
             .catch(e => {
               console.log(e);
+            })
+            .finally(fin => {
+              setOk(true);
             });
         });
     }
