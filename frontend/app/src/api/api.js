@@ -68,6 +68,9 @@ const business_service = {
   */
   takePhoto: () => BASE_URL + BUSINESS_SERVICE + 'photo',
   // 사진 찍기
+
+  getOrderCount: () => BASE_URL + BUSINESS_SERVICE + 'order/cnt/',
+  //routeID 의 주문건수 API
 };
 
 const gps_service = {
