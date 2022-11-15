@@ -13,7 +13,7 @@ import ImagePicker, {
 import {useEffect} from 'react';
 import {requestStoragePermission} from '../utils/permission';
 import {camera_service} from '../api/api';
-
+import axios from 'axios';
 const DetailJob = props => {
   // console.log(
   //   'DetailJob props-----------------------------------------',
@@ -121,7 +121,7 @@ const DetailJob = props => {
           </View>
         </View>
         <View style={styles.bodyRight}>
-          <Pressable>
+          <Pressable onPress={activeCam}>
             <Image source={camera} style={styles.camera}></Image>
           </Pressable>
         </View>
