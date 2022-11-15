@@ -77,7 +77,7 @@ export default function ManagerGPS({navigation}) {
                       // (id, userId, name, routeInfo)라는 속성을 가지는 새로운 객체배열에 저장
                       if (
                         // true
-                        // realDate === result.data.date &&
+                        realDate === result.data.date &&
                         realType === result.data.routeType
                       ) {
                         setTempList(tempList => {

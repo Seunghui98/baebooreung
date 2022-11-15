@@ -54,3 +54,18 @@ export const requestCameraPermission = async () => {
 //     return false;
 //   }
 // };
+
+export const requestStoragePermission = async () => {
+  try {
+    granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the STORAGE');
+    } else {
+      console.log('STORAGE permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
