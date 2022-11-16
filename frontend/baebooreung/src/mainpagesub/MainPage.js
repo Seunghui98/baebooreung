@@ -106,14 +106,14 @@ const MainPage = () => {
     1: <AllWork myParams={myParams} />,
     2: <RouteAnalysis myParams={myParams} />,
     3: <Chatting />,
-    4: <NowLocation myParams={myParams} />,
+    // 4: <NowLocation myParams={myParams} />,
   }
   const menu_header = {
     0: '실시간 업무 현황',
     1: '업무 내역',
     2: '경로 분석',
     3: '채팅',
-    4: '테스트',
+    // 4: '테스트',
   }
   React.useEffect(() => {
     setRegion('')
