@@ -25,14 +25,14 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
     1: "업무 내역",
     2: "경로 분석",
     3: "채팅",
-    4: "테스트"
+    // 4: "테스트"
   }
   const menus_fold = {
     0: "",
     1: "",
     2: "",
     3: "",
-    4: "",
+    // 4: "",
   }
 
   function changeBackground(id) {
@@ -103,7 +103,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
             <img className={styles.main_frame_logo_image} src={chat} alt="" />
             &nbsp;&nbsp;&nbsp;채팅
           </button>
-          <button
+          {/* <button
             id="button_5"
             className={styles.button_style}
             onClick={() => {
@@ -114,7 +114,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
           >
             <img className={styles.main_frame_logo_image} src={notice} alt="" />
             &nbsp;&nbsp;&nbsp;테스트용
-          </button>
+          </button> */}
         </div>
         <div>
           <div className={styles.profile}>
