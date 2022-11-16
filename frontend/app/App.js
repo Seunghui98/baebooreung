@@ -20,6 +20,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+import SplashScreen from 'react-native-splash-screen';
+
 // <-- manager App pages-->
 import HomeScreen from './src/pages/managerApp/HomeScreen';
 import GPSScreen from './src/pages/managerApp/GPSScreen';
@@ -213,6 +215,13 @@ export default function App() {
   useEffect(() => {
     requestUserPermission();
     NotificationListener();
+    try {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 2000); //스플래시 활성화 시간 2초
+    } catch (e) {
+      console.log(e.message);
+    }
   }, []);
   return (
     <SafeAreaView style={styles.container}>
