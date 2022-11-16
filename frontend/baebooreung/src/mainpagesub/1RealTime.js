@@ -222,6 +222,10 @@ const RealTime = (props) => {
       mapDataControl: false,
     });
     
+    // let btnHtml = '<a href="#"><span>BUTTON</span></a>'
+    // let customControl = new naver.maps.CustomControl(btnHtml, {
+    //     position: naver.maps.Position.TOP_RIGHT
+    // });
 
     let marker_default_1 = new naver.maps.Marker({
       map: map,
@@ -283,7 +287,7 @@ const RealTime = (props) => {
         }
       } else if (props.myParams.region === "SEOUL") {
         if (props.myParams.univ === "연세대학교") {
-          map.morph(YONSEI, 13)
+          map.morph(YONSEI, 15)
           setCenter(YONSEI)
         } else {
           map.morph(SEOUL, 12)
@@ -308,9 +312,9 @@ const RealTime = (props) => {
               routeColor.push(color_temp);
             } else {
               if (routeId === allTask[i].routeId) {
-                color_temp = "#0094EE";
+                color_temp = "#F5CC1F";
               } else {
-                color_temp = "gray";
+                color_temp = "#0F1839";
               }
               routeColor.push(color_temp);
             }
@@ -342,10 +346,10 @@ const RealTime = (props) => {
                   new naver.maps.Polyline({
                     map: map,
                     path: appData,
-                    strokeColor: "#0094EE",
+                    strokeColor: "#F5CC1F",
                     strokeStyle: "solid",
                     strokeLineCap: "round",
-                    strokeWeight: 10,
+                    strokeWeight: 12,
                     strokeOpacity: 1,
                   });
                 }
@@ -373,7 +377,7 @@ const RealTime = (props) => {
                     icon: {
                       content: `<div class=${
                         styles.mydiv
-                      } style="outline-style:solid; outline-width:7px; outline-color:${routeId >0 ? "#0094EE" : color_temp};">${
+                      } style="outline-style:solid; outline-width:7px; outline-color:${routeId >0 ? "#F5CC1F" : color_temp};">${
                         j + 1
                       }</div>`,
                       size: new naver.maps.Size(22, 35),
@@ -413,11 +417,11 @@ const RealTime = (props) => {
                   new naver.maps.Polyline({
                     map: map,
                     path: appData,
-                    strokeColor: routeId > 0 ? "gray" : color_temp,
+                    strokeColor: routeId > 0 ? "#0F1839" : color_temp,
                     strokeStyle: "solid",
                     strokeLineCap: "round",
-                    strokeWeight: 5,
-                    strokeOpacity: 1,
+                    strokeWeight: 10,
+                    strokeOpacity: 0.3,
                   });
                 });
               }
