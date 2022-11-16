@@ -180,6 +180,23 @@ function DriverTab() {
           headerShown: false,
         }}></Tab.Screen>
       <Tab.Screen
+        name="Message"
+        component={MessageScreen}
+        options={{
+          title: '메세지',
+          headerStyle: {
+            backgroundColor: identityColor,
+          },
+          headerTitleAlign: 'center',
+          headerTintColor: identityTextColor,
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          tabBarIcon: ({color, size}) => (
+            <Icon name="chat" color={color} size={size}></Icon>
+          ),
+        }}></Tab.Screen>
+      <Tab.Screen
         name="Detail"
         component={DetailRoutePage}
         options={{
