@@ -24,6 +24,8 @@ import NaverMapView, {
   Polyline,
   Polygon,
 } from 'react-native-nmap';
+import user from '../redux/user';
+import {user_service} from '../api/api';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
@@ -39,7 +41,7 @@ export default function DetailGPS(props) {
     latitude: 35.2028,
     longitude: 126.8091,
   });
-
+  const [profile, setProfile] = useState('');
   useEffect(() => {
     props.routeList //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
       .map((item, idx) => {
@@ -58,10 +60,10 @@ export default function DetailGPS(props) {
   }, []);
 
   useEffect(() => {
-    // if (driverList.length !== 0) {
-    //   driverList.map((item, idx) => {
-    //   });
-    // }
+    //프로필 사진 정보 저장
+    if (driverList.length !== 0) {
+      driverList.map((item, idx) => {});
+    }
   }, [ok]);
 
   return (
@@ -69,7 +71,37 @@ export default function DetailGPS(props) {
       <NaverMapView
         style={{width: '100%', height: '70%'}}
         center={{...location, zoom: 16}}>
-        <Marker coordinate={location} pinColor="red" />
+        <Marker
+          coordinate={location}
+          style={[profile !== '' ? styles.marker : styles.defaultMarker]}>
+          <View
+            style={[
+              styles.markerView,
+              props.routeName === '전남대학교'
+                ? styles.JUMarkerColor
+                : props.routeName === '연세대학교'
+                ? styles.YUMarkerColor
+                : props.routeName === '광주과학기술원'
+                ? styles.GUMarkerColor
+                : styles.MarkerColor,
+            ]}>
+            <View style={styles.markerInnerView}>
+              <View style={{flex: 1, margin: 5}}>
+                <Image
+                  source={
+                    profile !== ''
+                      ? {uri: profile}
+                      : require('../assets/images/truck.png')
+                  }
+                  style={[
+                    profile !== ''
+                      ? styles.markerImage
+                      : styles.defaultMarkerImage,
+                  ]}></Image>
+              </View>
+            </View>
+          </View>
+        </Marker>
       </NaverMapView>
 
       <FlatList
@@ -97,6 +129,16 @@ export default function DetailGPS(props) {
                             latitude: latitude,
                             longitude: longitude,
                           });
+                        })
+                        .catch(e => {
+                          console.log(e);
+                        });
+                      axios({
+                        method: 'get',
+                        url: user_service.getProfile() + `${item.id}`,
+                      })
+                        .then(res => {
+                          setProfile(res.data);
                         })
                         .catch(e => {
                           console.log(e);
@@ -189,5 +231,49 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: 70,
     height: 50,
+  },
+  marker: {
+    width: 60,
+    height: 60,
+  },
+  defaultMarker: {
+    width: 60,
+    height: 60,
+  },
+  markerView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 80,
+  },
+  markerInnerView: {
+    flex: 1,
+    margin: 10,
+    borderRadius: 80,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  markerImage: {
+    flex: 1,
+    width: 36,
+    height: 36,
+  },
+  defaultMarkerImage: {
+    flex: 1,
+    width: 36,
+    height: 24,
+  },
+  JUMarkerColor: {
+    backgroundColor: '#91fcaf',
+  },
+  YUMarkerColor: {
+    backgroundColor: '#91effc',
+  },
+  GUMarkerColor: {
+    backgroundColor: '#fc9c91',
+  },
+  MarkerColor: {
+    backgroundColor: 'gray',
   },
 });
