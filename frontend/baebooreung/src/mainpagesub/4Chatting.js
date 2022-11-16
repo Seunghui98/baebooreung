@@ -7,7 +7,7 @@ import axios from "axios";
 import { chat } from "../api/api";
 
 const Chatting = () => {
-  const [page, setPage] = useState("user"); // 유저 / 채팅방목록 / 채팅방 분기처리
+  const [page, setPage] = useState(false); // 유저 / 채팅방목록 / 채팅방 분기처리
   const [chatRoomList, setChatRoomList] = useState([]); //채팅방 목록
   const [roomName, setRoomName] = useState(""); // 방 제목
   const [roomId, setRoomId] = useState(""); // 입장할 방 설정
@@ -275,7 +275,28 @@ const Chatting = () => {
     console.log(messages);
   }, [messages]);
 
-  return <div className={styles.background}>채팅</div>;
+  return (
+    <div className={styles.background}>
+      {/*유저목록 div */}
+      <div className={styles.userListLayout}>
+        {userList.map((item, idx) => {
+          return (
+            <div className={styles.userList}>
+              <div className={styles.userListName}>{item.name}</div>
+              <div className={styles.userListPhone}>{item.phone}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div className={styles.chatLayout}>
+        {/* 채팅창 div */}
+        {page && <div className={styles.chatRoomLayout}>채팅창목록</div>}
+
+        {/* 채팅방 목록 div */}
+        <div className={styles.chatRoomListLayout}>채팅방목록</div>
+      </div>
+    </div>
+  );
 };
 
 export default Chatting;

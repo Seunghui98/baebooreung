@@ -8,6 +8,7 @@ export const userSlice = createSlice({
     grade: "",
     id: "",
     name: "",
+    phone: "",
     routeList: [],
   },
   reducers: {
@@ -19,6 +20,7 @@ export const userSlice = createSlice({
       state.grade = action.payload.grade;
       state.id = action.payload.id;
       state.name = action.payload.name;
+      state.phone = action.payload.phone;
       state.routeList = action.payload.routeList;
     },
   },
