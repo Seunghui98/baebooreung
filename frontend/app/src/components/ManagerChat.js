@@ -183,6 +183,7 @@ export default function ManagerChat({navigation}) {
         sender: user.email,
         message: message,
         userCount: userCount,
+        name: user.name,
       }),
     });
     setMessage('');
@@ -195,6 +196,7 @@ export default function ManagerChat({navigation}) {
         roomId: recv.roomId,
         type: recv.type,
         sender: recv.sender,
+        name: recv.name,
         message: recv.message,
       });
       return newMessages;
@@ -233,6 +235,7 @@ export default function ManagerChat({navigation}) {
         type: 'ENTER',
         roomId: roomId,
         sender: userId,
+        name: user.name,
       }),
     });
   }
@@ -245,6 +248,7 @@ export default function ManagerChat({navigation}) {
         type: 'QUIT',
         roomId: roomId,
         sender: userId,
+        name: user.name,
       }),
     });
   }
@@ -488,9 +492,9 @@ export default function ManagerChat({navigation}) {
 
                     <View
                       style={
-                        (item.type === 'ENTER' ||
-                          item.type === 'QUIT' ||
-                          item.sender !== user.email) && {flex: 1}
+                        (item.type === 'ENTER' || item.type === 'QUIT') && {
+                          flex: 1,
+                        }
                       }>
                       {/*  */}
                       {item.roomId === roomId &&
@@ -498,7 +502,7 @@ export default function ManagerChat({navigation}) {
                         item.sender !== user.email && (
                           <View style={styles.otherChatName}>
                             <Text style={{fontWeight: 'bold'}}>
-                              {item.sender}
+                              {item.name}
                             </Text>
                           </View>
                         )}
@@ -516,13 +520,11 @@ export default function ManagerChat({navigation}) {
                             ? styles.otherChat
                             : {}
                         }>
-                        {item.roomId === roomId &&
-                          item.type === 'ENTER' &&
-                          item.sender === user.email && (
-                            <Text style={styles.noticeChatText}>
-                              {item.sender}님이 입장하셨습니다.
-                            </Text>
-                          )}
+                        {item.roomId === roomId && item.type === 'ENTER' && (
+                          <Text style={styles.noticeChatText}>
+                            {item.name}님이 입장하셨습니다.
+                          </Text>
+                        )}
 
                         {/* */}
                         {item.roomId === roomId && item.type === 'TALK' && (
@@ -538,7 +540,7 @@ export default function ManagerChat({navigation}) {
 
                         {item.roomId === roomId && item.type === 'QUIT' && (
                           <Text style={styles.noticeChatText}>
-                            {item.sender}님이 퇴장하셨습니다.
+                            {item.name}님이 퇴장하셨습니다.
                           </Text>
                         )}
                       </View>
@@ -911,7 +913,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#58ACFA',
     borderRadius: 10,
     margin: 5,
-    padding: 5,
+    padding: 7,
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
     elevation: 4,
@@ -922,7 +924,7 @@ const styles = StyleSheet.create({
     maxWidth: (SCREEN_WIDTH * 4) / 7,
     backgroundColor: 'white',
     borderRadius: 10,
-    margin: 7,
+    margin: 5,
     padding: 7,
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
