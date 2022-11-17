@@ -22,7 +22,6 @@ import {business_service} from '../api/api';
 
 const BottomScrollSheet = props => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const ButtonStyle = {
     borderWidth: 0.5,
     borderRadius: 16,
