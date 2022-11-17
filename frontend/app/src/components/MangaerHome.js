@@ -19,7 +19,6 @@ import ImagePicker, {
   launchImageLibrary,
 } from 'react-native-image-picker';
 import defaultImage from '../assets/images/truck.png';
-import ImageResizeMode from 'react-native/Libraries/Image/ImageResizeMode';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
@@ -360,7 +359,25 @@ function ManagerHome({navigation}) {
 
   return (
     <View style={styles.container}>
+      {/* 메인화면 헤더 */}
       <View style={styles.top}>
+        {/* 배부릉 헤더 로고 */}
+        <View style={styles.logoLayout}>
+          <Image
+            source={{uri: userInfo.profile}}
+            style={{
+              borderRadius: 50,
+              width: SCREEN_WIDTH / 5,
+              height: SCREEN_HEIGHT / 10,
+            }}></Image>
+        </View>
+
+        {/*헤더 텍스트 (*** 관리자님) */}
+        <View style={styles.topTextLayout}>
+          <Text style={styles.topText}> {userInfo.name} 관리자님</Text>
+        </View>
+
+        {/* 프로필 사진 */}
         <Pressable
           onPress={async () => {
             changeProfile();
@@ -372,7 +389,7 @@ function ManagerHome({navigation}) {
               height: SCREEN_HEIGHT / 7,
               alignItems: 'center',
               justifyContent: 'center',
-              // backgroundColor: 'red',
+              backgroundColor: 'red',
             }}>
             {profileImage === '' && (
               <Image
@@ -394,15 +411,6 @@ function ManagerHome({navigation}) {
             )}
           </View>
         </Pressable>
-        <View style={styles.topTextLayout}>
-          {userInfo.grade === 'MANAGER' && (
-            <Text style={styles.topText}> {userInfo.name} 관리자님</Text>
-          )}
-          {userInfo.grade === 'DRIVER' && (
-            <Text style={styles.topText}> {userInfo.name} 드라이버님</Text>
-          )}
-        </View>
-        <View style={styles.logoLayout}></View>
       </View>
 
       <View style={styles.dailyWorkLayout}>
@@ -521,11 +529,17 @@ const styles = StyleSheet.create({
     elevation: 2,
     shadowOpacity: 0.4,
   },
-  topTextLayout: {
+  logoLayout: {
     flex: 1,
-    alignItems: 'flex-start',
+    backgroundColor: 'red',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: 10,
+  },
+  topTextLayout: {
+    backgroundColor: 'green',
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topText: {
     fontSize: 22,
