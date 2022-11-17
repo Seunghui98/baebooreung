@@ -7,6 +7,8 @@ import BottomScrollSheet from './BottomScrollSheet';
 const Route = ({navigation}) => {
   const lunchRoute = useSelector(state => state.work.lunchRoute);
   const dinnerRoute = useSelector(state => state.work.dinnerRoute);
+  const lunchRouteId = useSelector(state => state.work.lunchRouteId);
+  const dinnerRouteId = useSelector(state => state.work.dinnerRouteId);
   const lunchDone = useSelector(state => state.work.lunchDone);
   const lunchRouteType = useSelector(state => state.work.lunchRouteType);
   const lunchRouteName = useSelector(state => state.work.lunchRouteName);
@@ -75,6 +77,7 @@ const Route = ({navigation}) => {
             ButtonStyle={ButtonStyle}
             TextStyle={TextStyle}
             data={lunchRoute}
+            Id={lunchRouteId}
           />
         </View>
       </View>
@@ -131,6 +134,7 @@ const Route = ({navigation}) => {
             TextStyle={TextStyle}
             data={dinnerRoute}
             navigation={navigation}
+            Id={dinnerRouteId}
           />
         </View>
       </View>

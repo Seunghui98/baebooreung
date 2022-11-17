@@ -1,26 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Image, Pressable, FlatList} from 'react-native';
 import camera from '../assets/images/camera.png';
-import Map from './Map';
-import {useSelector} from 'react-redux';
 import {useEffect} from 'react';
 import {requestStoragePermission} from '../utils/permission';
 import {camera_service} from '../api/api';
 import axios from 'axios';
 import Cam from '../components/Cam';
-import NaverMapView, {Marker} from 'react-native-nmap';
+import NaverMapView, {Marker, Path} from 'react-native-nmap';
 import ImagePicker, {
   launchCamera,
   launchImageLibrary,
 } from 'react-native-image-picker';
+import {getLocationPermission} from '../utils/permission';
+import Geolocation from 'react-native-geolocation-service';
+import {sendGps} from '../api/kafka';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLat, setLng, setWatchId} from '../redux/gps';
 
 const DetailJob = props => {
   const lat = useSelector(state => state.gps.lat);
   const lng = useSelector(state => state.gps.lng);
-  const mylocation = {
-    latitude: lat,
-    longitude: lng,
-  };
+  console.log('lat, lng', lat, lng);
+  const [targetLocation, setTargetLocation] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(false);
+  const [markerCoords, setMarkerCoords] = useState(false);
+  //<---------------------------cam------------------------------>
   const activeCam = () => {
     const image = {
       uri: '',
@@ -41,7 +45,7 @@ const DetailJob = props => {
       }
       const formdata = new FormData();
       formdata.append('image', image);
-      formdata.append('delId', 1); //delId 값 넣으면 됩니당
+      formdata.append('delId', props.item.id); //delId 값 넣으면 됩니당
       axios({
         method: 'post',
         url: camera_service.uploadCheckIn(),
@@ -59,7 +63,7 @@ const DetailJob = props => {
             method: 'get',
             url: camera_service.getCheckIn(),
             params: {
-              delId: 1, // delId 값 넣으면 됩니당
+              delId: props.item.id, // delId 값 넣으면 됩니당
             },
           })
             .then(result => {
@@ -75,24 +79,94 @@ const DetailJob = props => {
     });
     return <Cam />;
   };
+
   useEffect(() => {
     requestStoragePermission();
   }, []);
 
+  useEffect(() => {
+    setTargetLocation(
+      String(props.item.longitude) + ',' + String(props.item.latitude),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (lat !== 0 && lng !== 0) {
+      setCurrentLocation(String(String(lng) + ',' + String(lat)));
+      setMarkerCoords({
+        latitude: lat,
+        longitude: lng,
+      });
+    }
+  }, [lat, lng]);
+
+  // console.log('targetLocation', targetLocation);
+  // console.log('currentLocation ---->', currentLocation);
+
+  function reDefine(data) {
+    let reDefineData = [];
+    data.map((e, index) => {
+      reDefineData.push({latitude: e[1], longitude: e[0]});
+    });
+    return reDefineData;
+  }
+
+  const apiData = {
+    start: currentLocation,
+    goal: targetLocation,
+    option: 'trafast',
+  };
+
+  function getDrawingData() {
+    axios({
+      method: 'post',
+      url: 'https://k7c207.p.ssafy.io:8000/user-service/map',
+      data: apiData,
+    })
+      .then(res => {
+        console.log('실행됨?');
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log('에러남');
+        console.log(err);
+      });
+  }
+
+  // useEffect(() => {
+  //   if (currentLocation !== false) {
+  //     getDrawingData();
+  //   }
+  // }, [currentLocation]);
+
   return (
     <View style={styles.DetailJobcontainer}>
+      <Text style={styles.headerText}>배송 안내</Text>
       <View style={styles.MapContainer}>
-        <NaverMapView
-          style={{width: '100%', height: '100%'}}
-          center={{...mylocation, zoom: 16}}>
-          <Marker coordinate={mylocation} pinColor="red" />
-          <Marker
-            coordinate={{
-              latitude: props.item.latitude,
-              longitude: props.item.longitude,
+        {markerCoords !== false ? (
+          <NaverMapView
+            style={{
+              width: '100%',
+              height: '100%',
             }}
-          />
-        </NaverMapView>
+            center={{...markerCoords, zoom: 16}}>
+            <Marker
+              coordinate={{latitude: lat, longitude: lng}}
+              pinColor={'red'}
+            />
+            <Marker
+              coordinate={{
+                latitude: props.item.latitude,
+                longitude: props.item.longitude,
+              }}
+            />
+            {/* <Path coordinates={path} width={10} color="red" /> */}
+          </NaverMapView>
+        ) : (
+          <View>
+            <Text>Loading...</Text>
+          </View>
+        )}
       </View>
       <View style={styles.body}>
         <View style={styles.bodyLeft}>
@@ -142,8 +216,10 @@ const styles = StyleSheet.create({
     flex: 0.5,
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   headerText2: {
     fontSize: 20,
@@ -152,8 +228,8 @@ const styles = StyleSheet.create({
   },
   MapContainer: {
     // borderWidth: 1,
-    flex: 5,
-    justifyContent: 'center',
+    flex: 6,
+    // justifyContent: 'center',
     alignItems: 'center',
   },
   body: {
@@ -162,6 +238,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     // borderWidth: 1,
+    //  shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5,
   },
   bodyLeft: {
     flex: 2.5,
@@ -181,6 +260,7 @@ const styles = StyleSheet.create({
   address: {
     textAlignVertical: 'bottom',
     paddingBottom: 2,
+    // borderWidth: 1,
   },
   bodyRight: {
     flex: 1,
@@ -199,7 +279,8 @@ const styles = StyleSheet.create({
     color: 'crimson',
   },
   RouteInfo: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
+    width: '100%',
     // borderWidth: 1,
   },
 });

@@ -66,12 +66,14 @@ const Login = ({navigation}) => {
     })
       .then(res => {
         const workList = res.data;
+        console.log(workList);
         for (let i = 0; i < workList.length; i++) {
+          console.log(i, workList[i].id);
           if (workList[i].routeType === 'lunch') {
             dispatch(
               setLunchRouteInfo({
                 date: workList[i].date,
-                routeId: workList[i].routeId,
+                id: workList[i].id,
                 done: workList[i].done,
                 routeType: workList[i].routeType,
                 routeName: workList[i].routeName,
@@ -83,7 +85,7 @@ const Login = ({navigation}) => {
             dispatch(
               setDinnerRouteInfo({
                 date: workList[i].date,
-                routeId: workList[i].routeId,
+                id: workList[i].id,
                 done: workList[i].done,
                 routeType: workList[i].routeType,
                 routeName: workList[i].routeName,
