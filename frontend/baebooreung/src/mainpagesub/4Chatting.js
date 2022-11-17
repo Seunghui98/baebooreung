@@ -28,13 +28,15 @@ const Chatting = () => {
 
   useEffect(() => {
     console.log(userList);
-    userList.map((item, idx) => {
-      setCreateChatCheckBox((createChatCheckBox) => {
-        const newArr = [...createChatCheckBox];
-        newArr.push(false);
-        return newArr;
+    userList
+      .filter((item) => item.email !== user.email)
+      .map((item, idx) => {
+        setCreateChatCheckBox((createChatCheckBox) => {
+          const newArr = [...createChatCheckBox];
+          newArr.push(false);
+          return newArr;
+        });
       });
-    });
   }, []);
 
   async function connect() {
@@ -289,6 +291,51 @@ const Chatting = () => {
       <div className={styles.createModal}>
         <div className={styles.modalView}>
           <div className={styles.createRoomNameLayout}>
+            <p>방제목</p>
+            <input
+              type="text"
+              placeholder="방 제목을 입력하세요"
+              onChange={(e) => {
+                RoomNameChange(e.target.value);
+              }}
+              value={roomName}
+              maxLength="45"
+            ></input>
+
+            {/* 채팅방에 추가할 초대 유저목록을 내 정보를 제외한 유저목록으로 갱신 후
+             체크박스를 통해 초대할 유저정보 입력*/}
+            {userList
+              .filter((item) => item.email !== user.email)
+              .map((item, idx) => {
+                return (
+                  <div key={idx} className={styles.createChatListStyle}>
+                    <div className={styles.userListDetailText}>
+                      {item.name}
+                      {item.grade === "MANAGER" && "관리자"}
+                      {item.grade === "DRIVER" && "드라이버"}
+                    </div>
+                    <div className={styles.userListDetailCheckBox}>
+                      {/* 체크박스 상태가 변하면 유저정보를 저장한 
+                      createChatCheckBox의 상태도 같이 변화*/}
+                      <input
+                        type="checkbox"
+                        onChange={() => {
+                          setCreateChatCheckBox((el) => {
+                            const newArr = [...el];
+                            newArr[idx] = !newArr[idx];
+                            return newArr;
+                          });
+                        }}
+                      ></input>
+                    </div>
+                  </div>
+                );
+              })}
+            {/* 초대버튼을 누를 시 나를 주체로 채팅방을 생성하고 
+              체크박스로 추가된 유저목록의 유저들을 채팅방에 초대한다
+              그 후에 체크박스의 체크된 요소들을 초기화시키고
+              변경된 모든사항을 초기화시킨후(방목록)
+              추가된 방목록을 재갱신 시킨다.*/}
             <div
               className={styles.buttonLayout}
               onClick={async () => {
@@ -303,8 +350,41 @@ const Chatting = () => {
                       userId: user.email,
                     },
                   })
-                    .then((res) => {})
-                    .catch((e) => {});
+                    .then((res) => {
+                      createChatCheckBox.map((item, idx) => {
+                        if (item === true) {
+                          axios({
+                            method: "post",
+                            url:
+                              chat.invite() +
+                              `${res.data.roomId}/${userList[idx].email}/`,
+                          })
+                            .then((res) => {
+                              console.log("초대", res.data);
+                            })
+                            .catch((e) => {
+                              console.log(e);
+                            });
+                        }
+                      });
+                    })
+                    .catch((e) => {
+                      console.log(e);
+                    });
+                  createChatCheckBox.map((item, idx) => {
+                    if (item === true) {
+                      setCreateChatCheckBox((createChatCheckBox) => {
+                        const newArr = [...createChatCheckBox];
+                        newArr[idx] = false;
+                        return newArr;
+                      });
+                    }
+                  });
+                  setCreateChatVisible(!createChatVisible);
+                  setRoomName("");
+                  setRoomNamePlaceholder("black");
+                  setChatRoomList([]);
+                  findAllRooms();
                 }
               }}
             >
