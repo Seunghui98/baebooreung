@@ -574,6 +574,7 @@ const Chatting = () => {
                 </button>
                 <button
                   onClick={() => {
+                    setPage(false);
                     axios({
                       method: "delete",
                       url: chat.exitRoom() + `${item.roomId}/${user.email}`,
