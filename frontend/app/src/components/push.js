@@ -28,7 +28,6 @@ function getFCMToken() {
 
 export function NotificationListener(userId, routeId, delName) {
   console.log('notification is listening...');
-  console.log('parameters----->', userId, routeId, delName);
   messaging().onNotificationOpenedApp(remoteMessage => {
     console.log(
       'Notification caused app to open from background state:',
