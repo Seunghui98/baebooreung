@@ -37,40 +37,15 @@ const BUSINESS_SERVICE = 'business-service/';
 const business_service = {
   //<---------------------------------GET------------------------------------>
   getDriverRoute: () => BASE_URL + BUSINESS_SERVICE,
-  /* 
-    드라이버의 루트
-    path Variable: userId,
-   */
   getRoute: () => BASE_URL + BUSINESS_SERVICE + 'route/',
-  /* 
-    루트 한개의 정보,
-    path Variable: routeId
-  */
   getNotDone: () => BASE_URL + BUSINESS_SERVICE + 'routes/',
-  /* 
-    당일 완료하지 못한 루트, 
-    pathVariable: userId,  
-    https://k7c207.p.ssafy.io:8000/business-service/routes/{userId}/today/undone, 
-  */
 
   // POST
+  workStart: () => BASE_URL + BUSINESS_SERVICE,
   workDone: () => BASE_URL + BUSINESS_SERVICE,
-  /* 
-    업무완료
-    path Variable: userId, routeId,
-    https://k7c207.p.ssafy.io:8000/business-service/${userId}/end/{routeId},
-  */
   checkIn: () => BASE_URL + BUSINESS_SERVICE + 'check-in/',
-  /* 
-    체크인
-    path Variable: userId,
-    requestBody : routeId, deliveryId,
-  */
   takePhoto: () => BASE_URL + BUSINESS_SERVICE + 'photo',
-  // 사진 찍기
-
   getOrderCount: () => BASE_URL + BUSINESS_SERVICE + 'order/cnt/',
-  //routeID 의 주문건수 API
 };
 
 const gps_service = {

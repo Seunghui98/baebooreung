@@ -29,13 +29,13 @@ const initialState = {
       type: '',
     },
   ],
-  lunchRouteId: '',
+  lunchRouteId: -1,
   lunchRouteName: '',
   lunchRouteType: '',
   lunchDone: false,
   lunchDate: '',
   lunchScheduledStartTime: '',
-  dinnerRouteId: '',
+  dinnerRouteId: -1,
   dinnerRouteName: '',
   dinnerRouteType: '',
   dinnerDone: false,
@@ -53,7 +53,7 @@ const workSlice = createSlice({
       state.dinnerRoute = action.payload;
     },
     setLunchRouteInfo: (state, action) => {
-      state.lunchRouteId = action.payload.routeId;
+      state.lunchRouteId = action.payload.id;
       state.lunchRouteType = action.payload.routeType;
       state.lunchDone = action.payload.done;
       state.lunchRouteName = action.payload.routeName;
@@ -61,7 +61,7 @@ const workSlice = createSlice({
       state.lunchScheduledStartTime = action.payload.scheduledStartTime;
     },
     setDinnerRouteInfo: (state, action) => {
-      state.dinnerRouteId = action.payload.routeId;
+      state.dinnerRouteId = action.payload.id;
       state.dinnerRouteType = action.payload.routeType;
       state.dinnerDone = action.payload.done;
       state.dinnerRouteName = action.payload.routeName;
