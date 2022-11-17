@@ -14,6 +14,7 @@ export const sendGps = props => {
     headers: {},
   })
     .then(res => {
+      console.log('device send gps to kafka');
       console.log(res.data);
     })
     .catch(err => {
