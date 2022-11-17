@@ -122,7 +122,28 @@
     margin : 10;
     align-items: center;
 }
-
+.createChatListStyle {
+    display :flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color: yellow;
+    padding :2%;
+    margin :1%;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.userListDetailText{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10%;
+    font-weight: bold;
+}
+.userListDetailCheckBox{
+    display :flex;
+    flex-direction: row;
+    justify-content : flex-end;
+}
 .buttonStyle{
 }
 
