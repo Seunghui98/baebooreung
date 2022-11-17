@@ -53,6 +53,17 @@ const RealTime = (props) => {
     return waypoints_temp.join("|") + ":";
   }
 
+  function setButtonToggle(id){
+    document.getElementById('button_pickup').className = styles.button_default
+    document.getElementById('button_delivery').className = styles.button_default
+    document.getElementById(id).className = styles.button_pick;
+  }
+
+  function resetButtonToggle() {
+    document.getElementById('button_pickup').className = styles.button_pick
+    document.getElementById('button_delivery').className = styles.button_default
+  }
+
   async function cal_course(requestBody) {
     const course = [];
     await axios({
@@ -293,7 +304,7 @@ const RealTime = (props) => {
       }
 
       for (let i = 0; i <= allTask.length - 1; i++) {
-        // if (i <= 3) {
+        if (i <= 2) {
         //
         myuniv.push(allTask[i].routeName);
         if (allTask[i].deliveryDtoList.length) {
@@ -393,6 +404,10 @@ const RealTime = (props) => {
                 setCenter([temp_lng / allTask[i].deliveryDtoList.length, temp_lat / allTask[i].deliveryDtoList.length])
                 setDriverId(allTask[i].userId)
                 setOneTask(allTask[i])
+                if (document.getElementById("button_delivery" )) {
+                  resetButtonToggle()
+                  setMenuControl(1)
+                }
                 axios({
                   url: `https://k7c207.p.ssafy.io:8000/user-service/user/${allTask[i].userId}`,
                   method: "get"
@@ -440,7 +455,7 @@ const RealTime = (props) => {
             }
           }
         }
-        // } //
+        } //
       }
     }
     console.log(routeColor);
@@ -529,10 +544,10 @@ const RealTime = (props) => {
                       style={{ color: routeColor[index] }}
                       onClick={() => {
                         if (routeId == route.routeId) {
-                          setRouteId(0)
-                          setDriverId(0)
-                          setDirverInfo([])
-                          setOneTask([])
+                          setRouteId(0);
+                          setDriverId(0);
+                          setDirverInfo([]);
+                          setOneTask([]);
                         } else {
                           setRouteId(route.routeId);
                         }
@@ -559,10 +574,10 @@ const RealTime = (props) => {
                       style={{ color: routeColor[index] }}
                       onClick={() => {
                         if (routeId == route.routeId) {
-                          setRouteId(0)
-                          setDriverId(0)
-                          setDirverInfo([])
-                          setOneTask([])
+                          setRouteId(0);
+                          setDriverId(0);
+                          setDirverInfo([]);
+                          setOneTask([]);
                         } else {
                           setRouteId(route.routeId);
                         }
@@ -586,10 +601,10 @@ const RealTime = (props) => {
                         style={{ color: routeColor[index] }}
                         onClick={() => {
                           if (routeId == route.routeId) {
-                            setRouteId(0)
-                            setDriverId(0)
-                            setDirverInfo([])
-                            setOneTask([])
+                            setRouteId(0);
+                            setDriverId(0);
+                            setDirverInfo([]);
+                            setOneTask([]);
                           } else {
                             setRouteId(route.routeId);
                           }
@@ -610,10 +625,10 @@ const RealTime = (props) => {
                         style={{ color: routeColor[index] }}
                         onClick={() => {
                           if (routeId == route.routeId) {
-                            setRouteId(0)
-                            setDriverId(0)
-                            setDirverInfo([])
-                            setOneTask([])
+                            setRouteId(0);
+                            setDriverId(0);
+                            setDirverInfo([]);
+                            setOneTask([]);
                           } else {
                             setRouteId(route.routeId);
                           }
@@ -644,10 +659,10 @@ const RealTime = (props) => {
                       style={{ color: routeColor[index] }}
                       onClick={() => {
                         if (routeId == route.routeId) {
-                          setRouteId(0)
-                          setDriverId(0)
-                          setDirverInfo([])
-                          setOneTask([])
+                          setRouteId(0);
+                          setDriverId(0);
+                          setDirverInfo([]);
+                          setOneTask([]);
                         } else {
                           setRouteId(route.routeId);
                         }
@@ -660,7 +675,6 @@ const RealTime = (props) => {
                       />
                       <div className={styles.profileContent}>
                         {route.routeName}&nbsp;
-
                       </div>
                     </button>
                   </div>
@@ -675,10 +689,10 @@ const RealTime = (props) => {
                       style={{ color: routeColor[index] }}
                       onClick={() => {
                         if (routeId == route.routeId) {
-                          setRouteId(0)
-                          setDriverId(0)
-                          setDirverInfo([])
-                          setOneTask([])
+                          setRouteId(0);
+                          setDriverId(0);
+                          setDirverInfo([]);
+                          setOneTask([]);
                         } else {
                           setRouteId(route.routeId);
                         }
@@ -703,79 +717,173 @@ const RealTime = (props) => {
       {/* 대학교 리스트 끝 */}
       {/* 업무 리스트 시작 */}
       <div className={styles.taskList}>
-        {
-          driverId > 0
-            ? <div className={styles.taskDiv}>
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "start", width: "100%", height: "100%" }}>
-                <div style={{ width: "100px", height: "100px", margin: "10px" }}>
-                  <img src={driverProfile} className={styles.taskImg} alt="" />
+        {driverId > 0 ? (
+          <div className={styles.taskDiv}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "start",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <div style={{ width: "100px", height: "100px", margin: "10px" }}>
+                <img src={driverProfile} className={styles.taskImg} alt="" />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <br></br>
+                <div style={{ fontSize: "28px", color: "#0F1839" }}>
+                  <span style={{fontSize:"22px", color:"gray"}}>담당자 : </span>{driverInfo.name}
                 </div>
-                <div style={{ width: "100%", height: "100%", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <br></br>
-                  <div style={{ fontSize: "42px", color: "#0F1839" }}>{driverInfo.name}</div>
-                  <div style={{ fontSize: "23px", color: "#0F1839" }}>{driverInfo.phone}</div>
+                <br />
+                <div style={{ fontSize: "22px", color: "#0F1839" }}>
+                  {driverInfo.phone}
                 </div>
               </div>
-              <hr width="100%" />
-              <div style={{ width: "100%" }}>
-                <button style={{ width: "50%", height: "50px" }} onClick={() => setMenuControl(1)}>픽업 장소</button>
-                <button style={{ width: "50%", height: "50px" }} onClick={() => setMenuControl(2)}>수령 장소</button>
-              </div>
-              {/* {
-                function () {
-                  if (menuControl === 2) {
-                    {
-                      oneTask.deliveryDtoList.map((delivery, index) => {
-                        return (
-                          <div style={{ width: "100%", display: "flex", flexDirection: "row", alignContent: "center" }}>
-                            <div style={{ display: "flex", flexDirection: "column", width: "65%" }}>
-                              <div>
-                                {delivery.delName}
-                              </div>
-                              <div>
-                                {delivery.orderNum}
-                              </div>
-                            </div>
-                            <div stlye={{ width: "30%" }}>
-                              시간
-                            </div>
-                            <div stlye={{ width: "20%" }}>
-                              완료 여부
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                  } else {
-                    {
-                      oneTask.deliveryDtoList.map((delivery, index) => {
-                        return (
-                          <div style={{ width: "100%", display: "flex", flexDirection: "row", alignContent: "center" }}>
-                            <div style={{ display: "flex", flexDirection: "column", width: "65%" }}>
-                              <div>
-                                {delivery.delName}
-                              </div>
-                              <div>
-                                {delivery.orderNum}
-                              </div>
-                            </div>
-                            <div stlye={{ width: "30%" }}>
-                              시간
-                            </div>
-                            <div stlye={{ width: "20%" }}>
-                              완료 여부
-                            </div>
-                          </div>
-                        )
-                      })
-                    }
-                  }
-                }
-              } */}
-
-
             </div>
-            : <></>
+            <br></br>
+            <div style={{ width: "100%", display:"flex", flexDirection:"row", justifyContent:"space-around" }}>
+              <button id="button_pickup"
+                className={styles.button_pick}
+                onClick={() => {
+                  setMenuControl(1);
+                  setButtonToggle("button_pickup");
+                }
+                }
+              >
+                픽업 장소
+              </button>
+              <button id="button_delivery"
+                className={styles.button_default}
+                onClick={() => {
+                  setMenuControl(2)
+                  setButtonToggle("button_delivery");
+                }
+                }
+              >
+                배달 장소
+              </button>
+            </div>
+            {menuControl === 1 ? (
+              <div style={{width:"100%"}}>
+                <div style={{width:"100%", margin:"10px", marginLeft:"0px", display:"flex", flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                  <div style={{width:"50%"}}>픽업지명</div>
+                  <div style={{width:"20%", marginRight:"10px", textAlign:"center"  }}>예정 시간</div>
+                  <div style={{width:"20%", textAlign:"center" }}>상태</div>
+                </div>
+                <hr width="100%" />
+                <div style={{width:"100%", maxHeight:"300px", overflowY:"auto"}}>
+                {oneTask.deliveryDtoList
+                  .filter((item) => item.type === "delivery")
+                  .map((delivery, index) => {
+                    return (
+                      <div style={{width:"100%"}}>
+                        {
+                          <div
+                          className={styles.touch}
+                          // onClick={()=> {
+                            
+                          // }}
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent:"center",
+                            padding:"10px",
+                            marginLeft:"0px",
+                            cursor:"pointer",
+                            borderRadius:"10px",
+                            boxSizing:"border-box"
+                          }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                width: "50%",
+                              }}
+                            >
+                              <div>{delivery.delName}</div>
+                              <div> {delivery.check ? <span style={{color:"green"}}>{delivery.orderNum}&ensp;</span> : <span style={{color:"red"}}>{delivery.orderNum}&ensp;</span>}건</div>
+                            </div>
+                            <div style={{ width: "20%", marginRight:"10px", textAlign:"center" }}>{delivery.delScheduledTime.slice(0,5)}</div>
+                            <div style={{ width: "20%", textAlign:"center"  }}>{delivery.check ? <span style={{color:"green"}}>완료</span> : <span style={{color:"red"}}>미완료</span>}</div>
+                            
+                          </div>
+                        }
+                      </div>
+                    );
+                  })}
+                  </div>
+              </div>
+            ) : (
+              <div style={{width:"100%"}}>
+                <div style={{width:"100%", margin:"10px", marginLeft:"0px", display:"flex", flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                  <div style={{width:"50%"}}>배달지명</div>
+                  <div style={{width:"20%", marginRight:"10px", textAlign:"center"  }}>예정 시간</div>
+                  <div style={{width:"20%", textAlign:"center" }}>상태</div>
+                </div>
+                <hr width="100%" />
+                <div style={{width:"100%", maxHeight:"300px", overflowY:"auto"}}>
+                {oneTask.deliveryDtoList
+                  .filter((item) => item.type === "pickup")
+                  .map((delivery, index) => {
+                    return (
+                      <div style={{width:"100%"}}>
+                        {
+                          <div
+                            className={styles.touch}
+                            // onClick={()=> {
+                              
+                            // }}
+                            style={{
+                              width: "100%",
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent:"center",
+                              padding:"10px",
+                              marginLeft:"0px",
+                              cursor:"pointer",
+                              borderRadius:"10px",
+                              boxSizing:"border-box"
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                width: "50%",
+                              }}
+                            >
+                              <div>{delivery.delName}</div>
+                              <div> {delivery.check ? <span style={{color:"green"}}>{delivery.orderNum}&ensp;</span> : <span style={{color:"red"}}>{delivery.orderNum}&ensp;</span>}건</div>
+                            </div>
+                            <div style={{ width: "20%", marginRight:"10px", textAlign:"center" }}>{delivery.delScheduledTime.slice(0,5)}</div>
+                            <div style={{ width: "20%", textAlign:"center"  }}>{delivery.check ? <span style={{color:"green"}}>완료</span> : <span style={{color:"red"}}>미완료</span>}</div>
+                            
+                          </div>
+                        }
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) }
+          </div>
+        ) : <></>
         }
       </div>
       {/* 업무 리스트 끝 */}
