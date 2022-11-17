@@ -141,6 +141,7 @@ const MainPage = () => {
         </div>
         <div style={{ height: "100%", width: "100%" }}>
           <div className={styles.menu_header_after} id="menu_header">
+            <div>{MenuId}</div>
             <div>{menu_header[MenuId]}</div>
             <div className={styles.menu_setting}>
 
