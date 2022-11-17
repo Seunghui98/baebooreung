@@ -13,6 +13,10 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Truck from '../assets/images/truck.png';
 import Sample from '../assets/images/sample.png';
+import yonsei from '../assets/images/yonsei.png';
+import CNU from '../assets/images/CNU.png';
+import GIST from '../assets/images/gist.png';
+
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#F7FE2E';
@@ -81,13 +85,42 @@ export default function DetailWork(props) {
                       setWorkType(false);
                     }
                   }}>
-                  <View>
+                  <View style={{flex: 1}}>
                     <View
                       style={
                         ID === item.id
-                          ? styles.driverListClick
+                          ? [
+                              styles.driverListClick,
+                              item.routeInfo.routeName === '전남대학교' && {
+                                backgroundColor: '#CCFFE5',
+                              },
+                              item.routeInfo.routeName === '연세대학교' && {
+                                backgroundColor: '#CCFFFF',
+                              },
+                              item.routeInfo.routeName === '광주과학기술원' && {
+                                backgroundColor: '#FFCCE5',
+                              },
+                            ]
                           : styles.driverList
                       }>
+                      {/* 대학 로고 Layout */}
+                      <View style={styles.universityLogoLayout}>
+                        {item.routeInfo.routeName === '전남대학교' && (
+                          <Image
+                            source={CNU}
+                            style={styles.universityLogo}></Image>
+                        )}
+                        {item.routeInfo.routeName === '연세대학교' && (
+                          <Image
+                            source={yonsei}
+                            style={styles.universityLogo}></Image>
+                        )}
+                        {item.routeInfo.routeName === '광주과학기술원' && (
+                          <Image
+                            source={GIST}
+                            style={styles.universityLogo}></Image>
+                        )}
+                      </View>
                       <View style={styles.driverListTextLayout}>
                         <Text
                           style={
@@ -95,11 +128,8 @@ export default function DetailWork(props) {
                               ? styles.driverListClickText
                               : styles.driverListText
                           }>
-                          {item.routeInfo.routeName} {item.name} 드라이버
+                          {item.name} 드라이버
                         </Text>
-                      </View>
-                      <View style={styles.driverListImageLayout}>
-                        <Image source={Truck} style={styles.image} />
                       </View>
                     </View>
                   </View>
@@ -309,6 +339,8 @@ const styles = StyleSheet.create({
     elevation: 2,
     shadowOpacity: 0.4,
   },
+
+  //수정
   driverListClick: {
     flex: 1,
     flexDirection: 'row',
@@ -316,29 +348,31 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 15,
     alignItems: 'center',
-    backgroundColor: 'black',
     borderRadius: 10,
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
     elevation: 2,
     shadowOpacity: 0.4,
   },
+
+  // 수정
   driverListTextLayout: {
-    flex: 1,
+    flex: 4,
     alignItems: 'center',
+    paddingRight: 10,
   },
+
   driverListText: {
     fontSize: 15,
     fontWeight: 'bold',
   },
+
+  //수정
   driverListClickText: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: 'white',
   },
-  driverListImageLayout: {
-    felx: 1,
-  },
+
   image: {
     resizeMode: 'stretch',
     width: 70,
@@ -477,5 +511,18 @@ const styles = StyleSheet.create({
     width: (SCREEN_WIDTH * 2) / 3,
     height: SCREEN_HEIGHT / 3,
     marginVertical: 10,
+  },
+
+  //추가 css
+  universityLogoLayout: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  universityLogo: {
+    flex: 1,
+    width: SCREEN_WIDTH / 6,
+    height: SCREEN_HEIGHT / 6,
+    opacity: 0.7,
   },
 });

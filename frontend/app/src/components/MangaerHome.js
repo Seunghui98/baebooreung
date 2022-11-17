@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
   },
   top: {
     flexDirection: 'row',
-    height: SCREEN_HEIGHT / 8,
+    height: SCREEN_HEIGHT / 9,
     backgroundColor: identityColor,
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
