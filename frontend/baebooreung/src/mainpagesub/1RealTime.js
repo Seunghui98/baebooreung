@@ -2,16 +2,17 @@ import zIndex from "@mui/material/styles/zIndex";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import styles from "./1RealTime.module.css";
-
 import jnu from "../assets/images/전남대학교.png";
 import gist from "../assets/images/지스트.png";
 import yonsei from "../assets/images/연세대.png";
 import focus_on from "../assets/images/focus_on.png";
 import focus_off from "../assets/images/focus_off.png";
-
+import refresh_on from "../assets/images/refresh_on.png";
+import refresh_move_on from "../assets/images/refresh_move_on.gif";
+import refresh_off from "../assets/images/refresh_off.png";
+import refresh_move_off from "../assets/images/refresh_move_off.gif";
 
 const { naver } = window;
-
 const BASE_URL = "https://k7c207.p.ssafy.io:8000";
 
 const RealTime = (props) => {
@@ -40,35 +41,31 @@ const RealTime = (props) => {
   const [temp_test, setTempTest] = useState(0);
   const [params_temp, setParamsTemp] = useState(0);
   const [routeColor, setRouteColor] = useState([]);
-
   const [routeId, setRouteId] = useState(0);
   const [positionLoc, setPositionLoc] = useState([]);
   const [driverId, setDriverId] = useState(0);
   const [driverProfile, setDriverProfile] = useState('')
   const [menuControl, setMenuControl] = useState(1)
-
+  const [refresh, setRefresh] = useState(0)
+  const [autoRefresh, setAutoRefresh] = useState(6000000)
   function make_LatLng(now_loc_temp) {
     return `${now_loc_temp.join(",")}`;
   }
-
   function setTwoCenter(a, b) {
     return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   }
   function make_waypoints(waypoints_temp) {
     return waypoints_temp.join("|") + ":";
   }
-
-  function setButtonToggle(id){
+  function setButtonToggle(id) {
     document.getElementById('button_pickup').className = styles.button_default
     document.getElementById('button_delivery').className = styles.button_default
     document.getElementById(id).className = styles.button_pick;
   }
-
   function resetButtonToggle() {
     document.getElementById('button_pickup').className = styles.button_pick
     document.getElementById('button_delivery').className = styles.button_default
   }
-
   async function cal_course(requestBody) {
     const course = [];
     await axios({
@@ -83,7 +80,6 @@ const RealTime = (props) => {
     });
     return course;
   }
-
   const [allTask, setAllTask] = useState([]);
   const [driverInfo, setDirverInfo] = useState([]);
   const [oneTask, setOneTask] = useState([]);
@@ -121,7 +117,6 @@ const RealTime = (props) => {
         console.log(err);
       });
   }
-
   async function searchRegionDateUniv() {
     if (props.myParams.univ) {
       await axios({
@@ -161,7 +156,6 @@ const RealTime = (props) => {
       searchRegionDate();
     }
   }
-
   async function searchRegionDateUnivTime() {
     if (props.myParams.taskTime) {
       await axios({
@@ -203,7 +197,6 @@ const RealTime = (props) => {
   }
   // 메인
   useEffect(() => {
-    
     if (document.getElementById('map')) {
       let map = new naver.maps.Map("map", {
         center: center,
@@ -234,16 +227,10 @@ const RealTime = (props) => {
       mapTypeControl: false,
       mapDataControl: false,
     });
-
-    // let btnHtml = '<a href="#"><span>BUTTON</span></a>'
-    // let customControl = new naver.maps.CustomControl(btnHtml, {
-    //     position: naver.maps.Position.TOP_RIGHT
-    // });
-
     let marker_default_1 = new naver.maps.Marker({
       map: map,
       position: new naver.maps.LatLng(cloudStoneLatLng),
-      animation: 0,
+      animation: 1,
       icon: {
         content:
           '<img src="https://user-images.githubusercontent.com/97590478/201602320-4ceeb1a1-d80c-40e2-97a3-56c5e87e8f58.png" alt="" ' +
@@ -252,12 +239,12 @@ const RealTime = (props) => {
         size: new naver.maps.Size(22, 35),
         anchor: new naver.maps.Point(11, 35),
       },
-    });
 
+    });
     let marker_default_2 = new naver.maps.Marker({
       map: map,
       position: new naver.maps.LatLng(ssafyLatLng),
-      animation: 0,
+      animation: 1,
       icon: {
         content:
           '<img src="https://user-images.githubusercontent.com/97590478/201608034-9d564762-236c-49cf-8b30-cdf3fd1787a2.png" alt="" ' +
@@ -267,7 +254,6 @@ const RealTime = (props) => {
         anchor: new naver.maps.Point(11, 35),
       },
     });
-
     let polyline_default = new naver.maps.Polyline({
       map: map,
       path: SsafyCloudStoneCourse,
@@ -286,6 +272,25 @@ const RealTime = (props) => {
       });
     }
     // 결과를 받아왔다면
+    if (allTask.length) {
+      for (let i = 0; i <= allTask.length - 1; i++) {
+        if (allTask[i].deliveryDtoList.length) {
+          if (!routeId || allTask[i].routeId === routeId) {
+            axios({
+              url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
+              method: "get",
+            }).then((res) => {
+              if (focus) {
+                // map.morph([res.data.longitude, res.data.latitude], 15, { duration: 5000 })
+                map.setCenter([res.data.longitude, res.data.latitude])
+                map.setZoom(18)
+                setCenter([res.data.longitude, res.data.latitude])
+              }
+            })
+          }
+        }
+      }
+    }
     if (allTask.length) {
       if (positionLoc.length === 0 && routeId === 0 && focus === 0) {
         if (props.myParams.region === "GWANGJU") {
@@ -319,7 +324,6 @@ const RealTime = (props) => {
           }
         }
       }
-
       for (let i = 0; i <= allTask.length - 1; i++) {
         // if (i <= 2) {
         //
@@ -343,7 +347,8 @@ const RealTime = (props) => {
             }
             routeColor.push(color_temp);
           }
-          if (allTask[i].routeId === routeId) {
+          if (routeId && allTask[i].routeId === routeId) {
+            // 선택 루트 있는 상태에서 1명 기사 마커, 경로 찍기
             axios({
               url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
               method: "get",
@@ -389,18 +394,64 @@ const RealTime = (props) => {
                 );
               });
             })
+            // 기사 마커, 경로 찍기
+          } else if (!routeId) {
+            // 선택 루트 없는 상태에서 모든 기사 마커, 경로 찍기
+            axios({
+              url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
+              method: "get",
+              params: {
+                userId: allTask[i].userId
+              }
+            }).then((res2) => {
+              axios({
+                url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
+                method: "get",
+              }).then((res) => {
+                new naver.maps.Marker({
+                  map: map,
+                  position: new naver.maps.LatLng([res.data.longitude, res.data.latitude]),
+                  icon: {
+                    content: `<div style="border-radius:50%;"><img src="${res2.data}" alt="" ` +
+                      `style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; border-radius:50%; outline-width: 10px; outline-style: solid; outline-color: ${color_temp}; object-fit:center; object-position:center;` +
+                      '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;"/></div>',
+                    size: new naver.maps.Size(22, 35),
+                    anchor: new naver.maps.Point(11, 35),
+                  }
+                })
+                const temp_course = {
+                  start: make_LatLng([res.data.longitude, res.data.latitude]),
+                  goal: make_LatLng([
+                    allTask[i].deliveryDtoList[0].longitude,
+                    allTask[i].deliveryDtoList[0].latitude,
+                  ]),
+                  option: "trafast",
+                };
+                cal_course(temp_course).then((appData) => {
+                  new naver.maps.Polyline({
+                    map: map,
+                    path: appData,
+                    strokeColor: color_temp,
+                    strokeStyle: "shortdash",
+                    strokeLineCap: "round",
+                    strokeWeight: 15,
+                    strokeOpacity: 0.8,
+                    strokeLineJoin: "round",
+                  });
+                }
+                );
+              });
+            })
+            // 기사 마커, 경로 찍기
           }
-          // console.log(routeColor);
           if (allTask[i].deliveryDtoList.length) {
             if (!routeId || allTask[i].routeId === routeId) {
               const waypoints_temp = [];
               let temp_lat = 0
               let temp_lng = 0
-              for (
-                let j = 0;
-                j <= allTask[i].deliveryDtoList.length - 1;
-                j++
-              ) {
+              // 모든 루트 순회 경로 찍기
+              for (let j = 0; j <= allTask[i].deliveryDtoList.length - 1; j++) {
+                // 경로 선택 있고, 경유지 선택 있을 시
                 if (allTask[i].routeId === routeId && positionLoc.length) {
                   new naver.maps.Marker({
                     map: map,
@@ -411,8 +462,8 @@ const RealTime = (props) => {
                     animation: 0,
                     icon: {
                       content: `
-                      <div class=${styles.myicon}>
-                      <div style="font-size:20px; margin-bottom:5px;">${allTask[i].deliveryDtoList[j].delName}</div>
+                      <div class=${styles.myIcon}>
+                      <div class=${styles.myIconName} style="font-size:20px; margin-bottom:5px;">${allTask[i].deliveryDtoList[j].delName}</div>
                       <div style="font-size:18px;">${allTask[i].deliveryDtoList[j].delScheduledTime.slice(0, 5)}</div>
                       </div>
                         <div class=${styles.mydiv} style="outline-style:solid; outline-width:7px; outline-color:${routeId > 0 ? "#F5CC1F" : color_temp};">
@@ -423,6 +474,7 @@ const RealTime = (props) => {
                       anchor: new naver.maps.Point(11, 35),
                     },
                   });
+                  // 경로 선택 있고, 경유지 선택 없을 시
                 } else if (allTask[i].routeId === routeId) {
                   new naver.maps.Marker({
                     map: map,
@@ -441,6 +493,7 @@ const RealTime = (props) => {
                       anchor: new naver.maps.Point(11, 35),
                     },
                   });
+                  // 경로 선택도 없을 시
                 } else {
                   new naver.maps.Marker({
                     map: map,
@@ -451,7 +504,6 @@ const RealTime = (props) => {
                     animation: 0,
                     icon: {
                       content: `
-
                         <div class=${styles.mydiv} style="outline-style:solid; outline-width:7px; outline-color:${routeId > 0 ? "#F5CC1F" : color_temp};">
                           ${j + 1}
                         </div>
@@ -460,9 +512,7 @@ const RealTime = (props) => {
                       anchor: new naver.maps.Point(11, 35),
                     },
                   });
-
                 }
-
                 waypoints_temp.push([
                   allTask[i].deliveryDtoList[j].longitude,
                   allTask[i].deliveryDtoList[j].latitude,
@@ -495,16 +545,6 @@ const RealTime = (props) => {
                 }).then((res) => {
                   setDriverProfile(res.data)
                 })
-                axios({
-                  url:`https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
-                  method:"get",
-                }).then((res)=> {
-                  if (focus) {
-                    // map.morph([res.data.longitude, res.data.latitude], 15, { duration: 5000 })
-                    map.setCenter([res.data.longitude, res.data.latitude])
-                    map.setZoom(15)
-                  }
-                })
               }
               const course_temp = {
                 start: make_LatLng([
@@ -522,6 +562,7 @@ const RealTime = (props) => {
                 option: "trafast",
                 waypoints: make_waypoints(waypoints_temp),
               };
+              // 해당하는 모든 루트 경로 직기
               cal_course(course_temp).then((appData) => {
                 new naver.maps.Polyline({
                   map: map,
@@ -541,29 +582,27 @@ const RealTime = (props) => {
       }
     }
     if (positionLoc.length && focus === 0) {
+      console.log(focus)
       // map.morph(positionLoc, 18, { duration: 5000 })
       map.setCenter(positionLoc)
       map.setZoom(18)
       setCenter(positionLoc)
     }
-  }, [SsafyCloudStoneCourse, allTask, routeId, positionLoc, params_temp, focus]);
-
+  }, [SsafyCloudStoneCourse, allTask, routeId, positionLoc, params_temp, focus, refresh]);
   useEffect(() => {
     cal_course(ssafy_cloudstone_route_temp).then((appData) => {
       setSsafyCloudStoneCourse(appData);
     });
   }, []);
-
+  //초기화
   useEffect(() => {
     setTimeout(() => {
       setParamsTemp(params_temp + 1);
-    }, 8000);
-  }, [params_temp]);
-
+    }, autoRefresh);
+  }, [params_temp, autoRefresh]);
   useEffect(() => {
     setTempTest(temp_test + 1);
   }, [center]);
-
   useEffect(() => {
     setTempTest(temp_test + 1);
     searchRegionDate();
@@ -574,7 +613,6 @@ const RealTime = (props) => {
     setOneTask([])
     setPositionLoc([])
   }, [props.myParams.region]);
-
   useEffect(() => {
     setTempTest(temp_test + 1);
     setRouteColor([]);
@@ -585,7 +623,6 @@ const RealTime = (props) => {
     setOneTask([])
     setPositionLoc([])
   }, [props.myParams.univ]);
-
   useEffect(() => {
     setTempTest(temp_test + 1);
     setRouteColor([]);
@@ -596,28 +633,37 @@ const RealTime = (props) => {
     setOneTask([])
     setPositionLoc([])
   }, [props.myParams.taskTime]);
-
-  // useEffect(() => {
-  //   searchRegionDateUnivTime()
-  // }, [props.myParams.Date])
-
-
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       {/* 토글 버튼 시작 */}
-      <div className={styles.toggle} onClick={()=> {focus ? setFocus(0) : setFocus(1)}}>
+      <div className={styles.toggle} onClick={() => { focus ? setFocus(0) : setFocus(1) }}>
         {
           routeId
-          ? <div>{
-            focus 
-            ? <img className={styles.focus_on} src={focus_on} alt="" />
-            : <img className={styles.focus_off} src={focus_off} alt="" />
-          }</div>
-          : <div></div>
+            ? <div>{
+              focus
+                ? <img className={styles.focus_on} src={focus_on} alt="" />
+                : <img className={styles.focus_off} src={focus_off} alt="" />
+            }</div>
+            : <div></div>
         }
-
       </div>
       {/* 토글 버튼 끝 */}
+      {/* 리프레시 버튼 시작 */}
+      <div className={styles.refreshToggle}>RELOAD</div>
+      <div className={styles.toggle2} onClick={() => { refresh ? setRefresh(0) : setRefresh(1) }}>
+        <img className={styles.refresh_off} src={refresh_off} alt="" />
+      </div>
+      {/* 리프레시 버튼 끝 */}
+      {/* 오토리프레시 버튼 시작 */}
+      <div className={styles.autoRefreshMent}>AUTO</div>
+      <div className={styles.toggle3} onClick={() => { autoRefresh <= 6000 ? setAutoRefresh(6000000) : setAutoRefresh(6000) }}>
+        {
+          autoRefresh <= 6000
+            ? <img className={styles.autoRefresh} src={refresh_move_on} alt="" />
+            : <img className={styles.autoRefresh} src={refresh_move_off} alt="" />
+        }
+      </div>
+      {/* 오토리프레시 버튼 끝
       {/* 안내 설명 시작 */}
       {props.myParams.region === "" ? (
         <div className={styles.effect}>
@@ -709,6 +755,7 @@ const RealTime = (props) => {
                             setOneTask([]);
                           } else {
                             setRouteId(route.routeId);
+                            console.log(route.routeName);
                           }
                         }}
                       >
@@ -733,6 +780,36 @@ const RealTime = (props) => {
                             setOneTask([]);
                           } else {
                             setRouteId(route.routeId);
+                            console.log(route.routeName);
+                          }
+                        }}
+                      >
+                        <img
+                          className={styles.profileImage}
+                          src={gist}
+                          alt=""
+                        />
+                        <div className={styles.profileContent}>
+                          {route.routeName}&nbsp;
+                        </div>
+                      </button>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div>
+                      <button
+                        className={styles.profileImageContent}
+                        style={{ color: routeColor[index] }}
+                        onClick={() => {
+                          if (routeId == route.routeId) {
+                            setRouteId(0);
+                            setDriverId(0);
+                            setDirverInfo([]);
+                            setOneTask([]);
+                          } else {
+                            setRouteId(route.routeId);
+                            console.log(route.routeName);
                           }
                         }}
                       >
@@ -846,7 +923,7 @@ const RealTime = (props) => {
               >
                 <br></br>
                 <div style={{ fontSize: "28px", color: "#0F1839" }}>
-                  <span style={{fontSize:"22px", color:"gray"}}>담당자 : </span>{driverInfo.name}
+                  <span style={{ fontSize: "22px", color: "gray" }}>담당자 : </span>{driverInfo.name}
                 </div>
                 <br />
                 <div style={{ fontSize: "22px", color: "#0F1839" }}>
@@ -855,7 +932,7 @@ const RealTime = (props) => {
               </div>
             </div>
             <br></br>
-            <div style={{ width: "100%", display:"flex", flexDirection:"row", justifyContent:"space-around" }}>
+            <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
               <button id="button_pickup"
                 className={menuControl === 1 ? styles.button_pick : styles.button_default}
                 onClick={() => {
@@ -878,114 +955,124 @@ const RealTime = (props) => {
               </button>
             </div>
             {menuControl === 1 ? (
-              <div style={{width:"100%"}}>
-                <div style={{width:"100%", margin:"10px", marginLeft:"0px", display:"flex", flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
-                  <div style={{width:"50%", textAlign:"center" }}>픽업지명</div>
-                  <div style={{width:"20%", marginRight:"10px", textAlign:"center"  }}>예정 시간</div>
-                  <div style={{width:"20%", textAlign:"center" }}>상태</div>
+              <div style={{ width: "100%" }}>
+                <div style={{ width: "100%", margin: "10px", marginLeft: "0px", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                  <div style={{ width: "50%", textAlign: "center" }}>픽업지명</div>
+                  <div style={{ width: "20%", marginRight: "10px", textAlign: "center" }}>예정 시간</div>
+                  <div style={{ width: "20%", textAlign: "center" }}>상태</div>
                 </div>
                 <hr width="100%" />
-                <div style={{width:"100%", maxHeight:"300px", overflowY:"auto"}}>
-                {oneTask.deliveryDtoList
-                  .filter((item) => item.type === "pickup")
-                  .map((delivery, index) => {
-                    return (
-                      <div style={{width:"100%"}}>
-                        {
-                          <div
-                          className={styles.touch}
-                          onClick={()=> {
-                            setPositionLoc([delivery.longitude, delivery.latitude])
-                            setMenuControl(1)
-                          }}
-                          style={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent:"center",
-                            padding:"10px",
-                            marginLeft:"0px",
-                            cursor:"pointer",
-                            borderRadius:"10px",
-                            boxSizing:"border-box"
-                          }}
-                          >
+                <div style={{ width: "100%", maxHeight: "300px", overflowY: "auto" }}>
+                  {oneTask.deliveryDtoList
+                    .filter((item) => item.type === "pickup")
+                    .map((delivery, index) => {
+                      return (
+                        <div style={{ width: "100%" }}>
+                          {
                             <div
+                              className={styles.touch}
+                              onClick={() => {
+                                setPositionLoc([delivery.longitude, delivery.latitude])
+                                setFocus(0)
+                                setMenuControl(1)
+                              }}
                               style={{
+                                width: "100%",
                                 display: "flex",
-                                flexDirection: "column",
-                                width: "50%",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "10px",
+                                marginLeft: "0px",
+                                cursor: "pointer",
+                                borderRadius: "10px",
+                                boxSizing: "border-box",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
                               }}
                             >
-                              <div>{delivery.delName}</div>
-                              <div> {delivery.check ? <span style={{color:"green"}}>{delivery.orderNum}&ensp;</span> : <span style={{color:"red"}}>{delivery.orderNum}&ensp;</span>}건</div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  width: "50%",
+                                }}
+                              >
+                                <div style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}>{delivery.delName}</div>
+                                <div> {delivery.check ? <span style={{ color: "green" }}>{delivery.orderNum}&ensp;</span> : <span style={{ color: "red" }}>{delivery.orderNum}&ensp;</span>}건</div>
+                              </div>
+                              <div style={{ width: "20%", marginRight: "10px", textAlign: "center" }}>{delivery.delScheduledTime.slice(0, 5)}</div>
+                              <div style={{ width: "20%", textAlign: "center" }}>{delivery.check ? <span style={{ color: "green" }}>완료</span> : <span style={{ color: "red" }}>미완료</span>}</div>
                             </div>
-                            <div style={{ width: "20%", marginRight:"10px", textAlign:"center" }}>{delivery.delScheduledTime.slice(0,5)}</div>
-                            <div style={{ width: "20%", textAlign:"center"  }}>{delivery.check ? <span style={{color:"green"}}>완료</span> : <span style={{color:"red"}}>미완료</span>}</div>
-                            
-                          </div>
-                        }
-                      </div>
-                    );
-                  })}
-                  </div>
+                          }
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             ) : (
-              <div style={{width:"100%"}}>
-                <div style={{width:"100%", margin:"10px", marginLeft:"0px", display:"flex", flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
-                  <div style={{width:"50%", textAlign:"center" }}>배달지명</div>
-                  <div style={{width:"20%", marginRight:"10px", textAlign:"center"  }}>예정 시간</div>
-                  <div style={{width:"20%", textAlign:"center" }}>상태</div>
+              <div style={{ width: "100%" }}>
+                <div style={{ width: "100%", margin: "10px", marginLeft: "0px", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                  <div style={{ width: "50%", textAlign: "center" }}>배달지명</div>
+                  <div style={{ width: "20%", marginRight: "10px", textAlign: "center" }}>예정 시간</div>
+                  <div style={{ width: "20%", textAlign: "center" }}>상태</div>
                 </div>
                 <hr width="100%" />
-                <div style={{width:"100%", maxHeight:"300px", overflowY:"auto"}}>
-                {oneTask.deliveryDtoList
-                  .filter((item) => item.type === "delivery")
-                  .map((delivery, index) => {
-                    return (
-                      <div style={{width:"100%"}}>
-                        {
-                          <div
-                            className={styles.touch}
-                            onClick={()=> {
-                              setPositionLoc([delivery.longitude, delivery.latitude])
-                              setMenuControl(2)
-                            }}
-                            style={{
-                              width: "100%",
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent:"center",
-                              padding:"10px",
-                              marginLeft:"0px",
-                              cursor:"pointer",
-                              borderRadius:"10px",
-                              boxSizing:"border-box"
-                            }}
-                          >
+                <div style={{ width: "100%", maxHeight: "300px", overflowY: "auto" }}>
+                  {oneTask.deliveryDtoList
+                    .filter((item) => item.type === "delivery")
+                    .map((delivery, index) => {
+                      return (
+                        <div style={{ width: "100%" }}>
+                          {
                             <div
+                              className={styles.touch}
+                              onClick={() => {
+                                setPositionLoc([delivery.longitude, delivery.latitude])
+                                setFocus(0)
+                                setMenuControl(2)
+                              }}
                               style={{
+                                width: "100%",
                                 display: "flex",
-                                flexDirection: "column",
-                                width: "50%",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "10px",
+                                marginLeft: "0px",
+                                cursor: "pointer",
+                                borderRadius: "10px",
+                                boxSizing: "border-box",
                               }}
                             >
-                              <div>{delivery.delName}</div>
-                              <div> {delivery.check ? <span style={{color:"green"}}>{delivery.orderNum}&ensp;</span> : <span style={{color:"red"}}>{delivery.orderNum}&ensp;</span>}건</div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  width: "50%",
+                                }}
+                              >
+                                <div style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}>{delivery.delName}</div>
+                                <div> {delivery.check ? <span style={{ color: "green" }}>{delivery.orderNum}&ensp;</span> : <span style={{ color: "red" }}>{delivery.orderNum}&ensp;</span>}건</div>
+                              </div>
+                              <div style={{ width: "20%", marginRight: "10px", textAlign: "center" }}>{delivery.delScheduledTime.slice(0, 5)}</div>
+                              <div style={{ width: "20%", textAlign: "center" }}>{delivery.check ? <span style={{ color: "green" }}>완료</span> : <span style={{ color: "red" }}>미완료</span>}</div>
                             </div>
-                            <div style={{ width: "20%", marginRight:"10px", textAlign:"center" }}>{delivery.delScheduledTime.slice(0,5)}</div>
-                            <div style={{ width: "20%", textAlign:"center"  }}>{delivery.check ? <span style={{color:"green"}}>완료</span> : <span style={{color:"red"}}>미완료</span>}</div>
-                            
-                          </div>
-                        }
-                      </div>
-                    );
-                  })}
+                          }
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
-            ) }
+            )}
           </div>
         ) : <></>
         }

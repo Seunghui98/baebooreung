@@ -4,11 +4,8 @@ import styles from './MainPage.module.css';
 
 import RealTime from './1RealTime';
 import AllWork from './2AllWork';
-import RouteAnalysis from './3RouteAnalysis';
 import Chatting from './4Chatting';
 import MainFrame from './MainFrame';
-import NowLocation from '../nowlocation/NowLocation';
-import Testpage from './testpage';
 
 // import NaverMapApi from '../navermap/NaverMapApi';
 import fold_on from '../assets/images/fold_on.png'
@@ -104,14 +101,12 @@ const MainPage = () => {
   const contents = {
     0: <RealTime myParams={myParams} />,
     1: <AllWork myParams={myParams} />,
-    2: <RouteAnalysis myParams={myParams} />,
-    3: <Chatting />,
+    2: <Chatting />,
   }
   const menu_header = {
     0: '실시간 업무 현황',
     1: '업무 내역',
-    2: '경로 분석',
-    3: '채팅',
+    2: '채팅',
   }
   React.useEffect(() => {
     setRegion('')
