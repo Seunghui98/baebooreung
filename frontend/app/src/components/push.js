@@ -6,6 +6,7 @@ import {Alert} from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
 import axios from 'axios';
 import {camera_service} from '../api/api';
+import {business_service} from '../api/api';
 export async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
@@ -23,6 +24,23 @@ function getFCMToken() {
     .then(token => {
       console.log('fcmToken', JSON.stringify(token));
       const fcmToken = JSON.stringify(token);
+    });
+}
+
+function checkin(userId, deliveryId, image) {
+  axios({
+    method: 'post',
+    url: business_service.checkIn() + `${userId}`,
+    data: {
+      deliveryId: deliveryId,
+      img: image,
+    },
+  })
+    .then(res => {
+      console.log('checkin--------->', res.data);
+    })
+    .catch(err => {
+      console.log('체크인 실패', err);
     });
 }
 
