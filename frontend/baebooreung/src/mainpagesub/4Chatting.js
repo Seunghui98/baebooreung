@@ -27,7 +27,8 @@ const Chatting = () => {
   const client = useRef({});
 
   useEffect(() => {
-    console.log(userList);
+    // console.log(userList);
+    // 채팅창 생성 모달창의 체크박스 상태를 모두 false로 초기화 시킴
     userList
       .filter((item) => item.email !== user.email)
       .map((item, idx) => {
@@ -82,7 +83,7 @@ const Chatting = () => {
       url: chat.findAllRooms(),
     })
       .then((res) => {
-        console.log("방 정보 전체 출력", res.data);
+        // console.log("방 정보 전체 출력", res.data);
 
         //전체 방 목록중에 내가 연관되어 있는 방정보만 출력하기 위하여 아래 axios 사용
         //그 후 그 채팅방의 데이터(id, roomId, roomName,createTime)를 chatRoomList에 저장
