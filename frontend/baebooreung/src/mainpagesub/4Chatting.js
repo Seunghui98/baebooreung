@@ -7,7 +7,7 @@ import axios from "axios";
 import { chat } from "../api/api";
 
 const Chatting = () => {
-  const [page, setPage] = useState(true); // 유저 / 채팅방목록 / 채팅방 분기처리
+  const [page, setPage] = useState(false); // 유저 / 채팅방목록 / 채팅방 분기처리
   const [chatRoomList, setChatRoomList] = useState([]); //채팅방 목록
   const [roomName, setRoomName] = useState(""); // 방 제목
   const [roomId, setRoomId] = useState(""); // 입장할 방 설정
@@ -380,11 +380,12 @@ const Chatting = () => {
                       });
                     }
                   });
-                  setCreateChatVisible(!createChatVisible);
+
                   setRoomName("");
                   setRoomNamePlaceholder("black");
                   setChatRoomList([]);
                   findAllRooms();
+                  setCreateChatVisible(!createChatVisible);
                 }
               }}
             >
