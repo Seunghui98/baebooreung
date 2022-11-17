@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Pressable,
-  FlatList,
-  Alert,
-} from 'react-native';
+import {View, Text, StyleSheet, Image, Pressable, FlatList} from 'react-native';
 import camera from '../assets/images/camera.png';
 import {useEffect} from 'react';
 import {requestStoragePermission} from '../utils/permission';
@@ -18,7 +10,7 @@ import NaverMapView, {Marker, Path} from 'react-native-nmap';
 import {launchCamera} from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
 import {NotificationListener} from './push';
-import Geolocation from 'react-native-geolocation-service';
+
 const DetailJob = props => {
   const lat = useSelector(state => state.gps.lat);
   const lng = useSelector(state => state.gps.lng);
@@ -29,8 +21,7 @@ const DetailJob = props => {
   const userId = useSelector(state => state.auth.id);
   const [isCheckIn, setIsCheckIn] = useState(false);
   const [checkMessage, setCheckMessage] = useState('');
-  const [workDone, SetWorkDone] = useState(false);
-  console.log('-------------->', props);
+
   function checkin(userId, deliveryId, image) {
     axios({
       method: 'post',
@@ -41,12 +32,9 @@ const DetailJob = props => {
       },
     })
       .then(res => {
-        console.log('checkin--------->', res.data);
+        console.log('checkin--------->', res);
         setIsCheckIn(true);
         setCheckMessage('체크인 성공');
-        if (res.data.deliveryId === -1) {
-          SetWorkDone(true);
-        }
       })
       .catch(err => {
         console.log('체크인 실패', err);
@@ -54,18 +42,6 @@ const DetailJob = props => {
         setCheckMessage('체크인 실패');
       });
   }
-  function killWatchLocation() {
-    if (this.watchId !== null) {
-      Geolocation.clearWatch(this.watchId);
-      console.log('getWatchLocation is stop...');
-    }
-  }
-  useEffect(() => {
-    if (workDone === true) {
-      Alert.alert('업무를 완료하시겠습니까?');
-      killWatchLocation();
-    }
-  }, [workDone]);
   //<---------------------------cam------------------------------>
   function activeCam() {
     const image = {
