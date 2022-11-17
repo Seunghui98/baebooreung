@@ -287,13 +287,38 @@ const Chatting = () => {
   function createRoomModal() {
     return (
       <div className={styles.createModal}>
-        <button
-          onClick={() => {
-            setCreateChatVisible(!createChatVisible);
-          }}
-        >
-          취소
-        </button>
+        <div className={styles.modalView}>
+          <div className={styles.createRoomNameLayout}>
+            <div
+              className={styles.buttonLayout}
+              onClick={async () => {
+                if (roomName === "") {
+                  setRoomNamePlaceholder("red");
+                } else {
+                  await axios({
+                    method: "post",
+                    url: chat.createRoom(),
+                    params: {
+                      name: roomName,
+                      userId: user.email,
+                    },
+                  })
+                    .then((res) => {})
+                    .catch((e) => {});
+                }
+              }}
+            >
+              <button>초대</button>
+              <button
+                onClick={() => {
+                  setCreateChatVisible(!createChatVisible);
+                }}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -319,6 +344,13 @@ const Chatting = () => {
         {page && (
           <div className={styles.chatRoomLayout}>
             <p>채팅창</p>
+            <button
+              onClick={() => {
+                setPage(false);
+              }}
+            >
+              x
+            </button>
             {messages.map((item, idx) => {
               return (
                 <div key={idx}>

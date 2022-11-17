@@ -108,9 +108,26 @@
 .messageInput {
 
 }
+.createModal{
+    display:flex;
+    justify-content: center;
+    background-color: 'rgba(0,0,0,0.7)',
+}
+.modalView {
+    margin :20;
+    background-color: white;
+}
+
+.createRoomNameLayout{
+    margin : 10;
+    align-items: center;
+}
 
 .buttonStyle{
 }
-.createModal{
-    display:flex;
+
+
+.buttonLayout{
+    flex-direction:  row;
+    justify-content : flex-end;
 }
