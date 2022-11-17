@@ -364,7 +364,6 @@ function ManagerHome({navigation}) {
         <Pressable
           onPress={async () => {
             changeProfile();
-            // uploadPicture();
           }}>
           <View
             style={{
@@ -381,10 +380,6 @@ function ManagerHome({navigation}) {
                 style={{width: SCREEN_WIDTH / 5, height: SCREEN_HEIGHT / 12}}
                 resizeMode={ImageResizeMode.contain}
               />
-              // <Icon
-              //   name="person"
-              //   size={SCREEN_HEIGHT / 8}
-              //   color={identityTextColor}></Icon>
             )}
             {profileImage !== '' && (
               <Image
@@ -407,6 +402,7 @@ function ManagerHome({navigation}) {
             <Text style={styles.topText}> {userInfo.name} 드라이버님</Text>
           )}
         </View>
+        <View style={styles.logoLayout}></View>
       </View>
 
       <View style={styles.dailyWorkLayout}>
