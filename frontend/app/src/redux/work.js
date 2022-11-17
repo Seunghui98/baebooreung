@@ -41,12 +41,17 @@ const initialState = {
   dinnerDone: false,
   dinnerDate: '',
   dinnerScheduledStartTime: '',
-  isWorkDone: false,
 };
 const workSlice = createSlice({
   name: 'work',
   initialState,
   reducers: {
+    setLunchIsCheckIn: (state, action) => {
+      state.lunchRoute[action.payload.index].check = action.payload.check;
+    }, // ({index: sequece - 1, check: true})
+    setDinnerIsCheckIn: (state, action) => {
+      state.DinnerRoute[action.payload.index].check = action.payload.check;
+    }, // ({index: sequece - 1, check: true})
     setLunchRoute: (state, action) => {
       state.lunchRoute = action.payload;
     },
