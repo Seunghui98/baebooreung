@@ -78,9 +78,15 @@ export const DetailRoutePage = props => {
 
   const {width} = Dimensions.get('window');
   function renderItem({item}) {
+    if (scrollRef.current) {
+      console.log(
+        'scrollRef.current.getCurrentIndex()',
+        scrollRef.current.getCurrentIndex(),
+      );
+    }
     return (
       <View style={{width: width}}>
-        <DetailJob item={item} />
+        <DetailJob item={item} scrollRef={scrollRef} />
       </View>
     );
   }
@@ -89,11 +95,12 @@ export const DetailRoutePage = props => {
     <SwiperFlatList
       ref={scrollRef}
       data={props.route.params.data}
-      renderItem={({item}) => (
-        <View style={{width: width}}>
-          <DetailJob item={item} />
-        </View>
-      )}
+      // renderItem={({item}) => (
+      //   <View style={{width: width}}>
+      //     <DetailJob item={item} />
+      //   </View>
+      // )}
+      renderItem={renderItem}
       renderAll={false}
       showPagination
       paginationStyle={{

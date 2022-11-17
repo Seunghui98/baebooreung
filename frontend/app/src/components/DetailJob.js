@@ -125,7 +125,13 @@ const DetailJob = props => {
 
   useEffect(() => {
     requestStoragePermission();
-    // NotificationListener(userId, props.item.id, props.item.delName);
+    NotificationListener(
+      userId,
+      props.item.id,
+      props.item.delName,
+      props.scrollRef,
+      props.item.sequence,
+    );
   }, []);
 
   useEffect(() => {
@@ -133,7 +139,7 @@ const DetailJob = props => {
       String(props.item.longitude) + ',' + String(props.item.latitude),
     );
     if (props !== undefined) {
-      NotificationListener();
+      // NotificationListener();
     }
   }, []);
 
