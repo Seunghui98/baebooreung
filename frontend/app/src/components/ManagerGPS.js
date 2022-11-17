@@ -5,12 +5,17 @@ import {
   Dimensions,
   FlatList,
   Pressable,
+  Image,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import {business_service} from '../api/api';
+import yonsei from '../assets/images/yonsei.png';
+import CNU from '../assets/images/CNU.png';
+import GIST from '../assets/images/gist.png';
+
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
 const identityTextColor = '#FACC2E';
@@ -255,7 +260,20 @@ export default function ManagerGPS({navigation}) {
                 {({pressed}) => (
                   <View
                     style={
-                      pressed ? styles.dailyWorkListClick : styles.dailyWorkList
+                      pressed
+                        ? styles.dailyWorkListClick
+                        : [
+                            styles.dailyWorkList,
+                            item.routeName === '전남대학교' && {
+                              backgroundColor: '#CCFFE5',
+                            },
+                            item.routeName === '연세대학교' && {
+                              backgroundColor: '#CCFFFF',
+                            },
+                            item.routeName === '광주과학기술원' && {
+                              backgroundColor: '#FFCCE5',
+                            },
+                          ]
                     }>
                     <View style={styles.dailWorkFirstLine}>
                       <View style={{flex: 1}}>
@@ -263,6 +281,31 @@ export default function ManagerGPS({navigation}) {
                           {item.routeName}
                         </Text>
                       </View>
+                      <View style={{flex: 1}}>
+                        <Text style={styles.driverNumText}>
+                          드라이버 {item.driverNum}명
+                        </Text>
+                      </View>
+                    </View>
+                    {/* 대학 로고 Layout */}
+                    <View style={styles.universityLogoLayout}>
+                      {item.routeName === '연세대학교' && (
+                        <Image
+                          source={yonsei}
+                          style={styles.universityLogo}></Image>
+                      )}
+                      {item.routeName === '전남대학교' && (
+                        <Image
+                          source={CNU}
+                          style={styles.universityLogo}></Image>
+                      )}
+                      {item.routeName === '광주과학기술원' && (
+                        <Image
+                          source={GIST}
+                          style={styles.universityLogo}></Image>
+                      )}
+                    </View>
+                    <View style={styles.dailWorkFirstLine}>
                       <View
                         style={{
                           flex: 1,
@@ -290,13 +333,6 @@ export default function ManagerGPS({navigation}) {
                             </Text>
                           </View>
                         )}
-                      </View>
-                    </View>
-                    <View style={styles.dailWorkFirstLine}>
-                      <View style={{flex: 1}}>
-                        <Text style={styles.driverNumText}>
-                          드라이버 {item.driverNum}명
-                        </Text>
                       </View>
                       <View
                         style={{
@@ -386,7 +422,7 @@ const styles = StyleSheet.create({
   dailyWorkList: {
     flex: 1,
     height: SCREEN_HEIGHT / 10,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
     paddingHorizontal: 10,
     paddingVertical: 10,
     borderRadius: 10,
@@ -400,20 +436,31 @@ const styles = StyleSheet.create({
   dailyWorkListClick: {
     flex: 1,
     height: SCREEN_HEIGHT / 10,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
     paddingHorizontal: 10,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: 'rgb(210, 230, 255)',
+    backgroundColor: '#E0E0E0',
     marginBottom: 20,
     shadowOffset: {width: 0, height: 1},
     shadowRadius: 2,
     elevation: 1,
     shadowOpacity: 0.4,
   },
+  universityLogo: {
+    flex: 1,
+    width: SCREEN_WIDTH / 6,
+    height: SCREEN_HEIGHT / 6,
+    opacity: 0.7,
+  },
+  universityLogoLayout: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   dailWorkFirstLine: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   dailyWorkListText: {
     fontSize: 14,
