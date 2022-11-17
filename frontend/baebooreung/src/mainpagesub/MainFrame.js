@@ -23,21 +23,18 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
   const menus = {
     0: "실시간 업무 현황",
     1: "업무 내역",
-    2: "경로 분석",
-    3: "채팅",
+    2: "채팅",
   }
   const menus_fold = {
     0: "",
     1: "",
     2: "",
-    3: "",
   }
 
   function changeBackground(id) {
     document.getElementById("button_1").className = styles.button_style;
     document.getElementById("button_2").className = styles.button_style;
     document.getElementById("button_3").className = styles.button_style;
-    document.getElementById("button_4").className = styles.button_style;
     document.getElementById(id).className = styles.button_style_pick;
   }
 
@@ -79,22 +76,6 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
               setMainId(2);
               changeBackground("button_3");
               changeMenuHeader(2);
-            }}
-          >
-            <img
-              className={styles.main_frame_logo_image}
-              src={tracking}
-              alt=""
-            />
-            &nbsp;&nbsp;&nbsp;경로 분석
-          </button>
-          <button
-            id="button_4"
-            className={styles.button_style}
-            onClick={() => {
-              setMainId(3);
-              changeBackground("button_4");
-              changeMenuHeader(3);
             }}
           >
             <img className={styles.main_frame_logo_image} src={chat} alt="" />
