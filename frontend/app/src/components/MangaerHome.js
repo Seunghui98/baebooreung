@@ -25,8 +25,8 @@ import CNU from '../assets/images/CNU.png';
 import GIST from '../assets/images/gist.png';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
-const identityColor = '#FACC2E';
-const identityTextColor = '#0B0B3B';
+const identityColor = '#0B0B3B';
+const identityTextColor = '#FACC2E';
 const date = new Date();
 
 function ManagerHome({navigation}) {
@@ -370,7 +370,6 @@ function ManagerHome({navigation}) {
           <Image
             source={logo}
             style={{
-              borderRadius: 50,
               width: SCREEN_WIDTH / 5,
               height: SCREEN_HEIGHT / 10,
             }}></Image>
@@ -389,7 +388,7 @@ function ManagerHome({navigation}) {
           <View
             style={{
               flex: 1,
-              width: SCREEN_WIDTH / 4,
+              width: SCREEN_WIDTH / 3.7,
               height: SCREEN_HEIGHT / 7,
               alignItems: 'center',
               justifyContent: 'center',
@@ -570,7 +569,6 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 10,
   },
   topText: {
     fontSize: 22,
