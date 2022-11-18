@@ -298,10 +298,6 @@ export default function ManagerChat({navigation}) {
     }
   }, [userList]);
 
-  useEffect(() => {
-    console.log('userProfileList', userProfileList);
-  }, [userProfileList]);
-
   return (
     <View style={styles.container}>
       {/* 친구 목록 화면 */}
@@ -615,12 +611,21 @@ export default function ManagerChat({navigation}) {
             </View>
             <FlatList
               contentContainerStyle={{}}
-              data={userList}
+              data={userProfileList}
               keyExtractor={(item, index) => index}
               renderItem={({item, index}) => (
                 <View style={styles.createChatListStyle}>
                   <View style={styles.userListDetailText}>
-                    <Icon name="person" size={30}></Icon>
+                    {item.profile !== null ? (
+                      <Image
+                        source={
+                          item.profile !== '' ? {uri: item.profile} : logo
+                        }
+                        style={styles.image}
+                      />
+                    ) : (
+                      <Image source={logo} style={styles.image} />
+                    )}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
                       {item.grade === 'DRIVER' && '드라이버'}
@@ -997,6 +1002,8 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
+    maxHeight: SCREEN_HEIGHT / 2,
+    maxWidth: SCREEN_WIDTH,
     backgroundColor: 'white',
   },
   createChatListStyle: {
