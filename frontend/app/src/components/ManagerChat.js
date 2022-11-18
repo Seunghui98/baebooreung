@@ -13,12 +13,14 @@ import {
   Modal,
   Pressable,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat, user, user_service} from '../api/api';
+import {camera_service, chat, user, user_service} from '../api/api';
 import CheckBox from '@react-native-community/checkbox';
 import Truck from '../assets/images/truck.png';
+import logo from '../assets/images/logo.png';
 import AudioRecord from '../components/AudioRecord';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
@@ -259,12 +261,18 @@ export default function ManagerChat({navigation}) {
   }, []);
 
   useEffect(() => {
-    if (userList.length !== 0 && userList !== undefined) {
+    connect();
+    return () => disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (userList.length !== 0) {
       console.log(userList);
       userList.map(item => {
+        console.log(item.email, item.grade, item.id, item.name);
         axios({
           method: 'get',
-          url: user_service.getProfile(),
+          url: camera_service.getFile(),
           params: {
             userId: item.id,
           },
@@ -280,18 +288,19 @@ export default function ManagerChat({navigation}) {
                 name: item.name,
                 profile: res.data,
               });
+              return newUserProfileList;
             });
           })
-          .catch(e => {});
+          .catch(e => {
+            console.log(e);
+          });
       });
     }
-    connect();
-    return () => disconnect();
-  }, []);
+  }, [userList]);
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    console.log('userProfileList', userProfileList);
+  }, [userProfileList]);
 
   return (
     <View style={styles.container}>
@@ -315,22 +324,31 @@ export default function ManagerChat({navigation}) {
           <View style={styles.rightBar}>
             <FlatList
               style={styles.list}
-              data={userList}
+              data={userProfileList}
               keyExtractor={(item, idx) => idx}
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
-                    {<Image source={Truck} style={styles.image} />}
+                    {item.profile !== null ? (
+                      <Image
+                        source={
+                          item.profile !== '' ? {uri: item.profile} : logo
+                        }
+                        style={styles.image}
+                      />
+                    ) : (
+                      <Image source={logo} style={styles.image} />
+                    )}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
                       {item.grade === 'DRIVER' && '기사님'}
                     </Text>
                   </View>
-                  {/* <View style={styles.userListDetailIcon}>
+                  <View style={styles.userListDetailIcon}>
                     <TouchableOpacity>
                       <Icon name="phone-forwarded" size={30}></Icon>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => {
                         chatRoomList.forEach(value => {
                           subscribe(roomId, user.email);
@@ -341,8 +359,8 @@ export default function ManagerChat({navigation}) {
                         name="textsms"
                         size={30}
                         style={styles.userMessageIcon}></Icon>
-                    </TouchableOpacity>
-                  </View> */}
+                    </TouchableOpacity> */}
+                  </View>
                 </View>
               )}
             />
@@ -1069,8 +1087,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   image: {
-    resizeMode: 'stretch',
     width: 50,
-    height: 40,
+    height: 50,
   },
 });
