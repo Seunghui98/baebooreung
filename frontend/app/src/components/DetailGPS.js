@@ -12,18 +12,9 @@ import {
 } from 'react-native';
 
 import {useSelector, useDispatch} from 'react-redux';
-import Truck from '../assets/images/truck.png';
-import Sample from '../assets/images/sample.png';
-// import ManagerMap from './ManagerMap';
 import axios from 'axios';
 import {gps_service} from '../api/api';
-import NaverMapView, {
-  Circle,
-  Marker,
-  Path,
-  Polyline,
-  Polygon,
-} from 'react-native-nmap';
+import NaverMapView, {Marker} from 'react-native-nmap';
 import user from '../redux/user';
 import {user_service} from '../api/api';
 import yonsei from '../assets/images/yonsei.png';
@@ -36,7 +27,6 @@ const identityTextColor = '#F7FE2E';
 
 export default function DetailGPS(props) {
   const userList = useSelector(state => state.userList.userList);
-  const [ok, setOk] = useState(false);
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
@@ -59,15 +49,7 @@ export default function DetailGPS(props) {
           return newDriverList;
         });
       });
-    setOk(true);
   }, []);
-
-  useEffect(() => {
-    //프로필 사진 정보 저장
-    if (driverList.length !== 0) {
-      driverList.map((item, idx) => {});
-    }
-  }, [ok]);
 
   return (
     <View style={styles.container}>
@@ -118,35 +100,33 @@ export default function DetailGPS(props) {
                 <TouchableOpacity
                   activeOpacity={0.9}
                   onPress={() => {
-                    if (ID !== item.id) {
-                      setID(item.id);
-                      axios({
-                        method: 'get',
-                        url: gps_service.getRealTimeGPS() + `${item.id}`,
-                      })
-                        .then(res => {
-                          // console.log('gps 정보 출력', res.data);
-                          const latitude = parseFloat(res.data.latitude);
-                          const longitude = parseFloat(res.data.longitude);
-                          setLocation({
-                            latitude: latitude,
-                            longitude: longitude,
-                          });
-                        })
-                        .catch(e => {
-                          console.log(e);
+                    setID(item.id);
+                    axios({
+                      method: 'get',
+                      url: gps_service.getRealTimeGPS() + `${item.id}`,
+                    })
+                      .then(res => {
+                        // console.log('gps 정보 출력', res.data);
+                        const latitude = parseFloat(res.data.latitude);
+                        const longitude = parseFloat(res.data.longitude);
+                        setLocation({
+                          latitude: latitude,
+                          longitude: longitude,
                         });
-                      axios({
-                        method: 'get',
-                        url: user_service.getProfile() + `${item.id}`,
                       })
-                        .then(res => {
-                          setProfile(res.data);
-                        })
-                        .catch(e => {
-                          console.log(e);
-                        });
-                    }
+                      .catch(e => {
+                        console.log(e);
+                      });
+                    axios({
+                      method: 'get',
+                      url: user_service.getProfile() + `${item.id}`,
+                    })
+                      .then(res => {
+                        setProfile(res.data);
+                      })
+                      .catch(e => {
+                        console.log(e);
+                      });
                   }}>
                   <View style={{flex: 1}}>
                     <View
