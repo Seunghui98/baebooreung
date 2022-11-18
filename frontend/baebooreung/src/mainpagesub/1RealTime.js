@@ -477,12 +477,12 @@ const RealTime = (props) => {
               let temp_lat = 0
               let temp_lng = 0
               // 모든 루트 순회 경로 찍기
-              for (let j = 0; j <= allTaskList[i].deliveryDtoList.length - 1; j++) {
+              for (let j = 0; j <= allTask[i].deliveryDtoList.length - 1; j++) {
                 // 경로 선택 있고, 경유지 선택 있을 시
-                if (allTaskList[i].deliveryDtoList.length) {
+                if (allTask[i].deliveryDtoList.length) {
                   waypoints_temp.push([
-                    allTaskList[i].deliveryDtoList[j].longitude,
-                    allTaskList[i].deliveryDtoList[j].latitude,
+                    allTask[i].deliveryDtoList[j].longitude,
+                    allTask[i].deliveryDtoList[j].latitude,
                   ]);
                 }
               }
@@ -578,17 +578,17 @@ const RealTime = (props) => {
                 })
               }
 
-              if (allTaskList[i].deliveryDtoList.length) {
+              if (allTask[i].deliveryDtoList.length) {
 
                 const course_temp = {
                   start: make_LatLng([
-                    allTaskList[i].deliveryDtoList[0].longitude,
-                    allTaskList[i].deliveryDtoList[0].latitude,
+                    allTask[i].deliveryDtoList[0].longitude,
+                    allTask[i].deliveryDtoList[0].latitude,
                   ]),
                   goal: make_LatLng(
                     [
-                      allTaskList[i].deliveryDtoList[allTaskList[i].deliveryDtoList.length - 1].longitude,
-                      allTaskList[i].deliveryDtoList[allTaskList[i].deliveryDtoList.length - 1].latitude,
+                      allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].longitude,
+                      allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].latitude,
                     ]
                   ),
                   option: "trafast",
