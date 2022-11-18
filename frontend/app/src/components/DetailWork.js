@@ -23,7 +23,7 @@ const identityTextColor = '#F7FE2E';
 
 export default function DetailWork(props) {
   const [ok, setOk] = useState(false);
-  const [workType, setWorkType] = useState(false); // 픽업장소 / 수령장소 분기처리
+  const [workType, setWorkType] = useState(false); // 픽업장소 / 배달장소 분기처리
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
@@ -162,9 +162,27 @@ export default function DetailWork(props) {
                               ? styles.driverHeaderClickText
                               : styles.driverHeaderText
                           }>
-                          수령 장소
+                          배달 장소
                         </Text>
                       </TouchableOpacity>
+                    </View>
+
+                    {/* 이름 / 시간 / 완료여부 */}
+                    <View style={styles.pickupTopLayout}>
+                      <View style={styles.pickupRestaurantName}>
+                        <Text style={styles.pickupRestaurantNameText}>
+                          이름
+                        </Text>
+                      </View>
+                      <View style={styles.pickupTime}>
+                        <Text
+                          style={[styles.pickupTimeText, {fontWeight: 'bold'}]}>
+                          시간
+                        </Text>
+                      </View>
+                      <View style={styles.pickupFinish}>
+                        <Text style={{fontWeight: 'bold'}}>완료 여부</Text>
+                      </View>
                     </View>
                     {workType === false && (
                       //이중 FlatList 사용시 주의 (실제 renderItem은 (item,index값을 받음))
@@ -247,7 +265,7 @@ export default function DetailWork(props) {
                                       }}>
                                       <View style={{flexDirection: 'row'}}>
                                         <Text style={styles.deliveryFinishText}>
-                                          수령 완료
+                                          배달 완료
                                         </Text>
                                         <Icon
                                           name="image-search"
@@ -340,7 +358,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
   },
 
-  //수정
   driverListClick: {
     flex: 1,
     flexDirection: 'row',
@@ -355,7 +372,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
   },
 
-  // 수정
   driverListTextLayout: {
     flex: 4,
     alignItems: 'center',
@@ -367,7 +383,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  //수정
   driverListClickText: {
     fontSize: 15,
     fontWeight: 'bold',
@@ -395,7 +410,7 @@ const styles = StyleSheet.create({
   },
   driverHeaderClickText: {
     fontSize: 15,
-    color: '#00BFFF',
+    color: identityColor,
     fontWeight: 'bold',
   },
   pickupListLayout: {
@@ -513,7 +528,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
-  //추가 css
   universityLogoLayout: {
     flex: 1,
     alignItems: 'center',
@@ -524,5 +538,13 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH / 6,
     height: SCREEN_HEIGHT / 6,
     opacity: 0.7,
+  },
+
+  pickupTopLayout: {
+    height: SCREEN_HEIGHT / 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginHorizontal: 10,
   },
 });
