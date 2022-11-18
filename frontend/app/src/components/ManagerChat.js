@@ -267,9 +267,9 @@ export default function ManagerChat({navigation}) {
 
   useEffect(() => {
     if (userList.length !== 0) {
-      console.log(userList);
+      // console.log(userList);
       userList.map(item => {
-        console.log(item.email, item.grade, item.id, item.name);
+        // console.log(item.email, item.grade, item.id, item.name);
         axios({
           method: 'get',
           url: camera_service.getFile(),
@@ -278,7 +278,7 @@ export default function ManagerChat({navigation}) {
           },
         })
           .then(res => {
-            console.log('파일가져오기', res.data);
+            // console.log('파일가져오기', res.data);
             setUserProfileList(userProfileList => {
               const newUserProfileList = [...userProfileList];
               newUserProfileList.push({
@@ -402,7 +402,7 @@ export default function ManagerChat({navigation}) {
                 <Pressable
                   activeOpacity={0.6}
                   onLongPress={() => {
-                    console.log('방정보', item);
+                    // console.log('방정보', item);
                     setQuitChatRoomInfo(() => {
                       return item;
                     });
