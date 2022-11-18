@@ -367,8 +367,8 @@ function ManagerHome({navigation}) {
           <Image
             source={logo}
             style={{
-              width: SCREEN_WIDTH / 5,
-              height: SCREEN_HEIGHT / 10,
+              width: SCREEN_WIDTH / 8,
+              height: SCREEN_HEIGHT / 16,
             }}></Image>
         </View>
 
@@ -393,7 +393,7 @@ function ManagerHome({navigation}) {
             {profileImage === '' && (
               <Image
                 source={defaultImage}
-                style={{width: SCREEN_WIDTH / 5, height: SCREEN_HEIGHT / 12}}
+                style={{width: SCREEN_WIDTH / 7, height: SCREEN_HEIGHT / 16}}
               />
             )}
             {profileImage !== '' && (
@@ -401,8 +401,8 @@ function ManagerHome({navigation}) {
                 source={profileImage ? {uri: userInfo.profile} : null}
                 style={{
                   borderRadius: 50,
-                  width: SCREEN_WIDTH / 5,
-                  height: SCREEN_HEIGHT / 10,
+                  width: SCREEN_WIDTH / 8,
+                  height: SCREEN_HEIGHT / 15,
                 }}
               />
             )}
