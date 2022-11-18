@@ -9,10 +9,9 @@ import {
   FlatList,
   Pressable,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Truck from '../assets/images/truck.png';
-import Sample from '../assets/images/sample.png';
 import yonsei from '../assets/images/yonsei.png';
 import CNU from '../assets/images/CNU.png';
 import GIST from '../assets/images/gist.png';
@@ -387,10 +386,14 @@ export default function DetailWork(props) {
               </Text>
             </View>
             <View style={{alignItems: 'center'}}>
-              <Image
-                source={checkImage !== '' ? {uri: checkImage} : Sample}
-                style={styles.modalImage}
-              />
+              {checkImage !== '' ? (
+                <Image
+                  source={checkImage !== '' ? {uri: checkImage} : null}
+                  style={styles.modalImage}
+                />
+              ) : (
+                <ActivityIndicator size="large"></ActivityIndicator>
+              )}
             </View>
             <View style={styles.buttonLayout}>
               <Pressable
