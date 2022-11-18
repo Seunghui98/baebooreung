@@ -191,7 +191,7 @@ export default function DetailGPS(props) {
                               ? styles.driverListClickText
                               : styles.driverListText
                           }>
-                          {item.name} 드라이버
+                          {item.name} 기사님
                         </Text>
                       </View>
                     </View>

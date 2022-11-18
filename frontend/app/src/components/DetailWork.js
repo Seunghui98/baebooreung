@@ -16,6 +16,8 @@ import Sample from '../assets/images/sample.png';
 import yonsei from '../assets/images/yonsei.png';
 import CNU from '../assets/images/CNU.png';
 import GIST from '../assets/images/gist.png';
+import axios from 'axios';
+import {camera_service} from '../api/api';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
@@ -27,6 +29,8 @@ export default function DetailWork(props) {
   const [ID, setID] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [driverList, setDriverList] = useState([]);
+  const [currentLoc, setCurrentLoc] = useState('');
+  const [checkImage, setCheckImage] = useState('');
 
   useEffect(() => {
     //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
@@ -128,7 +132,7 @@ export default function DetailWork(props) {
                               ? styles.driverListClickText
                               : styles.driverListText
                           }>
-                          {item.name} 드라이버
+                          {item.name} 기사님
                         </Text>
                       </View>
                     </View>
@@ -167,122 +171,198 @@ export default function DetailWork(props) {
                       </TouchableOpacity>
                     </View>
 
-                    {/* 이름 / 시간 / 완료여부 */}
-                    <View style={styles.pickupTopLayout}>
-                      <View style={styles.pickupRestaurantName}>
-                        <Text style={styles.pickupRestaurantNameText}>
-                          이름
-                        </Text>
-                      </View>
-                      <View style={styles.pickupTime}>
-                        <Text
-                          style={[styles.pickupTimeText, {fontWeight: 'bold'}]}>
-                          시간
-                        </Text>
-                      </View>
-                      <View style={styles.pickupFinish}>
-                        <Text style={{fontWeight: 'bold'}}>완료 여부</Text>
-                      </View>
-                    </View>
                     {workType === false && (
                       //이중 FlatList 사용시 주의 (실제 renderItem은 (item,index값을 받음))
-                      <FlatList
-                        style={styles.pickupListLayout}
-                        data={item.routeInfo.deliveryList}
-                        keyExtractor={(el, idx) => 'key' + idx}
-                        renderItem={el => (
-                          <View>
-                            {el.item.type === 'pickup' && (
-                              <View style={styles.pickupLayout}>
-                                <View style={styles.pickupRestaurantName}>
-                                  <Text style={styles.pickupRestaurantNameText}>
-                                    {el.item.delName}
-                                  </Text>
-                                  <Text style={styles.pickupOrderQuantityText}>
-                                    {el.item.orderNum}건
-                                  </Text>
-                                </View>
-                                <View style={styles.pickupTime}>
-                                  <Text style={styles.pickupTimeText}>
-                                    {el.item.delScheduledTime.substr(0, 5)}
-                                  </Text>
-                                </View>
-                                <View style={styles.pickupFinish}>
-                                  {el.item.check === true && (
-                                    <Pressable
-                                      onPress={() => {
-                                        setModalVisible(!modalVisible);
-                                      }}>
-                                      <View style={{flexDirection: 'row'}}>
-                                        <Text style={styles.pickupFinishText}>
-                                          픽업 완료
-                                        </Text>
-                                        <Icon
-                                          name="image-search"
-                                          size={18}></Icon>
-                                      </View>
-                                    </Pressable>
-                                  )}
-                                  {el.item.check === false && (
-                                    <Text style={styles.pickupFailText}>
-                                      미완료
-                                    </Text>
-                                  )}
-                                </View>
-                              </View>
-                            )}
+                      <View>
+                        {/* 이름 / 시간 / 완료여부 */}
+                        <View style={styles.pickupTopLayout}>
+                          <View style={styles.pickupRestaurantName}>
+                            <Text style={styles.pickupRestaurantNameText}>
+                              픽업지명
+                            </Text>
                           </View>
-                        )}></FlatList>
+                          <View style={styles.pickupTime}>
+                            <Text
+                              style={[
+                                styles.pickupTimeText,
+                                {fontWeight: 'bold'},
+                              ]}>
+                              예상시간
+                            </Text>
+                          </View>
+                          <View style={styles.pickupFinish}>
+                            <Text style={{fontWeight: 'bold'}}>상태</Text>
+                          </View>
+                        </View>
+
+                        {/* 픽업지 FlatList */}
+                        <FlatList
+                          style={styles.pickupListLayout}
+                          data={item.routeInfo.deliveryList}
+                          keyExtractor={(el, idx) => 'key' + idx}
+                          renderItem={el => (
+                            <View>
+                              {el.item.type === 'pickup' && (
+                                <View style={styles.pickupLayout}>
+                                  <View style={styles.pickupRestaurantName}>
+                                    <Text
+                                      style={styles.pickupRestaurantNameText}>
+                                      {el.item.delName}
+                                    </Text>
+                                    <Text
+                                      style={
+                                        el.item.check === true
+                                          ? {color: 'green'}
+                                          : styles.pickupOrderQuantityText
+                                      }>
+                                      {el.item.orderNum}건
+                                    </Text>
+                                  </View>
+                                  <View style={styles.pickupTime}>
+                                    <Text style={styles.pickupTimeText}>
+                                      {el.item.delScheduledTime.substr(0, 5)}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.pickupFinish}>
+                                    {el.item.check === true && (
+                                      <Pressable
+                                        onPress={() => {
+                                          setModalVisible(!modalVisible);
+                                          setCurrentLoc(el.item.delName);
+                                          axios({
+                                            method: 'get',
+                                            url: camera_service.getCheckIn(),
+                                            params: {
+                                              delId: el.item.id,
+                                            },
+                                          })
+                                            .then(res => {
+                                              console.log(res.data);
+                                              setCheckImage(res.data);
+                                            })
+                                            .catch(e => {
+                                              console.log(e);
+                                            });
+                                        }}>
+                                        <View style={{flexDirection: 'row'}}>
+                                          <Text style={styles.pickupFinishText}>
+                                            완료{' '}
+                                          </Text>
+                                          <Icon
+                                            name="image-search"
+                                            size={18}></Icon>
+                                        </View>
+                                      </Pressable>
+                                    )}
+                                    {el.item.check === false && (
+                                      <Text style={styles.pickupFailText}>
+                                        미완료
+                                      </Text>
+                                    )}
+                                  </View>
+                                </View>
+                              )}
+                            </View>
+                          )}></FlatList>
+                      </View>
                     )}
 
                     {workType === true && (
-                      <FlatList
-                        style={styles.deliveryListLayout}
-                        data={item.routeInfo.deliveryList}
-                        keyExtractor={(el, idx) => idx}
-                        renderItem={el => (
-                          <View>
-                            {el.item.type === 'delivery' && (
-                              <View style={styles.deliveryLayout}>
-                                <View style={styles.deliveryLocationName}>
-                                  <Text style={styles.deliveryLocationNameText}>
-                                    {el.item.delName}
-                                  </Text>
-                                  <Text style={styles.deliveryQuantityText}>
-                                    {el.item.orderNum}건
-                                  </Text>
-                                </View>
-                                <View style={styles.deliveryTime}>
-                                  <Text style={styles.deliveryTimeText}>
-                                    {el.item.delScheduledTime.substr(0, 5)}
-                                  </Text>
-                                </View>
-                                <View style={styles.deliveryFinish}>
-                                  {el.item.check === true && (
-                                    <Pressable
-                                      onPress={() => {
-                                        setModalVisible(!modalVisible);
-                                      }}>
-                                      <View style={{flexDirection: 'row'}}>
-                                        <Text style={styles.deliveryFinishText}>
-                                          배달 완료
-                                        </Text>
-                                        <Icon
-                                          name="image-search"
-                                          size={18}></Icon>
-                                      </View>
-                                    </Pressable>
-                                  )}
-                                  {el.item.check === false && (
-                                    <Text style={styles.deliveryFailText}>
-                                      미완료
-                                    </Text>
-                                  )}
-                                </View>
-                              </View>
-                            )}
+                      <View>
+                        {/* 이름 / 시간 / 완료여부 */}
+                        <View style={styles.pickupTopLayout}>
+                          <View style={styles.pickupRestaurantName}>
+                            <Text style={styles.pickupRestaurantNameText}>
+                              배달지명
+                            </Text>
                           </View>
-                        )}></FlatList>
+                          <View style={styles.pickupTime}>
+                            <Text
+                              style={[
+                                styles.pickupTimeText,
+                                {fontWeight: 'bold'},
+                              ]}>
+                              예상시간
+                            </Text>
+                          </View>
+                          <View style={styles.pickupFinish}>
+                            <Text style={{fontWeight: 'bold'}}>상태</Text>
+                          </View>
+                        </View>
+
+                        <FlatList
+                          style={styles.deliveryListLayout}
+                          data={item.routeInfo.deliveryList}
+                          keyExtractor={(el, idx) => idx}
+                          renderItem={el => (
+                            <View>
+                              {el.item.type === 'delivery' && (
+                                <View style={styles.deliveryLayout}>
+                                  <View style={styles.deliveryLocationName}>
+                                    <Text
+                                      style={styles.deliveryLocationNameText}>
+                                      {el.item.delName}
+                                    </Text>
+                                    <Text
+                                      style={
+                                        el.item.check === true
+                                          ? {color: 'green'}
+                                          : styles.deliveryQuantityText
+                                      }>
+                                      {el.item.orderNum}건
+                                    </Text>
+                                  </View>
+                                  <View style={styles.deliveryTime}>
+                                    <Text style={styles.deliveryTimeText}>
+                                      {el.item.delScheduledTime.substr(0, 5)}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.deliveryFinish}>
+                                    {/* 업무가 완료되었다면 해당 루트의 S3 사진파일 정보를 가져오고 
+                                      해당 배달지의 이름 및 실제시간 갱신
+                                    */}
+                                    {el.item.check === true && (
+                                      <Pressable
+                                        onPress={() => {
+                                          setModalVisible(!modalVisible);
+                                          setCurrentLoc(el.item.delName);
+                                          axios({
+                                            method: 'get',
+                                            url: camera_service.getCheckIn(),
+                                            params: {
+                                              delId: el.item.id,
+                                            },
+                                          })
+                                            .then(res => {
+                                              console.log(res.data);
+                                              setCheckImage(res.data);
+                                            })
+                                            .catch(e => {
+                                              console.log(e);
+                                            });
+                                        }}>
+                                        <View style={{flexDirection: 'row'}}>
+                                          <Text
+                                            style={styles.deliveryFinishText}>
+                                            완료{' '}
+                                          </Text>
+                                          <Icon
+                                            name="image-search"
+                                            size={18}></Icon>
+                                        </View>
+                                      </Pressable>
+                                    )}
+                                    {el.item.check === false && (
+                                      <Text style={styles.deliveryFailText}>
+                                        미완료
+                                      </Text>
+                                    )}
+                                  </View>
+                                </View>
+                              )}
+                            </View>
+                          )}></FlatList>
+                      </View>
                     )}
                   </View>
                 )}
@@ -301,15 +381,24 @@ export default function DetailWork(props) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text></Text>
-            <View style={{alignItems: 'center'}}>
-              <Image source={Sample} style={styles.modalImage} />
+            <View style={styles.modalTextView}>
+              <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                {currentLoc}
+              </Text>
             </View>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>확인</Text>
-            </Pressable>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={checkImage !== '' ? {uri: checkImage} : Sample}
+                style={styles.modalImage}
+              />
+            </View>
+            <View style={styles.buttonLayout}>
+              <Pressable
+                style={[styles.button]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>확인</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -424,7 +513,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   pickupRestaurantName: {
-    flex: 3,
+    flex: 4,
     alignItems: 'flex-start',
     paddingLeft: 10,
   },
@@ -435,7 +524,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   pickupTime: {
-    flex: 1,
+    flex: 1.5,
     alignItems: 'center',
   },
   pickupTimeText: {},
@@ -461,7 +550,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   deliveryLocationName: {
-    flex: 3,
+    flex: 4,
     alignItems: 'flex-start',
     paddingLeft: 10,
   },
@@ -472,7 +561,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   deliveryTime: {
-    flex: 1,
+    flex: 1.5,
     alignItems: 'center',
   },
   deliveryTimeText: {},
@@ -508,16 +597,21 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalTextView: {
+    padding: 5,
+  },
+  buttonLayout: {
+    alignItems: 'center',
+  },
+
   button: {
     borderRadius: 10,
     padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
     backgroundColor: identityColor,
   },
+
   textStyle: {
-    color: identityTextColor,
+    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -527,7 +621,7 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT / 3,
     marginVertical: 10,
   },
-
+  ////////////////////////////////////////////모달 끝///
   universityLogoLayout: {
     flex: 1,
     alignItems: 'center',
@@ -546,5 +640,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     marginHorizontal: 10,
+    borderBottomWidth: 1,
   },
 });

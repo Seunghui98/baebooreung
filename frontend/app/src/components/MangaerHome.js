@@ -57,7 +57,7 @@ function ManagerHome({navigation}) {
       //오후 10시부터 오후 2시까지는 점심정보를 띄움,오후 2시부터 오후 10시까지는 저녁정보를 띄움
 
       let realType; //점심, 저녁에 대한 정보를 시간에 따라 저장
-      if (realTime >= 14 && realTime < 22) {
+      if (realTime >= 14) {
         realType = 'dinner';
       } else {
         realType = 'lunch';
