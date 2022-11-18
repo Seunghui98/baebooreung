@@ -41,7 +41,7 @@ const Login = ({navigation}) => {
   console.log(fcmToken);
   const ButtonStyle = {
     borderWidth: 0.8,
-    borderRadius: 16,
+    borderRadius: 12,
     borderColor: 'white',
     borderWidth: 4,
     overflow: 'hidden',
@@ -247,7 +247,7 @@ const Login = ({navigation}) => {
           <Image
             source={logo}
             style={{
-              width: SCREEN_WIDTH / 3,
+              width: SCREEN_WIDTH / 2.5,
               height: SCREEN_HEIGHT / 5,
             }}></Image>
         </View>
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   idForm: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: 30,
     paddingLeft: 20,
     borderColor: 'white',
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   passwordForm: {
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
     paddingLeft: 20,
