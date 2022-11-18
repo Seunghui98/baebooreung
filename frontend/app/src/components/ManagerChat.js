@@ -259,29 +259,32 @@ export default function ManagerChat({navigation}) {
   }, []);
 
   useEffect(() => {
-    // 유저목록 프로필사진 가능하면...?
-    // if (userList.length !== 0 && userList !== undefined) {
-    //   userList.map(item => {
-    //     axios({
-    //       method: 'get',
-    //       url: user_service.getProfile() + `${item.id}`,
-    //     })
-    //       .then(res => {
-    //         console.log('파일가져오기', res.data);
-    //         setUserProfileList(userProfileList => {
-    //           const newUserProfileList = [...userProfileList];
-    //           newUserProfileList.push({
-    //             email: item.email,
-    //             grade: item.grade,
-    //             id: item.id,
-    //             name: item.name,
-    //             profile: res.data,
-    //           });
-    //         });
-    //       })
-    //       .catch(e => {});
-    //   });
-    // }
+    if (userList.length !== 0 && userList !== undefined) {
+      console.log(userList);
+      userList.map(item => {
+        axios({
+          method: 'get',
+          url: user_service.getProfile(),
+          params: {
+            userId: item.id,
+          },
+        })
+          .then(res => {
+            console.log('파일가져오기', res.data);
+            setUserProfileList(userProfileList => {
+              const newUserProfileList = [...userProfileList];
+              newUserProfileList.push({
+                email: item.email,
+                grade: item.grade,
+                id: item.id,
+                name: item.name,
+                profile: res.data,
+              });
+            });
+          })
+          .catch(e => {});
+      });
+    }
     connect();
     return () => disconnect();
   }, []);
@@ -320,7 +323,7 @@ export default function ManagerChat({navigation}) {
                     {<Image source={Truck} style={styles.image} />}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
-                      {item.grade === 'DRIVER' && '드라이버'}
+                      {item.grade === 'DRIVER' && '기사님'}
                     </Text>
                   </View>
                   {/* <View style={styles.userListDetailIcon}>
