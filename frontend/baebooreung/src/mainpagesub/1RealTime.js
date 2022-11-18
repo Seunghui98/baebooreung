@@ -12,6 +12,7 @@ import refresh_move_off from "../assets/images/refresh_move_off.gif";
 import logo_team from "../assets/images/logo_team.png";
 import picture from "../assets/images/picture.png";
 import Swal from "sweetalert2";
+import arrow from "../assets/images/up-right.png";
 
 
 const { naver } = window;
@@ -701,7 +702,9 @@ const RealTime = (props) => {
       {props.myParams.region === "" ? (
         <div className={styles.effect}>
           <div className={styles.ment}>
-            지역, 대학, 시간 순서로 선택해주세요.
+            <div style={{ marginBottom: "10px" }}> <span style={{ color: "blue" }}>실시간 업무 현황 </span>페이지 입니다.</div>
+            <div style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px", fontSize: "25px" }}><span style={{ color: "blue" }}>지역, 대학, 시간</span>을 순서대로 선택해주세요. <img style={{ width: "20px" }} src={arrow} alt="" /></div>
+            <div style={{ color: "red", fontSize: "20px" }}>*날짜 선택 불가</div>
           </div>
         </div>
       ) : (

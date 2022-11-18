@@ -1,7 +1,7 @@
 import styles from "./MainFrame.module.css";
 import "../assets/styles/font.css";
 
-import React, { useEffect, Link } from "react";
+import React, { useEffect, useState, Link } from "react";
 
 import logo from "../assets/images/new_logo_2.png";
 import logo_fold from "../assets/images/new_logo_2_fold_stroke.png";
@@ -14,8 +14,24 @@ import task from "../assets/images/task.png";
 import driver from "../assets/images/driver.png";
 import tracking from "../assets/images/tracking.png";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
+
+
 
 const MainFrame = ({ setMainId, changeMenuHeader }) => {
+  const userInfo = useSelector((state) => state.user);
+  const [profileUrl, setProfileUrl] = useState('')
+
+  axios({
+    url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
+    method: "get",
+    params: {
+      userId: userInfo.id
+    }
+  }).then((res) => {
+    setProfileUrl(res.data)
+  })
   const navigate = useNavigate();
   const onClickImg = () => {
     navigate(`/`);
@@ -54,7 +70,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
             }}
           >
             <img className={styles.main_frame_logo_image} src={driver} alt="" />
-            &nbsp;&nbsp;&nbsp;<div>{menus[0]}</div>
+            &nbsp;&nbsp;&nbsp;<div style={{ fontFamily: "BMHANNAAir" }}>{menus[0]}</div>
             {/* &nbsp;&nbsp;&nbsp;{menus[0]} */}
           </button>
           <button
@@ -67,7 +83,7 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
             }}
           >
             <img className={styles.main_frame_logo_image} src={task} alt="" />
-            &nbsp;&nbsp;&nbsp;업무 내역
+            &nbsp;&nbsp;&nbsp;<div style={{ fontFamily: "BMHANNAAir" }}>{menus[1]}</div>
           </button>
           <button
             id="button_3"
@@ -79,18 +95,19 @@ const MainFrame = ({ setMainId, changeMenuHeader }) => {
             }}
           >
             <img className={styles.main_frame_logo_image} src={chat} alt="" />
-            &nbsp;&nbsp;&nbsp;채팅
+            &nbsp;&nbsp;&nbsp;<div style={{ fontFamily: "BMHANNAAir" }}>{menus[2]}</div>
           </button>
         </div>
         <div>
           <div className={styles.profile}>
             <div className={styles.profile_div}>
               <img
+                style={{ borderRadius: "50%", border: "3px solid #F5CC1F" }}
                 className={styles.main_frame_logo_image}
-                src={profile}
+                src={profileUrl}
                 alt=""
               />
-              &nbsp;&nbsp;&nbsp;내 이름
+              &nbsp;&nbsp;&nbsp;<div style={{ fontFamily: "BMHANNAAir" }}>{userInfo.name}</div>
             </div>
             <button className={styles.button_style_profile}>
               <img
