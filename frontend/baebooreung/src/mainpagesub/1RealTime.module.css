@@ -14,7 +14,8 @@
   
   .ment {
     position: absolute;
-    top:40%;
+    text-align: center;
+    top:35%;
     right:35%;
     padding: 12px;
     background-color: rgba( 255, 255, 255, 1 );
