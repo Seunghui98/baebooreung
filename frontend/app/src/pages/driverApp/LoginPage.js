@@ -7,6 +7,8 @@ import {
   View,
   Pressable,
   Alert,
+  Image,
+  Dimensions,
 } from 'react-native';
 
 // axios
@@ -29,6 +31,10 @@ import work, {
 import CustomButton from '../../components/CustomButton';
 import {isEmail, isPassword} from '../../utils/inputCheck';
 import messaging from '@react-native-firebase/messaging';
+import logo from '../../assets/images/logo.png';
+const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
+const identityColor = '#0B0B3B';
+const identityTextColor = '#FACC2E';
 
 const Login = ({navigation}) => {
   const fcmToken = useSelector(state => state.auth.fcmToken);
@@ -36,6 +42,8 @@ const Login = ({navigation}) => {
   const ButtonStyle = {
     borderWidth: 0.8,
     borderRadius: 16,
+    borderColor: 'white',
+    borderWidth: 4,
     overflow: 'hidden',
     width: '100%',
   };
@@ -234,38 +242,56 @@ const Login = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>배부릉 로그인</Text>
+      <View style={[styles.headerContainer, {flexDirection: 'row'}]}>
+        <View
+          style={{flex: 1.5, alignItems: 'center', justifyContent: 'center'}}>
+          <Image
+            source={logo}
+            style={{
+              width: SCREEN_WIDTH / 5,
+              height: SCREEN_HEIGHT / 10,
+            }}></Image>
+        </View>
+        <View
+          style={{
+            flex: 2.5,
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+          }}>
+          <Text style={[styles.header, {}]}>배부릉 로그인</Text>
+        </View>
       </View>
       <View style={styles.Body}>
         <Text style={styles.label}>아이디</Text>
         <TextInput
           style={styles.idForm}
           placeholder="아이디를 입력하세요."
+          placeholderTextColor="white"
           onChange={onChangeId}
         />
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
           style={styles.passwordForm}
           placeholder="비밀번호를 입력하세요."
+          placeholderTextColor="white"
           onChange={onChangePw}
           secureTextEntry={true}
         />
         <Text>{pwMessage}</Text>
         <View style={styles.needSignUp}>
-          <Text>회원이 아니신가요?</Text>
+          <Text style={{color: 'white'}}>회원이 아니신가요?</Text>
           <Pressable
             onPress={() => {
               navigation.navigate('Signup');
             }}>
-            <Text style={{color: 'blue'}}>회원가입</Text>
+            <Text style={{color: identityTextColor}}>회원가입</Text>
           </Pressable>
         </View>
       </View>
       <View style={styles.footer}>
         <View style={styles.btnContainer}>
           <CustomButton onPress={login} ButtonStyle={ButtonStyle}>
-            <Text>로그인</Text>
+            <Text style={{color: 'white'}}>로그인</Text>
           </CustomButton>
         </View>
       </View>
@@ -279,6 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItem: 'center',
     paddingHorizontal: 10,
+    backgroundColor: identityColor,
   },
   headerContainer: {
     flex: 1,
@@ -290,6 +317,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
   },
   Body: {
     flex: 1,
@@ -303,12 +332,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 30,
     paddingLeft: 20,
+    borderColor: 'white',
+    borderWidth: 4,
+    color: 'white',
   },
   passwordForm: {
     borderRadius: 8,
     marginBottom: 10,
     borderWidth: 1,
     paddingLeft: 20,
+    borderColor: 'white',
+    borderWidth: 4,
+    color: 'white',
   },
   needSignUp: {
     flexDirection: 'row',
@@ -331,6 +366,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 15,
     fontWeight: '800',
+    color: 'white',
   },
 });
 
