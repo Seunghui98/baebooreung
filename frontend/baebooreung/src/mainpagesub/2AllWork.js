@@ -4,11 +4,6 @@ import styles from "./2AllWork.module.css";
 import jnu from "../assets/images/전남대학교.png";
 import gist from "../assets/images/지스트.png";
 import yonsei from "../assets/images/연세대.png";
-import focus_on from "../assets/images/focus_on.png";
-import focus_off from "../assets/images/focus_off.png";
-import refresh_move_on from "../assets/images/refresh_move_on.gif";
-import refresh_off from "../assets/images/refresh_off.png";
-import refresh_move_off from "../assets/images/refresh_move_off.gif";
 import logo_team from "../assets/images/logo_team.png";
 import picture from "../assets/images/picture.png";
 import Swal from "sweetalert2";
@@ -19,6 +14,7 @@ const { naver } = window;
 const BASE_URL = "https://k7c207.p.ssafy.io:8000";
 
 const RealTime = (props) => {
+  const [oldRoute, setOldRoute] = useState([])
   const [focus, setFocus] = useState(0)
   const [myuniv, setMyUniv] = useState([]);
   const JNU = [126.9063, 35.1767];
@@ -357,132 +353,183 @@ const RealTime = (props) => {
             }
             routeColor.push(color_temp);
           }
-          if (routeId && allTask[i].routeId === routeId) {
-            // 선택 루트 있는 상태에서 1명 기사 마커, 경로 찍기
-            axios({
-              url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
-              method: "get",
-              params: {
-                userId: allTask[i].userId
-              }
-            }).then((res2) => {
-              axios({
-                url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
-                method: "get",
-              }).then((res) => {
-                new naver.maps.Marker({
-                  map: map,
-                  position: new naver.maps.LatLng([res.data.longitude, res.data.latitude]),
-                  icon: {
-                    content: `<div style="border-radius:50%;"><img src="${res2.data}" alt="" ` +
-                      `style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; border-radius:50%; outline-width: 10px; outline-style: solid; outline-color: ${color_temp}; object-fit:center; object-position:center;` +
-                      '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;"/></div>',
-                    size: new naver.maps.Size(22, 35),
-                    anchor: new naver.maps.Point(11, 35),
-                  },
-                  animation: 1,
-                })
-
-                if (allTaskList[i].deliveryDtoList.length) {
-
-                  const temp_course = {
-                    start: make_LatLng([res.data.longitude, res.data.latitude]),
-                    goal: make_LatLng([
-                      allTaskList[i].deliveryDtoList[0].longitude,
-                      allTaskList[i].deliveryDtoList[0].latitude,
-                    ]),
-                    option: "trafast",
-                  };
-                  // 기사 경로 찍기
-                  cal_course(temp_course).then((appData) => {
-                    new naver.maps.Polyline({
-                      map: map,
-                      path: appData,
-                      strokeColor: "#F5CC1F",
-                      strokeStyle: "shortdash",
-                      strokeLineCap: "round",
-                      strokeWeight: 15,
-                      strokeOpacity: 1,
-                      strokeLineJoin: "round",
-                    });
-                  });
-
-                }
-
-
-              });
-            })
-            // 기사 마커, 경로 찍기
-          } else if (!routeId) {
-            // 선택 루트 없는 상태에서 모든 기사 마커, 경로 찍기
-            axios({
-              url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
-              method: "get",
-              params: {
-                userId: allTask[i].userId
-              }
-            }).then((res2) => {
-              axios({
-                url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
-                method: "get",
-              }).then((res) => {
-                new naver.maps.Marker({
-                  map: map,
-                  position: new naver.maps.LatLng([res.data.longitude, res.data.latitude]),
-                  icon: {
-                    content: `<div style="border-radius:50%;"><img src="${res2.data}" alt="" ` +
-                      `style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; border-radius:50%; outline-width: 10px; outline-style: solid; outline-color: ${color_temp}; object-fit:center; object-position:center;` +
-                      '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;"/></div>',
-                    size: new naver.maps.Size(22, 35),
-                    anchor: new naver.maps.Point(11, 35),
-                  },
-                  animation: 1,
-                })
-
-                if (allTaskList[i].deliveryDtoList.length) {
-
-
-                  const temp_course = {
-                    start: make_LatLng([res.data.longitude, res.data.latitude]),
-                    goal: make_LatLng([
-                      allTaskList[i].deliveryDtoList[0].longitude,
-                      allTaskList[i].deliveryDtoList[0].latitude,
-                    ]),
-                    option: "trafast",
-                  };
-
-                  // 기사 경로 찍기
-                  cal_course(temp_course).then((appData) => {
-                    new naver.maps.Polyline({
-                      map: map,
-                      path: appData,
-                      strokeColor: color_temp,
-                      strokeStyle: "shortdash",
-                      strokeLineCap: "round",
-                      strokeWeight: 15,
-                      strokeOpacity: 0.8,
-                      strokeLineJoin: "round",
-                    });
-                  });
-
-                }
-
-              });
-            })
-            // 기사 마커, 경로 찍기
+          console.log(routeId)
+          // 경로 선택 없고, 경유지 선택 없을 때 보여주기(전부 다)
+          if (!routeId) {
+            // axios({
+            //   url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/route/${routeId}`,
+            //   method: "get",
+            // }).then((res) => {
+            //   res.data.map((item) => {
+            //     if (parseFloat(item.longitude) >= 126.0 && parseFloat(item.longitude) <= 128.0 && parseFloat(item.latitude) >= 34.0 && parseFloat(item.latitude) <= 36.0) {
+            //       oldRoute.push([parseFloat(item.longitude), parseFloat(item.latitude)])
+            //     }
+            //   })
+            // })
+            // new naver.maps.Polyline({
+            //   map: map,
+            //   path: oldRoute,
+            //   strokeColor: "#0F1839",
+            //   strokeStyle: "solid",
+            //   strokeLineCap: "round",
+            //   strokeWeight: 10,
+            //   strokeOpacity: 0.6,
+            //   strokeLineJoin: "round",
+            // });
+            // 경로 선택 있고, 경유지 선택 없을 때 보여주기(해당 경로에 해당하는 것만)
+          } else if (routeId) {
+            // console.log(routeId)
+            // axios({
+            //   url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/route/${routeId}`,
+            //   method: "get",
+            // }).then((res) => {
+            //   res.data.map((item) => {
+            //     if (parseFloat(item.longitude) >= 126.0 && parseFloat(item.longitude) <= 128.0 && parseFloat(item.latitude) >= 34.0 && parseFloat(item.latitude) <= 36.0) {
+            //       oldRoute.push([parseFloat(item.longitude), parseFloat(item.latitude)])
+            //     }
+            //   })
+            // })
+            // new naver.maps.Polyline({
+            //   map: map,
+            //   path: oldRoute,
+            //   strokeColor: "#0F1839",
+            //   strokeStyle: "solid",
+            //   strokeLineCap: "round",
+            //   strokeWeight: 10,
+            //   strokeOpacity: 0.6,
+            //   strokeLineJoin: "round",
+            // });
+            // 경로 선택 있고, 경유지 선택 있을 때 보여주기(해당 경유지에 해당하는 것만)
+          } else if (allTask[i].routeId === routeId && positionLoc.length) {
           }
+
+          //   // 선택 루트 있는 상태에서 1명 기사 마커, 경로 찍기
+          //   axios({
+          //     url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
+          //     method: "get",
+          //     params: {
+          //       userId: allTask[i].userId
+          //     }
+          //   }).then((res2) => {
+          //     axios({
+          //       url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
+          //       method: "get",
+          //     }).then((res) => {
+          //       new naver.maps.Marker({
+          //         map: map,
+          //         position: new naver.maps.LatLng([res.data.longitude, res.data.latitude]),
+          //         icon: {
+          //           content: `<div style="border-radius:50%;"><img src="${res2.data}" alt="" ` +
+          //             `style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; border-radius:50%; outline-width: 10px; outline-style: solid; outline-color: ${color_temp}; object-fit:center; object-position:center;` +
+          //             '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;"/></div>',
+          //           size: new naver.maps.Size(22, 35),
+          //           anchor: new naver.maps.Point(11, 35),
+          //         },
+          //         animation: 1,
+          //       })
+
+          //       if (allTaskList[i].deliveryDtoList.length) {
+
+          //         const temp_course = {
+          //           start: make_LatLng([res.data.longitude, res.data.latitude]),
+          //           goal: make_LatLng([
+          //             allTaskList[i].deliveryDtoList[0].longitude,
+          //             allTaskList[i].deliveryDtoList[0].latitude,
+          //           ]),
+          //           option: "trafast",
+          //         };
+          //         // 기사 경로 찍기
+          //         cal_course(temp_course).then((appData) => {
+          //           new naver.maps.Polyline({
+          //             map: map,
+          //             path: appData,
+          //             strokeColor: "#F5CC1F",
+          //             strokeStyle: "shortdash",
+          //             strokeLineCap: "round",
+          //             strokeWeight: 15,
+          //             strokeOpacity: 1,
+          //             strokeLineJoin: "round",
+          //           });
+          //         });
+
+          //       }
+
+
+          //     });
+          //   })
+          //   // 기사 마커, 경로 찍기
+          // } else if (!routeId) {
+          //   // 선택 루트 없는 상태에서 모든 기사 마커, 경로 찍기
+          //   axios({
+          //     url: `https://k7c207.p.ssafy.io:8000/s3-service/getProfile`,
+          //     method: "get",
+          //     params: {
+          //       userId: allTask[i].userId
+          //     }
+          //   }).then((res2) => {
+          //     axios({
+          //       url: `https://k7c207.p.ssafy.io:8000/gps-service/gps/${allTask[i].userId}`,
+          //       method: "get",
+          //     }).then((res) => {
+          //       new naver.maps.Marker({
+          //         map: map,
+          //         position: new naver.maps.LatLng([res.data.longitude, res.data.latitude]),
+          //         icon: {
+          //           content: `<div style="border-radius:50%;"><img src="${res2.data}" alt="" ` +
+          //             `style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; max-width: none; max-height: none; border-radius:50%; outline-width: 10px; outline-style: solid; outline-color: ${color_temp}; object-fit:center; object-position:center;` +
+          //             '-webkit-user-select: none; position: absolute; width: 50px; height: 50px; left: -15px; top: -20px;"/></div>',
+          //           size: new naver.maps.Size(22, 35),
+          //           anchor: new naver.maps.Point(11, 35),
+          //         },
+          //         animation: 1,
+          //       })
+
+          //       if (allTaskList[i].deliveryDtoList.length) {
+
+
+          //         const temp_course = {
+          //           start: make_LatLng([res.data.longitude, res.data.latitude]),
+          //           goal: make_LatLng([
+          //             allTaskList[i].deliveryDtoList[0].longitude,
+          //             allTaskList[i].deliveryDtoList[0].latitude,
+          //           ]),
+          //           option: "trafast",
+          //         };
+
+          //         // 기사 경로 찍기
+          //         cal_course(temp_course).then((appData) => {
+          //           new naver.maps.Polyline({
+          //             map: map,
+          //             path: appData,
+          //             strokeColor: color_temp,
+          //             strokeStyle: "shortdash",
+          //             strokeLineCap: "round",
+          //             strokeWeight: 15,
+          //             strokeOpacity: 0.8,
+          //             strokeLineJoin: "round",
+          //           });
+          //         });
+
+          //       }
+
+          //     });
+          //   })
+          //   // 기사 마커, 경로 찍기
+          // }
           if (allTask[i].deliveryDtoList.length) {
             if (!routeId || allTask[i].routeId === routeId) {
               const waypoints_temp = [];
               let temp_lat = 0
               let temp_lng = 0
+
+
               // 모든 루트 순회 경로 찍기
-              for (let j = 0; j <= allTaskList[i].deliveryDtoList.length - 1; j++) {
+              for (let j = 0; j <= allTask[i].deliveryDtoList.length - 1; j++) {
                 // 경로 선택 있고, 경유지 선택 있을 시
-                if (allTaskList[i].deliveryDtoList.length) {
+                if (allTask[i].deliveryDtoList.length) {
                   waypoints_temp.push([
-                    allTaskList[i].deliveryDtoList[j].longitude,
-                    allTaskList[i].deliveryDtoList[j].latitude,
+                    allTask[i].deliveryDtoList[j].longitude,
+                    allTask[i].deliveryDtoList[j].latitude,
                   ]);
                 }
               }
@@ -551,6 +598,9 @@ const RealTime = (props) => {
                 temp_lat += allTask[i].deliveryDtoList[j].latitude
                 temp_lng += allTask[i].deliveryDtoList[j].longitude
               }
+
+
+
               // 루트 하나 선택할 때
               if (allTask[i].routeId === routeId) {
                 if (positionLoc.length === 0 & focus === 0) {
@@ -576,19 +626,19 @@ const RealTime = (props) => {
                 }).then((res) => {
                   setDriverProfile(res.data)
                 })
+
               }
 
-              if (allTaskList[i].deliveryDtoList.length) {
-
+              if (allTask[i].deliveryDtoList.length) {
                 const course_temp = {
                   start: make_LatLng([
-                    allTaskList[i].deliveryDtoList[0].longitude,
-                    allTaskList[i].deliveryDtoList[0].latitude,
+                    allTask[i].deliveryDtoList[0].longitude,
+                    allTask[i].deliveryDtoList[0].latitude,
                   ]),
                   goal: make_LatLng(
                     [
-                      allTaskList[i].deliveryDtoList[allTaskList[i].deliveryDtoList.length - 1].longitude,
-                      allTaskList[i].deliveryDtoList[allTaskList[i].deliveryDtoList.length - 1].latitude,
+                      allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].longitude,
+                      allTask[i].deliveryDtoList[allTask[i].deliveryDtoList.length - 1].latitude,
                     ]
                   ),
                   option: "trafast",
@@ -608,6 +658,7 @@ const RealTime = (props) => {
                   });
                 });
 
+
               }
 
             }
@@ -622,7 +673,9 @@ const RealTime = (props) => {
       map.setZoom(18)
       setCenter(positionLoc)
     }
+
   }, [SsafyCloudStoneCourse, allTask, routeId, positionLoc, params_temp, focus, refresh]);
+
   useEffect(() => {
     cal_course(ssafy_cloudstone_route_temp).then((appData) => {
       setSsafyCloudStoneCourse(appData);
