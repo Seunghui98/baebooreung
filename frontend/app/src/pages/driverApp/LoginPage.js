@@ -242,36 +242,27 @@ const Login = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.headerContainer, {flexDirection: 'row'}]}>
-        <View
-          style={{flex: 1.5, alignItems: 'center', justifyContent: 'center'}}>
+      <View style={[styles.headerContainer]}>
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
           <Image
             source={logo}
             style={{
-              width: SCREEN_WIDTH / 5,
-              height: SCREEN_HEIGHT / 10,
+              width: SCREEN_WIDTH / 3,
+              height: SCREEN_HEIGHT / 5,
             }}></Image>
-        </View>
-        <View
-          style={{
-            flex: 2.5,
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-          }}>
-          <Text style={[styles.header, {}]}>배부릉 로그인</Text>
         </View>
       </View>
       <View style={styles.Body}>
-        <Text style={styles.label}>아이디</Text>
+        <Text style={[styles.label, {marginHorizontal: 40}]}>아이디</Text>
         <TextInput
-          style={styles.idForm}
+          style={[styles.idForm, {marginHorizontal: 40}]}
           placeholder="아이디를 입력하세요."
           placeholderTextColor="white"
           onChange={onChangeId}
         />
-        <Text style={styles.label}>비밀번호</Text>
+        <Text style={[styles.label, {marginHorizontal: 40}]}>비밀번호</Text>
         <TextInput
-          style={styles.passwordForm}
+          style={[styles.passwordForm, {marginHorizontal: 40}]}
           placeholder="비밀번호를 입력하세요."
           placeholderTextColor="white"
           onChange={onChangePw}
@@ -279,19 +270,25 @@ const Login = ({navigation}) => {
         />
         <Text>{pwMessage}</Text>
         <View style={styles.needSignUp}>
-          <Text style={{color: 'white'}}>회원이 아니신가요?</Text>
+          <Text style={{color: 'white', marginHorizontal: 40}}>
+            회원이 아니신가요?
+          </Text>
           <Pressable
             onPress={() => {
               navigation.navigate('Signup');
             }}>
-            <Text style={{color: identityTextColor}}>회원가입</Text>
+            <Text style={{color: identityTextColor, marginHorizontal: 40}}>
+              회원가입
+            </Text>
           </Pressable>
         </View>
       </View>
       <View style={styles.footer}>
         <View style={styles.btnContainer}>
           <CustomButton onPress={login} ButtonStyle={ButtonStyle}>
-            <Text style={{color: 'white'}}>로그인</Text>
+            <Text style={{color: identityColor, fontWeight: 'bold'}}>
+              로그인
+            </Text>
           </CustomButton>
         </View>
       </View>
@@ -313,12 +310,6 @@ const styles = StyleSheet.create({
     alignItem: 'center',
     marginVertical: 10,
     // borderWidth: 1,
-  },
-  header: {
-    fontSize: 20,
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold',
   },
   Body: {
     flex: 1,
