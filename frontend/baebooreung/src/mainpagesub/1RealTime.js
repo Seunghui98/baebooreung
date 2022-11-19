@@ -43,7 +43,7 @@ const RealTime = (props) => {
     option: "traoptimal",
   };
   const [center, setCenter] = useState(
-    setTwoCenter(ssafyLatLng, cloudStoneLatLng)
+    [126.87222, 35.1805]
   );
 
 
