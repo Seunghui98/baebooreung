@@ -23,6 +23,8 @@ import Truck from '../assets/images/truck.png';
 import logo from '../assets/images/logo.png';
 import AudioRecord from '../components/AudioRecord';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
+const identityColor = '#0B0B3B';
+const identityTextColor = '#FACC2E';
 
 export default function ManagerChat({navigation}) {
   const [page, setPage] = useState('user'); // 유저 / 채팅방목록 / 채팅방 분기처리
@@ -565,8 +567,11 @@ export default function ManagerChat({navigation}) {
                   </View>
                 </View>
               )}></FlatList>
-            <View style={styles.bottomContainer}>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 6}}></View>
               <AudioRecord propFunction={handleChange}></AudioRecord>
+            </View>
+            <View style={styles.bottomContainer}>
               <TextInput
                 style={styles.messageInput}
                 multiline={true}
@@ -575,12 +580,23 @@ export default function ManagerChat({navigation}) {
                   handleChange(text);
                 }}
                 value={message}></TextInput>
-              <TouchableOpacity
-                style={styles.buttonStyle}
-                onPress={sendMessage}
-                disabled={message === ''}>
-                <Text style={styles.buttonTextStyle}>전송</Text>
-              </TouchableOpacity>
+              <View
+                style={{flex: 1, backgroundColor: 'black', borderRadius: 10}}>
+                <TouchableOpacity
+                  style={[
+                    styles.buttonStyle,
+                    {
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 10,
+                    },
+                  ]}
+                  onPress={sendMessage}
+                  disabled={message === ''}>
+                  <Text style={styles.buttonTextStyle}>전송</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -598,8 +614,29 @@ export default function ManagerChat({navigation}) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={[styles.createRoomNameLayout, {}]}>
-              <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
-              <View style={{}}>
+              <View style={{alignItems: 'flex-end'}}>
+                <Pressable
+                  style={styles.cancelButton}
+                  onPress={() => {
+                    createChatCheckBox.map((item, idx) => {
+                      if (item === true) {
+                        setCreateChatCheckBox(createChatCheckBox => {
+                          const newArr = [...createChatCheckBox];
+                          newArr[idx] = false;
+                          return newArr;
+                        });
+                      }
+                    });
+                    setCreateChatVisible(!createChatVisible);
+                    setRoomName('');
+                    setRoomNamePlaceholder('#A4A4A4');
+                  }}>
+                  <Text style={styles.createChatButtonTextStyle}>X</Text>
+                </Pressable>
+              </View>
+              <View style={{alignItems: 'center'}}>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
+
                 <TextInput
                   style={styles.roomNameInput}
                   placeholder={'방 제목을 입력하세요'}
@@ -630,7 +667,7 @@ export default function ManagerChat({navigation}) {
                     )}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
-                      {item.grade === 'DRIVER' && '드라이버'}
+                      {item.grade === 'DRIVER' && '기사님'}
                     </Text>
                   </View>
                   <View style={styles.userListDetailIcon}>
@@ -698,30 +735,12 @@ export default function ManagerChat({navigation}) {
                     });
                     setCreateChatVisible(!createChatVisible);
                     setRoomName('');
-                    setRoomNamePlaceholder('black');
+                    setRoomNamePlaceholder('#A4A4A4');
                     setChatRoomList([]);
                     findAllRooms();
                   }
                 }}>
                 <Text style={styles.createChatButtonTextStyle}>초대</Text>
-              </Pressable>
-              <Pressable
-                style={styles.cancelButton}
-                onPress={() => {
-                  createChatCheckBox.map((item, idx) => {
-                    if (item === true) {
-                      setCreateChatCheckBox(createChatCheckBox => {
-                        const newArr = [...createChatCheckBox];
-                        newArr[idx] = false;
-                        return newArr;
-                      });
-                    }
-                  });
-                  setCreateChatVisible(!createChatVisible);
-                  setRoomName('');
-                  setRoomNamePlaceholder('black');
-                }}>
-                <Text style={styles.createChatButtonTextStyle}>취소</Text>
               </Pressable>
             </View>
           </View>
@@ -977,7 +996,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   messageInput: {
-    flex: 5,
+    flex: 4,
     maxHeight: SCREEN_HEIGHT / 7.3,
     fontSize: 15,
     borderTopLeftRadius: 10,
@@ -989,7 +1008,6 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     backgroundColor: 'black',
-
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
@@ -1003,8 +1021,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.7)',
   },
   modalView: {
+    borderRadius: 10,
     margin: 20,
-    maxHeight: SCREEN_HEIGHT / 2,
+    maxHeight: (SCREEN_HEIGHT * 2) / 3,
     maxWidth: SCREEN_WIDTH,
     backgroundColor: 'white',
   },
@@ -1031,13 +1050,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     margin: 10,
-    backgroundColor: '#58ACFA',
+    backgroundColor: identityColor,
     borderRadius: 10,
   },
   cancelButton: {
     alignItems: 'center',
-    padding: 10,
-    margin: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
     backgroundColor: 'red',
     borderRadius: 10,
   },
@@ -1047,7 +1066,6 @@ const styles = StyleSheet.create({
   },
   createRoomNameLayout: {
     margin: 10,
-    alignItems: 'center',
   },
   roomNameInput: {
     width: (SCREEN_WIDTH * 2) / 3,
