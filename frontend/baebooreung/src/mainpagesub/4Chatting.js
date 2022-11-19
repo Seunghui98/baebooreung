@@ -5,7 +5,8 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { chat } from "../api/api";
-
+import { camera_service } from "../api/api";
+import logo from "../assets/images/logo.png";
 const Chatting = () => {
   const [page, setPage] = useState(false); // 유저 / 채팅방목록 / 채팅방 분기처리
   const [chatRoomList, setChatRoomList] = useState([]); //채팅방 목록
@@ -22,18 +23,12 @@ const Chatting = () => {
   const name = user.name; //메세지를 전송하는 주체
   const dispatch = useDispatch();
   const client = useRef({});
-
   useEffect(() => {
     // console.log(userList);
     // 채팅창 생성 모달창의 체크박스 상태를 모두 false로 초기화 시킴
     userList
       .filter((item) => item.email !== user.email)
       .map((item, idx) => {
-        setUserProfileList((userProfileList) => {
-          const newUserProfileList = [...userProfileList];
-          newUserProfileList.push(item);
-          return newUserProfileList;
-        });
         setCreateChatCheckBox((createChatCheckBox) => {
           const newArr = [...createChatCheckBox];
           newArr.push(false);
@@ -262,9 +257,50 @@ const Chatting = () => {
     return () => disconnect();
   }, []);
 
+  //프로필 사진을 받아오기 위하여 userList가 갱신되면
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    if (userList.length !== 0) {
+      userList
+        .filter((item) => item.email !== user.email)
+        .map((item) => {
+          // console.log(item.email, item.grade, item.id, item.name);
+          axios({
+            method: "get",
+            url: camera_service.getFile(),
+            params: {
+              userId: item.id,
+            },
+          })
+            .then((res) => {
+              console.log("파일가져오기", res.data);
+
+              setUserProfileList((userProfileList) => {
+                const newUserProfileList = [...userProfileList];
+                newUserProfileList.push({
+                  email: item.email,
+                  grade: item.grade,
+                  id: item.id,
+                  name: item.name,
+                  profile: res.data,
+                  phone: item.phone,
+                });
+                return newUserProfileList;
+              });
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        });
+    }
+  }, [userList]);
+
+  useEffect(() => {
+    console.log(userProfileList);
+  }, [userProfileList]);
+
+  // useEffect(() => {
+  //   console.log(createChatCheckBox);
+  // }, [createChatCheckBox]);
 
   function createRoomModal() {
     return (
@@ -282,11 +318,12 @@ const Chatting = () => {
               maxLength="45"
             ></input>
 
-            {/* 채팅방에 추가할 초대 유저목록을 내 정보를 제외한 유저목록으로 갱신 후
+            {/* 채팅방에 추가할 초대 유저목록을 갱신 후
              체크박스를 통해 초대할 유저정보 입력*/}
-            {userList
-              .filter((item) => item.email !== user.email)
+            {userProfileList
+              // .filter((item) => item.email !== user.email)
               .map((item, idx) => {
+                console.log(item.profile);
                 return (
                   <div key={idx} className={styles.createChatListStyle}>
                     <div className={styles.userListDetailText}>
@@ -386,7 +423,7 @@ const Chatting = () => {
       <div className={styles.userListLayout}>
         {/* filter를 이용하여 나를 제외한 유저목록 출력 */}
         <p>유저 목록</p>
-        {userList
+        {userProfileList
           .filter((item) => item.email !== user.email)
           .map((item, idx) => {
             return (
