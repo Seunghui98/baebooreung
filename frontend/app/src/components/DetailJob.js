@@ -224,7 +224,7 @@ const DetailJob = props => {
   const apiData = {
     start: currentLocation,
     goal: targetLocation,
-    option: 'trafast',
+    option: 'traoptimal',
   };
 
   function getDrawingData() {
@@ -237,7 +237,7 @@ const DetailJob = props => {
         // console.log('DrawingData ?');
         console.log('경로 데이터 성공');
         // console.log(res.data.route.trafast[0].path);
-        const route = res.data.route.trafast[0].path;
+        const route = res.data.route.traoptimal[0].path;
         const redefineData = reDefine(route);
         setPath(redefineData);
       })
