@@ -262,7 +262,7 @@ const DetailJob = props => {
               width: '100%',
               height: '100%',
             }}
-            center={{...markerCoords, zoom: 16}}>
+            center={{...markerCoords, zoom: 14}}>
             <Marker
               coordinate={{latitude: lat, longitude: lng}}
               width={40}
