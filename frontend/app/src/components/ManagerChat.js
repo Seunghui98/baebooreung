@@ -599,7 +599,7 @@ export default function ManagerChat({navigation}) {
           <View style={styles.modalView}>
             <View style={[styles.createRoomNameLayout, {}]}>
               <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
-              <View style={{backgroundColor: 'red'}}>
+              <View style={{}}>
                 <TextInput
                   style={styles.roomNameInput}
                   placeholder={'방 제목을 입력하세요'}
@@ -1025,18 +1025,21 @@ const styles = StyleSheet.create({
   buttonLayout: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    marginHorizontal: 50,
   },
   submitButton: {
     alignItems: 'center',
     padding: 10,
     margin: 10,
     backgroundColor: '#58ACFA',
+    borderRadius: 10,
   },
   cancelButton: {
     alignItems: 'center',
     padding: 10,
     margin: 10,
     backgroundColor: 'red',
+    borderRadius: 10,
   },
   createChatButtonTextStyle: {
     fontSize: 16,
@@ -1047,7 +1050,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   roomNameInput: {
+    width: (SCREEN_WIDTH * 2) / 3,
     fontSize: 15,
+    borderRadius: 10,
+    shadowOffset: {width: 0, height: 1},
+    shadowRadius: 2,
+    elevation: 4,
+    shadowOpacity: 0.4,
+    backgroundColor: 'white',
+    marginVertical: 5,
   },
   quitModalView: {
     margin: 20,
