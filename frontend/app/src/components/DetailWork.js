@@ -49,6 +49,9 @@ export default function DetailWork(props) {
   }, []);
 
   useEffect(() => {
+    checkArr.sort(function (a, b) {
+      return b - a;
+    });
     console.log(checkArr);
   }, [checkArr]);
 
