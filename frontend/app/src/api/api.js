@@ -47,6 +47,7 @@ const business_service = {
   checkIn: () => BASE_URL + BUSINESS_SERVICE + 'check-in/',
   takePhoto: () => BASE_URL + BUSINESS_SERVICE + 'photo',
   getOrderCount: () => BASE_URL + BUSINESS_SERVICE + 'order/cnt/',
+  getCheckStatus: () => BASE_URL + BUSINESS_SERVICE + 'delivery/check/',
 };
 const GPS_SERVICE = 'gps-service/';
 const gps_service = {
