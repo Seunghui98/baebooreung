@@ -17,6 +17,7 @@ import {gps_service} from '../api/api';
 import NaverMapView, {Marker} from 'react-native-nmap';
 import user from '../redux/user';
 import {user_service} from '../api/api';
+import logo from '../assets/images/logo.png';
 import yonsei from '../assets/images/yonsei.png';
 import CNU from '../assets/images/CNU.png';
 import GIST from '../assets/images/gist.png';
@@ -72,17 +73,23 @@ export default function DetailGPS(props) {
             ]}>
             <View style={styles.markerInnerView}>
               <View style={{flex: 1, margin: 5}}>
-                <Image
-                  source={
-                    profile !== ''
-                      ? {uri: profile}
-                      : require('../assets/images/truck.png')
-                  }
-                  style={[
-                    profile !== ''
-                      ? styles.markerImage
-                      : styles.defaultMarkerImage,
-                  ]}></Image>
+                {profile !== null ? (
+                  <Image
+                    source={profile !== '' ? {uri: profile} : logo}
+                    style={[
+                      profile !== ''
+                        ? styles.markerImage
+                        : styles.defaultMarkerImage,
+                    ]}></Image>
+                ) : (
+                  <Image
+                    source={logo}
+                    style={[
+                      profile !== ''
+                        ? styles.markerImage
+                        : styles.defaultMarkerImage,
+                    ]}></Image>
+                )}
               </View>
             </View>
           </View>
