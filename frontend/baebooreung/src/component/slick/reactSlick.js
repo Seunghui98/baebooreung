@@ -104,7 +104,7 @@ const SliderSlick = () => {
             border: "none",
             borderStyle: "none",
           }}>
-            <div style={{ fontSize: "36px", color: "white", fontFamily: "BMJUA", textAlign: "center", marginBottom: "10px" }}>배부릉 소개 영상</div>
+            <div style={{ fontSize: "36px", color: "white", fontFamily: "BMJUA", textAlign: "center", marginBottom: "10px" }}>배부릉 발표 UCC</div>
             <ReactPlayer
               className='react-player'
               url={movie2}   // 플레이어 url
