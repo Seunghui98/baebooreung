@@ -597,7 +597,7 @@ export default function ManagerChat({navigation}) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={styles.createRoomNameLayout}>
+            <View style={[styles.createRoomNameLayout, {}]}>
               <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
               <View style={{backgroundColor: 'red'}}>
                 <TextInput
@@ -673,7 +673,7 @@ export default function ManagerChat({navigation}) {
                               method: 'post',
                               url:
                                 chat.invite() +
-                                `${res.data.roomId}/${userList[idx].email}/`,
+                                `${res.data.roomId}/${userProfileList[idx].email}/`,
                             })
                               .then(res => {
                                 console.log('초대', res.data);
