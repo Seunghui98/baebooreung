@@ -31,7 +31,6 @@ export default function DetailWork(props) {
   const [currentLoc, setCurrentLoc] = useState('');
   const [checkImage, setCheckImage] = useState('');
   const [checkArr, setCheckArr] = useState([]); //현재 상황이 픽업/배달 완료인지 미완료인지 클릭이벤트로 checkArr 배열에 저장
-  const [status, setStatus] = useState(false);
   useEffect(() => {
     //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
     props.routeList.map((item, idx) => {
@@ -50,8 +49,8 @@ export default function DetailWork(props) {
   }, []);
 
   useEffect(() => {
-    console.log('53줄', checkArr);
-  }, [status]);
+    console.log(checkArr);
+  }, [checkArr]);
 
   useEffect(() => {
     if (driverList.length !== 0) {
@@ -86,8 +85,9 @@ export default function DetailWork(props) {
                   activeOpacity={0.9}
                   onPress={() => {
                     if (ID !== item.id) {
-                      setCheckArr([]);
                       //드라이버의 실제 배송 업무중 check 값이 실시간으로 바뀔때를 대비하여 만든 api / 클릭때마다 실행하여 상태를 확인할 수 있도록 한다.
+                      //클릭시 모든 DELIVERYlIST의 완료/미완료 유무 저장
+                      setCheckArr([]);
                       item.routeInfo.deliveryList.map(async el => {
                         await axios({
                           method: 'get',
@@ -107,12 +107,10 @@ export default function DetailWork(props) {
                       });
                       setID(item.id);
                       setWorkType(false);
-                      setStatus(!status);
                     } else {
                       setID('');
                       setCheckArr([]);
                       setWorkType(false);
-                      setStatus(!status);
                     }
                   }}>
                   <View style={{flex: 1}}>
@@ -164,13 +162,34 @@ export default function DetailWork(props) {
                     </View>
                   </View>
                 </TouchableOpacity>
+
                 {ID === item.id && (
                   <View style={styles.ScrollList}>
                     <View style={styles.driverHeader}>
+                      {/* 픽업 장소 버튼 */}
                       <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={() => {
-                          return setWorkType(false);
+                          setWorkType(false);
+                          setCheckArr([]);
+                          item.routeInfo.deliveryList.map(async el => {
+                            await axios({
+                              method: 'get',
+                              url:
+                                business_service.getCheckStatus() + `${el.id}`,
+                            })
+                              .then(res => {
+                                console.log(res.data);
+                                setCheckArr(checkArr => {
+                                  const newCheckArr = [...checkArr];
+                                  newCheckArr.push(res.data);
+                                  return newCheckArr;
+                                });
+                              })
+                              .catch(e => {
+                                console.log(e);
+                              });
+                          });
                         }}>
                         <Text
                           style={
@@ -181,10 +200,31 @@ export default function DetailWork(props) {
                           픽업 장소
                         </Text>
                       </TouchableOpacity>
+
+                      {/* 배달 장소 버튼 */}
                       <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={() => {
-                          return setWorkType(true);
+                          setWorkType(true);
+                          setCheckArr([]);
+                          item.routeInfo.deliveryList.map(async el => {
+                            await axios({
+                              method: 'get',
+                              url:
+                                business_service.getCheckStatus() + `${el.id}`,
+                            })
+                              .then(res => {
+                                console.log(res.data);
+                                setCheckArr(checkArr => {
+                                  const newCheckArr = [...checkArr];
+                                  newCheckArr.push(res.data);
+                                  return newCheckArr;
+                                });
+                              })
+                              .catch(e => {
+                                console.log(e);
+                              });
+                          });
                         }}>
                         <Text
                           style={
@@ -197,6 +237,7 @@ export default function DetailWork(props) {
                       </TouchableOpacity>
                     </View>
 
+                    {/* 픽업 장소 부분 */}
                     {workType === false && (
                       //이중 FlatList 사용시 주의 (실제 renderItem은 (item,index값을 받음))
                       <View>
@@ -237,7 +278,7 @@ export default function DetailWork(props) {
                                     </Text>
                                     <Text
                                       style={
-                                        el.item.check === true
+                                        checkArr[el.index] === true
                                           ? {color: 'green'}
                                           : styles.pickupOrderQuantityText
                                       }>
@@ -250,7 +291,7 @@ export default function DetailWork(props) {
                                     </Text>
                                   </View>
                                   <View style={styles.pickupFinish}>
-                                    {el.item.check === true && (
+                                    {checkArr[el.index] === true && (
                                       <Pressable
                                         onPress={() => {
                                           setModalVisible(!modalVisible);
@@ -280,7 +321,7 @@ export default function DetailWork(props) {
                                         </View>
                                       </Pressable>
                                     )}
-                                    {el.item.check === false && (
+                                    {checkArr[el.index] === false && (
                                       <Text style={styles.pickupFailText}>
                                         미완료
                                       </Text>
@@ -332,7 +373,7 @@ export default function DetailWork(props) {
                                     </Text>
                                     <Text
                                       style={
-                                        el.item.check === true
+                                        checkArr[el.index] === true
                                           ? {color: 'green'}
                                           : styles.deliveryQuantityText
                                       }>
@@ -348,7 +389,7 @@ export default function DetailWork(props) {
                                     {/* 업무가 완료되었다면 해당 루트의 S3 사진파일 정보를 가져오고 
                                       해당 배달지의 이름 및 실제시간 갱신
                                     */}
-                                    {el.item.check === true && (
+                                    {checkArr[el.index] === true && (
                                       <Pressable
                                         onPress={() => {
                                           setModalVisible(!modalVisible);
@@ -379,7 +420,7 @@ export default function DetailWork(props) {
                                         </View>
                                       </Pressable>
                                     )}
-                                    {el.item.check === false && (
+                                    {checkArr[el.index] === false && (
                                       <Text style={styles.deliveryFailText}>
                                         미완료
                                       </Text>
