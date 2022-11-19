@@ -745,9 +745,9 @@ const RealTime = (props) => {
       {props.myParams.region === "" ? (
         <div className={styles.effect}>
           <div className={styles.ment}>
-            <div style={{ marginBottom: "10px" }}> <span style={{ color: "blue" }}>실시간 업무 현황 </span>페이지 입니다.</div>
+            <div style={{ marginTop: "10px", marginBottom: "10px" }}> <span style={{ color: "blue" }}>실시간 업무 현황 </span>페이지 입니다.</div>
             <div style={{ marginLeft: "10px", marginRight: "10px", marginBottom: "10px", fontSize: "25px" }}><span style={{ color: "blue" }}>지역, 대학, 시간</span>을 순서대로 선택해주세요. <img style={{ width: "20px" }} src={arrow} alt="" /></div>
-            <div style={{ color: "red", fontSize: "20px" }}>*날짜 선택 불가</div>
+            <div style={{ color: "red", fontSize: "20px", marginBottom: "10px" }}>*날짜 선택 불가</div>
           </div>
         </div>
       ) : (
