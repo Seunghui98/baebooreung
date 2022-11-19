@@ -1022,7 +1022,7 @@ const styles = StyleSheet.create({
   },
   buttonLayout: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-evenly',
   },
   submitButton: {
     alignItems: 'center',
