@@ -34,7 +34,7 @@ export default function ManagerChat({navigation}) {
   const [messages, setMessages] = useState([]); // 채팅 목록
   const [createChatVisible, setCreateChatVisible] = useState(false); // 채팅창 생성 모달창
   const [createChatCheckBox, setCreateChatCheckBox] = useState([]);
-  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('black');
+  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('#A4A4A4');
   const [quitChatVisible, setQuitChatVisible] = useState(false); // 채팅방 수정/나가기 모달창
   const [quitChatRoomInfo, setQuitChatRoomInfo] = useState({});
   const userList = useSelector(state => state.userList.userList);
@@ -598,16 +598,18 @@ export default function ManagerChat({navigation}) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.createRoomNameLayout}>
-              <Text>방 제목</Text>
-              <TextInput
-                style={styles.roomNameInput}
-                placeholder={'방 제목을 입력하세요'}
-                placeholderTextColor={roomNamePlaceholder}
-                onChangeText={text => {
-                  RoomNameChange(text);
-                }}
-                value={roomName}
-                maxLength={45}></TextInput>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
+              <View style={{backgroundColor: 'red'}}>
+                <TextInput
+                  style={styles.roomNameInput}
+                  placeholder={'방 제목을 입력하세요'}
+                  placeholderTextColor={roomNamePlaceholder}
+                  onChangeText={text => {
+                    RoomNameChange(text);
+                  }}
+                  value={roomName}
+                  maxLength={45}></TextInput>
+              </View>
             </View>
             <FlatList
               contentContainerStyle={{}}
