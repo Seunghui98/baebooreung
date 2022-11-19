@@ -13,12 +13,14 @@ import {
   Modal,
   Pressable,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import {chat, user, user_service} from '../api/api';
+import {camera_service, chat, user, user_service} from '../api/api';
 import CheckBox from '@react-native-community/checkbox';
 import Truck from '../assets/images/truck.png';
+import logo from '../assets/images/logo.png';
 import AudioRecord from '../components/AudioRecord';
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
@@ -32,7 +34,7 @@ export default function ManagerChat({navigation}) {
   const [messages, setMessages] = useState([]); // 채팅 목록
   const [createChatVisible, setCreateChatVisible] = useState(false); // 채팅창 생성 모달창
   const [createChatCheckBox, setCreateChatCheckBox] = useState([]);
-  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('black');
+  const [roomNamePlaceholder, setRoomNamePlaceholder] = useState('#A4A4A4');
   const [quitChatVisible, setQuitChatVisible] = useState(false); // 채팅방 수정/나가기 모달창
   const [quitChatRoomInfo, setQuitChatRoomInfo] = useState({});
   const userList = useSelector(state => state.userList.userList);
@@ -259,36 +261,42 @@ export default function ManagerChat({navigation}) {
   }, []);
 
   useEffect(() => {
-    // 유저목록 프로필사진 가능하면...?
-    // if (userList.length !== 0 && userList !== undefined) {
-    //   userList.map(item => {
-    //     axios({
-    //       method: 'get',
-    //       url: user_service.getProfile() + `${item.id}`,
-    //     })
-    //       .then(res => {
-    //         console.log('파일가져오기', res.data);
-    //         setUserProfileList(userProfileList => {
-    //           const newUserProfileList = [...userProfileList];
-    //           newUserProfileList.push({
-    //             email: item.email,
-    //             grade: item.grade,
-    //             id: item.id,
-    //             name: item.name,
-    //             profile: res.data,
-    //           });
-    //         });
-    //       })
-    //       .catch(e => {});
-    //   });
-    // }
     connect();
     return () => disconnect();
   }, []);
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    if (userList.length !== 0) {
+      // console.log(userList);
+      userList.map(item => {
+        // console.log(item.email, item.grade, item.id, item.name);
+        axios({
+          method: 'get',
+          url: camera_service.getFile(),
+          params: {
+            userId: item.id,
+          },
+        })
+          .then(res => {
+            // console.log('파일가져오기', res.data);
+            setUserProfileList(userProfileList => {
+              const newUserProfileList = [...userProfileList];
+              newUserProfileList.push({
+                email: item.email,
+                grade: item.grade,
+                id: item.id,
+                name: item.name,
+                profile: res.data,
+              });
+              return newUserProfileList;
+            });
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      });
+    }
+  }, [userList]);
 
   return (
     <View style={styles.container}>
@@ -312,22 +320,31 @@ export default function ManagerChat({navigation}) {
           <View style={styles.rightBar}>
             <FlatList
               style={styles.list}
-              data={userList}
+              data={userProfileList}
               keyExtractor={(item, idx) => idx}
               renderItem={({item}) => (
                 <View style={styles.userListStyle}>
                   <View style={styles.userListDetailText}>
-                    {<Image source={Truck} style={styles.image} />}
+                    {item.profile !== null ? (
+                      <Image
+                        source={
+                          item.profile !== '' ? {uri: item.profile} : logo
+                        }
+                        style={styles.image}
+                      />
+                    ) : (
+                      <Image source={logo} style={styles.image} />
+                    )}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
-                      {item.grade === 'DRIVER' && '드라이버'}
+                      {item.grade === 'DRIVER' && '기사님'}
                     </Text>
                   </View>
-                  {/* <View style={styles.userListDetailIcon}>
+                  <View style={styles.userListDetailIcon}>
                     <TouchableOpacity>
                       <Icon name="phone-forwarded" size={30}></Icon>
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       onPress={() => {
                         chatRoomList.forEach(value => {
                           subscribe(roomId, user.email);
@@ -338,8 +355,8 @@ export default function ManagerChat({navigation}) {
                         name="textsms"
                         size={30}
                         style={styles.userMessageIcon}></Icon>
-                    </TouchableOpacity>
-                  </View> */}
+                    </TouchableOpacity> */}
+                  </View>
                 </View>
               )}
             />
@@ -385,7 +402,7 @@ export default function ManagerChat({navigation}) {
                 <Pressable
                   activeOpacity={0.6}
                   onLongPress={() => {
-                    console.log('방정보', item);
+                    // console.log('방정보', item);
                     setQuitChatRoomInfo(() => {
                       return item;
                     });
@@ -580,26 +597,37 @@ export default function ManagerChat({navigation}) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={styles.createRoomNameLayout}>
-              <Text>방 제목</Text>
-              <TextInput
-                style={styles.roomNameInput}
-                placeholder={'방 제목을 입력하세요'}
-                placeholderTextColor={roomNamePlaceholder}
-                onChangeText={text => {
-                  RoomNameChange(text);
-                }}
-                value={roomName}
-                maxLength={45}></TextInput>
+            <View style={[styles.createRoomNameLayout, {}]}>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>방 제목</Text>
+              <View style={{backgroundColor: 'red'}}>
+                <TextInput
+                  style={styles.roomNameInput}
+                  placeholder={'방 제목을 입력하세요'}
+                  placeholderTextColor={roomNamePlaceholder}
+                  onChangeText={text => {
+                    RoomNameChange(text);
+                  }}
+                  value={roomName}
+                  maxLength={45}></TextInput>
+              </View>
             </View>
             <FlatList
               contentContainerStyle={{}}
-              data={userList}
+              data={userProfileList}
               keyExtractor={(item, index) => index}
               renderItem={({item, index}) => (
                 <View style={styles.createChatListStyle}>
                   <View style={styles.userListDetailText}>
-                    <Icon name="person" size={30}></Icon>
+                    {item.profile !== null ? (
+                      <Image
+                        source={
+                          item.profile !== '' ? {uri: item.profile} : logo
+                        }
+                        style={styles.image}
+                      />
+                    ) : (
+                      <Image source={logo} style={styles.image} />
+                    )}
                     <Text style={styles.userListTextStyle}>
                       {item.name} {item.grade === 'MANAGER' && '관리자'}
                       {item.grade === 'DRIVER' && '드라이버'}
@@ -645,7 +673,7 @@ export default function ManagerChat({navigation}) {
                               method: 'post',
                               url:
                                 chat.invite() +
-                                `${res.data.roomId}/${userList[idx].email}/`,
+                                `${res.data.roomId}/${userProfileList[idx].email}/`,
                             })
                               .then(res => {
                                 console.log('초대', res.data);
@@ -976,6 +1004,8 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
+    maxHeight: SCREEN_HEIGHT / 2,
+    maxWidth: SCREEN_WIDTH,
     backgroundColor: 'white',
   },
   createChatListStyle: {
@@ -994,7 +1024,7 @@ const styles = StyleSheet.create({
   },
   buttonLayout: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-evenly',
   },
   submitButton: {
     alignItems: 'center',
@@ -1066,8 +1096,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   image: {
-    resizeMode: 'stretch',
     width: 50,
-    height: 40,
+    height: 50,
   },
 });
