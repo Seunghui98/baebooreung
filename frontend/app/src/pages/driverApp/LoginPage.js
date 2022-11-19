@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 
 // axios
@@ -242,56 +243,59 @@ const Login = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.headerContainer]}>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Image
-            source={logo}
-            style={{
-              width: SCREEN_WIDTH / 2.5,
-              height: SCREEN_HEIGHT / 5,
-            }}></Image>
+      <ScrollView>
+        <View style={[styles.headerContainer]}>
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Image
+              source={logo}
+              style={{
+                width: SCREEN_WIDTH / 2.5,
+                height: SCREEN_HEIGHT / 5,
+              }}></Image>
+          </View>
         </View>
-      </View>
-      <View style={styles.Body}>
-        <Text style={[styles.label, {marginHorizontal: 40}]}>아이디</Text>
-        <TextInput
-          style={[styles.idForm, {marginHorizontal: 40}]}
-          placeholder="아이디를 입력하세요."
-          placeholderTextColor="white"
-          onChange={onChangeId}
-        />
-        <Text style={[styles.label, {marginHorizontal: 40}]}>비밀번호</Text>
-        <TextInput
-          style={[styles.passwordForm, {marginHorizontal: 40}]}
-          placeholder="비밀번호를 입력하세요."
-          placeholderTextColor="white"
-          onChange={onChangePw}
-          secureTextEntry={true}
-        />
-        <Text>{pwMessage}</Text>
-        <View style={styles.needSignUp}>
-          <Text style={{color: 'white', marginHorizontal: 40}}>
-            회원이 아니신가요?
-          </Text>
-          <Pressable
-            onPress={() => {
-              navigation.navigate('Signup');
-            }}>
-            <Text style={{color: identityTextColor, marginHorizontal: 40}}>
-              회원가입
+        <View style={styles.Body}>
+          <Text style={[styles.label, {marginHorizontal: 40}]}>아이디</Text>
+          <TextInput
+            style={[styles.idForm, {marginHorizontal: 40}]}
+            placeholder="아이디를 입력하세요."
+            placeholderTextColor="white"
+            onChange={onChangeId}
+          />
+          <Text style={[styles.label, {marginHorizontal: 40}]}>비밀번호</Text>
+          <TextInput
+            style={[styles.passwordForm, {marginHorizontal: 40}]}
+            placeholder="비밀번호를 입력하세요."
+            placeholderTextColor="white"
+            onChange={onChangePw}
+            secureTextEntry={true}
+          />
+          <Text>{pwMessage}</Text>
+          <View style={styles.needSignUp}>
+            <Text style={{color: 'white', marginHorizontal: 40}}>
+              회원이 아니신가요?
             </Text>
-          </Pressable>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Signup');
+              }}>
+              <Text style={{color: identityTextColor, marginHorizontal: 40}}>
+                회원가입
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-      <View style={styles.footer}>
-        <View style={styles.btnContainer}>
-          <CustomButton onPress={login} ButtonStyle={ButtonStyle}>
-            <Text style={{color: identityColor, fontWeight: 'bold'}}>
-              로그인
-            </Text>
-          </CustomButton>
+        <View style={styles.footer}>
+          <View style={styles.btnContainer}>
+            <CustomButton onPress={login} ButtonStyle={ButtonStyle}>
+              <Text style={{color: identityColor, fontWeight: 'bold'}}>
+                로그인
+              </Text>
+            </CustomButton>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
