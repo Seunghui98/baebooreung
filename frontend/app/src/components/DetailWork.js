@@ -16,7 +16,7 @@ import yonsei from '../assets/images/yonsei.png';
 import CNU from '../assets/images/CNU.png';
 import GIST from '../assets/images/gist.png';
 import axios from 'axios';
-import {camera_service} from '../api/api';
+import {business_service, camera_service} from '../api/api';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 const identityColor = '#0B0B3B';
@@ -30,7 +30,8 @@ export default function DetailWork(props) {
   const [driverList, setDriverList] = useState([]);
   const [currentLoc, setCurrentLoc] = useState('');
   const [checkImage, setCheckImage] = useState('');
-
+  const [checkArr, setCheckArr] = useState([]); //현재 상황이 픽업/배달 완료인지 미완료인지 클릭이벤트로 checkArr 배열에 저장
+  const [status, setStatus] = useState(false);
   useEffect(() => {
     //props 로 받아온 조건에 맞는 루트 리스트를 driverList에 저장
     props.routeList.map((item, idx) => {
@@ -47,6 +48,10 @@ export default function DetailWork(props) {
     });
     setOk(true);
   }, []);
+
+  useEffect(() => {
+    console.log('53줄', checkArr);
+  }, [status]);
 
   useEffect(() => {
     if (driverList.length !== 0) {
@@ -81,11 +86,33 @@ export default function DetailWork(props) {
                   activeOpacity={0.9}
                   onPress={() => {
                     if (ID !== item.id) {
+                      setCheckArr([]);
+                      //드라이버의 실제 배송 업무중 check 값이 실시간으로 바뀔때를 대비하여 만든 api / 클릭때마다 실행하여 상태를 확인할 수 있도록 한다.
+                      item.routeInfo.deliveryList.map(async el => {
+                        await axios({
+                          method: 'get',
+                          url: business_service.getCheckStatus() + `${el.id}`,
+                        })
+                          .then(res => {
+                            console.log(res.data);
+                            setCheckArr(checkArr => {
+                              const newCheckArr = [...checkArr];
+                              newCheckArr.push(res.data);
+                              return newCheckArr;
+                            });
+                          })
+                          .catch(e => {
+                            console.log(e);
+                          });
+                      });
                       setID(item.id);
                       setWorkType(false);
+                      setStatus(!status);
                     } else {
                       setID('');
+                      setCheckArr([]);
                       setWorkType(false);
+                      setStatus(!status);
                     }
                   }}>
                   <View style={{flex: 1}}>
@@ -289,6 +316,7 @@ export default function DetailWork(props) {
                           </View>
                         </View>
 
+                        {/* 배달지 FlatList */}
                         <FlatList
                           style={styles.deliveryListLayout}
                           data={item.routeInfo.deliveryList}
