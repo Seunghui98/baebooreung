@@ -11,6 +11,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
+import AppText from '../../components/AppText';
 
 // axios
 import axios from 'axios';
@@ -361,6 +362,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: 'white',
+    fontFamily: 'BMJUA_ttf',
   },
 });
 
