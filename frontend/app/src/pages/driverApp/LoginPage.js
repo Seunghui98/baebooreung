@@ -243,18 +243,17 @@ const Login = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={[styles.headerContainer]}>
-          <View
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Image
-              source={logo}
-              style={{
-                width: SCREEN_WIDTH / 2.5,
-                height: SCREEN_HEIGHT / 5,
-              }}></Image>
-          </View>
+      <View style={[styles.headerContainer]}>
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <Image
+            source={logo}
+            style={{
+              width: SCREEN_WIDTH / 2.5,
+              height: SCREEN_HEIGHT / 5,
+            }}></Image>
         </View>
+      </View>
+      <ScrollView style={{flex: 1}}>
         <View style={styles.Body}>
           <Text style={[styles.label, {marginHorizontal: 40}]}>아이디</Text>
           <TextInput
@@ -309,7 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: identityColor,
   },
   headerContainer: {
-    flex: 1,
+    flex: 0.5,
     justifyContent: 'center',
     alignItem: 'center',
     marginVertical: 10,
