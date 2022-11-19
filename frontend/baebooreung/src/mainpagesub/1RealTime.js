@@ -43,7 +43,7 @@ const RealTime = (props) => {
     option: "traoptimal",
   };
   const [center, setCenter] = useState(
-    [126.87222, 35.1805]
+    [126.82222, 35.1755]
   );
 
 
@@ -326,7 +326,7 @@ const RealTime = (props) => {
               // focus 여부에 체크되어 있다면 줌, 센터
               if (focus) {
                 map.setCenter([res.data.longitude, res.data.latitude])
-                map.setZoom(18)
+                map.setZoom(19)
                 setCenter([res.data.longitude, res.data.latitude])
               }
             })
