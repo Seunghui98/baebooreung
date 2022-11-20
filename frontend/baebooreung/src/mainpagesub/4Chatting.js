@@ -420,8 +420,8 @@ const Chatting = () => {
                       item.roomId === roomId && item.sender === user.email
                         ? styles.myChatComponent
                         : item.roomId === roomId && item.sender !== user.email
-                        ? styles.otherChatComponent
-                        : {}
+                          ? styles.otherChatComponent
+                          : {}
                     }
                   >
                     {/* messages에 저장된 roomId가 내가 입장한 roomId와 일치하고
@@ -460,11 +460,11 @@ const Chatting = () => {
                             ? styles.noticeChat
                             : item.roomId === roomId &&
                               item.sender === user.email
-                            ? styles.myChat
-                            : item.roomId === roomId &&
-                              item.sender !== user.email
-                            ? styles.otherChat
-                            : {}
+                              ? styles.myChat
+                              : item.roomId === roomId &&
+                                item.sender !== user.email
+                                ? styles.otherChat
+                                : {}
                         }
                       >
                         {/* messages에 저장된 roomId가 내가 입장한 roomId와 일치하고
