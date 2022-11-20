@@ -6,17 +6,19 @@
 }
 
 .userListLayout{
-    background-color: gray;
+    background-color: white;
     display :flex;
     flex-direction: column;
-    width:28%;
+    width:25%;
     height:100%;
     align-items: center;
-    border-radius: 50px;
+    border-radius: 30px;
     overflow-y: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
     color:black;
+    border: 3px solid #0F1839;
+    margin-right: 30px;
 }
 .userListLayout::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
@@ -30,11 +32,12 @@
 .userListName {
     display:flex;
     /* background-color:; */
-    font-size: 35px;
+    font-size: 25px;
+    margin-bottom: 5px;
 }
 .userListPhone {
 
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .chatLayout {
@@ -45,21 +48,24 @@
 
 }
 .chatRoomLayout{
-    background-color: red;
+    /* background-color: red; */
+    border: 3px solid #0F1839;
     display : flex;
     flex-direction: column;
-    width:50%;
+    width:48%;
     height:100%;
-    border-radius: 50px;
+    border-radius: 30px;
+    margin:auto;
 }
 
 .chatRoomListLayout{
     background-color: green;
     display:flex;
     flex-direction : column;
-    width:50%;
+    width:48%;
     height:100%;
-    border-radius: 50px;
+    border-radius: 30px;
+    margin:auto;
 }
 .chatRoomList{
     display:flex;
