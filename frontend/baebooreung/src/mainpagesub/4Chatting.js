@@ -421,21 +421,21 @@ const Chatting = () => {
     <div className={styles.background}>
       {/*유저목록 div */}
       <div className={styles.userListLayout}>
-        {/* filter를 이용하여 나를 제외한 유저목록 출력 */}
-        <p>유저 목록</p>
         {userProfileList
           .filter((item) => item.email !== user.email)
           .map((item, idx) => {
             return (
               <div key={idx} className={styles.userList}>
-                <div>
+                <div style={{ display: "flex", flexDirection: "column" }}>
                   <img
                     src={`${item.profile}`}
-                    style={{ width: "100px", height: "100px" }}
+                    style={{ width: "100px", height: "100px", borderRadius: "50%", border: "3px solid #F5CC1F" }}
                   ></img>
                 </div>
-                <div className={styles.userListName}>{item.name}</div>
-                <div className={styles.userListPhone}>{item.phone}</div>
+                <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", marginLeft: "10px", fontFamily: "BMJUA" }}>
+                  <div className={styles.userListName}>{item.name}</div>
+                  <div className={styles.userListPhone}>{item.phone}</div>
+                </div>
               </div>
             );
           })}
