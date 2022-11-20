@@ -684,7 +684,8 @@ const RealTime = (props) => {
                       {/* <button className={styles.profileImageContent} style={{ outlineColor: routeColor[index], outlineStyle: "solid", outlineWidth: "4px" }}> */}
                       <img className={styles.profileImage} src={jnu} alt="" />
                       <div className={styles.profileContent}>
-                        {route.routeName}&nbsp;
+                        {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                       </div>
                     </button>
                   </div>
@@ -713,7 +714,8 @@ const RealTime = (props) => {
                     >
                       <img className={styles.profileImage} src={gist} alt="" />
                       <div className={styles.profileContent}>
-                        {route.routeName}&nbsp;
+                        {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                       </div>
                     </button>
                   </div>
@@ -740,7 +742,8 @@ const RealTime = (props) => {
                       >
                         <img className={styles.profileImage} src={jnu} alt="" />
                         <div className={styles.profileContent}>
-                          {route.routeName}&nbsp;
+                          {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                         </div>
                       </button>
                     </div>
@@ -768,7 +771,8 @@ const RealTime = (props) => {
                           alt=""
                         />
                         <div className={styles.profileContent}>
-                          {route.routeName}&nbsp;
+                          {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                         </div>
                       </button>
                     </div>
@@ -797,7 +801,8 @@ const RealTime = (props) => {
                           alt=""
                         />
                         <div className={styles.profileContent}>
-                          {route.routeName}&nbsp;
+                          {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                         </div>
                       </button>
                     </div>
@@ -831,7 +836,8 @@ const RealTime = (props) => {
                         alt=""
                       />
                       <div className={styles.profileContent}>
-                        {route.routeName}&nbsp;
+                        {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                       </div>
                     </button>
                   </div>
@@ -861,7 +867,8 @@ const RealTime = (props) => {
                         alt=""
                       />
                       <div className={styles.profileContent}>
-                        {route.routeName}&nbsp;
+                        {route.routeName}_{route.routeType === 'dinner' ? "저녁" : "점심"}&nbsp;
+
                       </div>
                     </button>
                   </div>

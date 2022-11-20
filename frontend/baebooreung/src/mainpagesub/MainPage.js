@@ -239,6 +239,7 @@ const MainPage = () => {
                               >
                                 <MenuItem sx={{ fontFamily: "BMJUA" }} value={'전남대학교'}>전남대학교</MenuItem>
                                 <MenuItem sx={{ fontFamily: "BMJUA" }} value={'광주과학기술원'}>광주과학기술원</MenuItem>
+                                {/* <MenuItem sx={{ fontFamily: "BMJUA" }} value={'기타'}>기타</MenuItem> */}
                               </Select>
                             </FormControl>
                             :

@@ -14,6 +14,7 @@
 }
 .userList{
     display :flex;
+    margin: 10px;
 
 }
 
