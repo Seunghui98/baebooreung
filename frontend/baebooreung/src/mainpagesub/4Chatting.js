@@ -428,6 +428,12 @@ const Chatting = () => {
           .map((item, idx) => {
             return (
               <div key={idx} className={styles.userList}>
+                <div>
+                  <img
+                    src={`${item.profile}`}
+                    style={{ width: "100px", height: "100px" }}
+                  ></img>
+                </div>
                 <div className={styles.userListName}>{item.name}</div>
                 <div className={styles.userListPhone}>{item.phone}</div>
               </div>
