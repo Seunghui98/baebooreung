@@ -12,8 +12,8 @@ spring:
       matching-strategy: ant_path_matcher
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://k7c207.p.ssafy.io:3306/93pro?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&characterEncoding=utf8
-    username: baebooreung
-    password: baebooreung93pro
+    url: 
+    username: 
+    password: 
 server:
   port: 8081
